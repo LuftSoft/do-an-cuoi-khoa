@@ -4,24 +4,6 @@
     <p-progressSpinner styleClass="w-4rem h-4rem" strokeWidth="8" fill="var(--surface-ground)"
       animationDuration="1s"></p-progressSpinner>
   </div>
-  <p>hello world!</p>
-  <span class="p-input-icon-left">
-    <i class="pi pi-search"></i>
-    <input type="text" pInputText [(ngModel)]="value" />
-  </span>
-
-  <p-button label="Show ProcessBar" styleClass="p-button-raised p-button-success"
-    (onClick)="showProgressBar()"></p-button>
-  <p-button label="Show Toast" styleClass="p-button-raised p-button-warning" (onClick)="showToast()"></p-button>
-
-  <div class="card">
-    <button type="button" pButton pRipple label="Activate Last" (click)="activateLast()" class="mb-3"></button>
-    <p-tabMenu [model]="items" [activeItem]="activeItem" (activeItemChange)="onActiveItemChange($event)"></p-tabMenu>
-  </div>
-
-  <i class="pi pi-check" style="font-size: 1rem"></i>
-  <i class="pi pi-times" style="font-size: 1.5rem"></i>
-  <i class="pi pi-search" style="font-size: 2rem"></i>
-  <i class="pi pi-user" style="font-size: 2.5rem"></i>
+  <a href="/user/auth/login">login</a>
   <router-outlet></router-outlet>
 </div>

@@ -3,8 +3,47 @@
 @import "primeng/resources/primeng.css";
 @import "primeicons/primeicons.css";
 
+/* assets */
+@import "assets/layout/styles/layout/layout.scss";
+@import "assets/demo/styles/flags/flags.css";
+@import "assets/demo/styles/badges.scss";
+@import "assets/demo/styles/code.scss";
+
+/* bootstrap */
+@import "node_modules/bootstrap/dist/css/bootstrap.min.css";
+
 body {
     margin: 0;
     padding: 0;
     font-family: var(--font-family);
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.w-35 {
+    width: 35%;
+}
+
+.p-password {
+    width: 100% !important;
+}
+
+.position-relative {
+    position: relative;
+}
+
+.position-absolute {
+    position: absolute;
+}
+
+/*BOX-SHADOW box-shadow*/
+.box-shadow-commmon {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+/*COLOR color*/
+.surface-c-color {
+    color: var(--text-color-secondary);
 }
