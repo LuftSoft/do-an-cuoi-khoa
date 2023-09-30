@@ -1,17 +1,15 @@
 # ĐỒ ÁN CUỐI KHÓA
 ## Đề tài:
-## Client: Angular
+## NodeJs v.18
+## Client: ReactJs
 ### About:
-- Angular v.16.2.1
-- NodeJS v.18
 ### Setup
 -
-## Server: ASPNET Core API
+## Server: ExpressJs, NodeJs
 ### About:
-- ASPNET Core 6 API.
 ---
 ### Setup
 -
 ---
-## Database: Microsoft SQL Server
+## Database: MySQL 8.0.34
 
