@@ -1,12 +1,12 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class userRoles extends Model {
+    class user_roles extends Model {
         static associate(models) {
             // associations can be defined here
         }
     }
-    userRoles.init(
+    user_roles.init(
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         {
             timestamps: false,
             sequelize,
-            modelName: 'userRoles',
+            modelName: 'user_roles',
         });
-    return userRoles;
+    return user_roles;
 }

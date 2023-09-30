@@ -1,4 +1,4 @@
-const dbContext = require('../database/models/dbContext');
+const dbContext = require('../database/models/config/dbContext');
 const { Helpers } = require('../extension/helper');
 const users = dbContext.users;
 
