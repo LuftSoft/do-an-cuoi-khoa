@@ -69,6 +69,20 @@ module.exports = {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
+      },
+      user_id: {
+        type: Sequelize.STRING(255),
+        references: {
+          model: 'users',
+          key: 'id'
+        }
+      },
+      role_id: {
+        type: Sequelize.STRING(255),
+        references: {
+          model: 'roles',
+          key: 'id'
+        }
       }
     }
     );

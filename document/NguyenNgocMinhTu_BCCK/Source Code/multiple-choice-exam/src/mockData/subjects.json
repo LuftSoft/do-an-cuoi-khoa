@@ -1,0 +1,42 @@
+[
+  {
+    "id": "4978584c-6a82-476c-b518-729498ee59f4",
+    "name": "Toán rời rạc",
+    "description": "Toán học rời rạc (tiếng Anh: discrete mathematics) là tên chung của nhiều ngành toán học có đối tượng nghiên cứu là các tập hợp rời rạc, các ngành này được tập hợp lại từ khi xuất hiện khoa học máy tính làm thành cơ sở toán học của khoa học máy tính."
+  },
+  {
+    "id": "bcc5c0b4-cb3a-4e3e-b4c6-67eff12387aa",
+    "name": "Tư tưởng Hồ Chí Minh",
+    "description": "Tư tưởng Hồ Chí Minh là một hệ thống quan điểm và tư tưởng của Hồ Chí Minh trong sự nghiệp cách mạng của ông được Đảng Cộng sản Việt Nam tổng kết, hệ thống hóa. Hệ thống tư tưởng này bao gồm những quan điểm về những vấn đề cơ bản của cách mạng Việt Nam."
+  },
+  {
+    "id": "e4038248-970c-4f6e-8b71-eaf5c1d4d40a",
+    "name": "Lập trình hướng đối tượng",
+    "description": "Lập trình hướng đối tượng (tiếng Anh: Object-oriented programming - OOP) là một mẫu hình lập trình dựa trên khái niệm \"đối tượng\", mà trong đó, đối tượng chứa đựng các dữ liệu, trên các trường, thường được gọi là các thuộc tính; và mã nguồn, được tổ chức thành các phương thức."
+  },
+  {
+    "id": "c5a2aef5-83d9-4db9-a881-47f839b4a7a2",
+    "name": "An toàn và bảo mật hệ thống thông tin",
+    "description": "An toàn máy tính xét trên tính bí mật, tính toàn vẹn, tính sẵn sàng. Ba tính đó còn gọi là tam giác C-I-A (confidentiality, integrity,availability). Đảm bảo an toàn hệ thống thông tin là đảm bảo an toàn của hệ thống thông tin (phần cứng, phần mềm, dữ liệu) trước các mối đe dọa (sự truy cập, sửa đổi, phá hoại dữ liệu bất hợp pháp) bằng các biện pháp kỹ thuật lẫn phi kỹ thuật (mã hóa, kiểm soát truy cập, chính sách …)."
+  },
+  {
+    "id": "ad0c90a2-5c3e-4e77-b837-22b9a91e1748",
+    "name": "Lý thuyết thông tin",
+    "description": "Lý thuyết thông tin là một nhánh của toán học ứng dụng và kĩ thuật điện nghiên cứu về đo đạc lượng thông tin. Lý thuyết thông tin được xây dựng bởi Claude E. Shannon để xác định giới hạn cơ bản trong các hoạt động xử lý tín hiệu chẳng hạn như nén dữ liệu hay lưu trữ và truyền dẫn dữ liệu."
+  },
+  {
+    "id": "495b50e1-552c-419a-8bcb-a73164b50ae2",
+    "name": "Lý thuyết đồ thị",
+    "description": "Trong toán học và tin học, lý thuyết đồ thị (tiếng Anh: graph theory) nghiên cứu các tính chất của đồ thị. Một cách không chính thức, đồ thị là một tập các đối tượng được gọi là các đỉnh (hoặc nút) nối với nhau bởi các cạnh (hoặc cung). Cạnh có thể có hướng hoặc vô hướng."
+  },
+  {
+    "id": "9ebc59c2-e553-4fc2-bee9-85deffb14c33",
+    "name": "Xử lý tín hiệu số",
+    "description": "Công nghệ xử lý tín hiệu số là công nghệ bùng nổ nhanh chóng trong ngành công nghiệp điện tử và viễn thông hiện nay. Xử lý tín hiệu số có nhiều ứng dụng đa dạng, ví dụ như trong lĩnh vực điện tử y sinh, trong điều chỉnh động cơ diesel, xử lý thoại, các cuộc gọi điện thoại khoảng cách xa, xử lý tiếng nói, xử lý âm thanh, và tăng cường chất lượng hình ảnh và truyền hình."
+  },
+  {
+    "id": "0fad5c39-b877-4312-a043-7fd87e632a62",
+    "name": "Cấu trúc dữ liệu và giải thuật",
+    "description": "Cấu trúc dữ liệu là một cách lưu dữ liệu trong máy tính sao cho nó có thể được sử dụng một cách hiệu quả. Một giải thuật (thuật toán), là một tập hợp hữu hạn các hướng dẫn được xác định rõ ràng, có thể thực hiện được bằng máy tính, thường để giải quyết một lớp vấn đề hoặc để thực hiện một phép tính."
+  }
+]

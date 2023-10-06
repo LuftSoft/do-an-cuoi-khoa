@@ -1,0 +1,17 @@
+Phần mềm cần thiết:
+1. NodeJs version 18.17.1
+2. Docker Desktop version 4.22.0 (117440)
+
+Chạy các lệnh ở terminal theo đúng thứ tự sau để build chương trình:
+1. docker-compose --env-file .env.local up -d
+2. npm install
+3. npm run build
+4. npm start
+
+Chạy các lệnh ở terminal theo đúng thứ tự sau để vào chế độ development:
+1. docker-compose --env-file .env.local up -d
+2. npm install
+3. npm run dev
+
+Tạo dữ liệu mẫu:
+Gọi route POST /api/testing

@@ -23,7 +23,18 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       role_id: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255),
+        references: {
+          model: 'roles',
+          key: 'id'
+        }
+      },
+      permission_id: {
+        type: Sequelize.STRING(255),
+        references: {
+          model: 'permissions',
+          key: 'id'
+        }
       },
       permission_id: Sequelize.INTEGER
     });
