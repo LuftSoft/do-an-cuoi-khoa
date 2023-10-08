@@ -5,6 +5,7 @@ const { authorize } = require('../extension/middleware/application.middleware');
 const { logger, Helpers } = require('../extension/helper');
 const router = express.Router();
 const { CONFIG } = require('../shared/common.constants');
+const { uploadUtil } = require('../util/upload.util');
 
 router.post('/signup', async (req, res) => {
     const user = req.body;
@@ -72,11 +73,10 @@ router.get('/:id', authorize([]), async (req, res) => {
     }
     res.send(new BaseAPIResponse(res.statusCode, user, msg));
 });
-router.put('/avatar', async (req, res) => {
+router.put('/avatar', uploadUtil.upload.single('avatar'), async (req, res) => {
     const token = Helpers.getAuthToken(req);
-    console.log(token, req.body);
-    const { avatar } = req.body;
-    return await userService.updateAvatar(avatar, token);
+    const avatar = req.file;
+    res.send(await userService.updateAvatar(avatar, token));
 });
 router.put('/password', async (req, res) => {
     const token = req.headers['authorization'].split(' ')[1];

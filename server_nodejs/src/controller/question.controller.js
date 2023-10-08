@@ -1,27 +1,29 @@
 const express = require('express');
-const userService = require('../service/user.service');
-const BaseAPIResponse = require('../dto/baseApiResponse');
-const { authorize } = require('../extension/middleware/application.middleware');
-const { logger, Helpers } = require('../extension/helper');
+const questionService = require('../service/question.service');
 const router = express.Router();
-const { CONFIG } = require('../shared/common.constants');
 
 router.get('/', async (req, res) => {
-
+    res.send(await questionService.getAll());
 });
 
 router.get('/:id', async (req, res) => {
-
+    const id = req.params.id;
+    res.send(await questionService.getOne(id));
 });
 
 router.post('/', async (req, res) => {
-    const question = req.body;
+    const subject = req.body;
+    res.send(await questionService.create(subject));
 });
 
 router.put('/', async (req, res) => {
-    const question = req.body;
+    const subject = req.body;
+    res.send(await questionService.update(subject));
 });
 
 router.delete('/:id', async (req, res) => {
-
+    const id = req.params.id;
+    res.send(await questionService.delete(id));
 });
+
+module.exports = router;

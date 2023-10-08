@@ -1,0 +1,43 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap"); */
+
+:root {
+  --primary-color: var(--bs-blue);
+  --secondary-color: var(--bs-gray-600);
+}
+
+/* custome scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary-color);
+  border-radius: 8px;
+  transition: color 0.2s ease 0s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-color);
+}
+
+body {
+  font-family: "Heebo", sans-serif;
+  overflow-y: overlay;
+}
+
+*,
+::after,
+::before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  /* color: #009cff; */
+  text-decoration: none;
+}

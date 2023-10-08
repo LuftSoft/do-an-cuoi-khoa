@@ -2,6 +2,10 @@
 const {
   Model
 } = require('sequelize');
+const chapters = require('./chapters');
+const tests = require('./tests');
+const test_details = require('./test_details');
+const { CONSTANTS } = require('../../shared/constant');
 module.exports = (sequelize, DataTypes) => {
   class questions extends Model {
     /**
@@ -19,15 +23,27 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    question: {
-      type: DataTypes.STRING,
+    level: {
+      type: DataTypes.ENUM(Object.values(CONSTANTS.QUESTION.LEVEL)),
       allowNull: false
     },
+    question: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    chapter_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    }
 
   }, {
     sequelize,
     timestamps: false,
     modelName: 'questions',
   });
+  questions.associate = (models) => {
+    questions.belongsTo(models.chapters, { as: 'chapters' });
+    questions.belongsToMany(models.tests, { as: 'tests', through: test_details });
+  }
   return questions;
 };

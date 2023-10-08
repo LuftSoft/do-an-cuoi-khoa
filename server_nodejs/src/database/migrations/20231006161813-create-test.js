@@ -5,44 +5,67 @@ module.exports = {
     await queryInterface.createTable('tests', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      subject: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255),
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       password: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       start_time: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       schedule_time: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       end_time: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       easy_question: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER(4),
+        allowNull: false
       },
       medium_question: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER(4),
+        allowNull: false
       },
       difficult_question: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER(4),
+        allowNull: false
       },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+      show_correct_answer: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false
       },
-      updatedAt: {
+      show_mark: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false
+      },
+      submit_when_switch_tab: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false
+      },
+      user_id: {
+        type: Sequelize.STRING(255),
         allowNull: false,
-        type: Sequelize.DATE
+        references: {
+          model: 'users',
+          key: 'id'
+        }
+      },
+      subject_id: {
+        type: Sequelize.STRING(255),
+        allowNull: false,
+        references: {
+          model: 'subjects',
+          key: 'id'
+        }
       }
     });
   },

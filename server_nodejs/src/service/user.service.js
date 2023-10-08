@@ -2,10 +2,10 @@ const userRepository = require('../repository/user.repository');
 const { getUserIdFromJWTToken } = require('../extension/middleware/index');
 var jwt = require('jsonwebtoken');
 const path = require('path');
-const authService = require('./auth.service');
+const authService = require('./common/auth.service');
 const BaseAPIResponse = require('../dto/baseApiResponse');
 const { CONFIG } = require('../shared/common.constants');
-const sendMailService = require('../service/sendmail.service');
+const sendMailService = require('./common/sendmail.service');
 const { Helpers, logger } = require('../extension/helper');
 
 
@@ -48,7 +48,11 @@ module.exports = {
             )
     },
     getAll: async () => {
-        return await userRepository.getAll();
+        var users = await userRepository.getAll();
+        users.forEach(user => {
+            user.avatar = user.avatar.toString('base64');
+        })
+        return users;
     },
     getById: async (id) => {
         return await userRepository.getById(id);
@@ -60,10 +64,10 @@ module.exports = {
             throw new Error(CONFIG.ERROR_RESPONSE.USER.LOGIN);
         }
         const isPasswordCorrect = authService.comparePassword(password, user.passwordHash);
-        console.log(user);
         if (!isPasswordCorrect) {
             throw new Error(CONFIG.ERROR_RESPONSE.USER.LOGIN);
         }
+        await userRepository.update(user);
         const accessToken = authService.generateAccessToken(user.id);
         const refreshToken = authService.generateRefreshToken(user.id);
         return {
@@ -136,7 +140,6 @@ module.exports = {
         return userUpdate ? userUpdate : false;
     },
     getUser: (req, res, next) => {
-        Helpers
         const { _id } = req.data
         new User().getUser()
             .then(result => res.status(200).json(result))
@@ -152,8 +155,7 @@ module.exports = {
     },
     updateAvatar: async (avatar, token) => {
         try {
-            console.log(avatar);
-            const userId = authService.getUserIdFromJWTToken(token);
+            const userId = authService.getUserIdFromJWTToken(token, process.env.SECRET_TOKEN_KEY);
             if (!userId) {
                 throw new Error(CONFIG.ERROR_RESPONSE.USER.TOKEN_INVALID);
             }
@@ -161,7 +163,7 @@ module.exports = {
             if (!user) {
                 throw new Error('User is not exist');
             }
-            user.avatar = avatar;
+            user.avatar = avatar ? avatar.buffer : null;
             const userUpdate = await userRepository.update(user);
             return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, userUpdate, 'Thay đổi ảnh đại diện thành công');
         }

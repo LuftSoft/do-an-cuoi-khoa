@@ -1,4 +1,4 @@
-const permissions = require('../permission');
+const permissions = require('../permissions');
 const role_permissions = require('../role_permissions');
 const roles = require('../roles');
 const user_roles = require('../user_roles');
@@ -43,16 +43,14 @@ dbContext.users = require('../users')(sequelize, DataTypes);
 dbContext.user_roles = require('../user_roles')(sequelize, DataTypes);
 dbContext.roles = require('../roles')(sequelize, DataTypes);
 dbContext.role_permissions = require('../role_permissions')(sequelize, DataTypes);
-dbContext.permissions = require('../permission')(sequelize, DataTypes);
+dbContext.permissions = require('../permissions')(sequelize, DataTypes);
 dbContext.questions = require('../questions')(sequelize, DataTypes);
-dbContext.categories = require('../categories')(sequelize, DataTypes);
+dbContext.tests = require('../tests')(sequelize, DataTypes);
+dbContext.subjects = require('../subjects')(sequelize, DataTypes);
+dbContext.chapters = require('../chapters')(sequelize, DataTypes);
+dbContext.test_details = require('../test_details')(sequelize, DataTypes);
 
 /* DEFINE RELATIONSHIPS */
-users.belongsToMany(roles, { through: user_roles });
-roles.belongsToMany(users, { through: user_roles });
-
-roles.belongsToMany(permissions, { through: role_permissions });
-permissions.belongsToMany(roles, { through: role_permissions });
 // dbContext.sequelize.sync({ force: true })
 //     .then(() => {
 //         console.log('yes re-sync done!');
