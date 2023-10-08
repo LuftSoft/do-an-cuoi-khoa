@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class group_detail extends Model {
+  class group_details extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,12 +13,32 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  group_detail.init({
-    user_id: DataTypes.STRING,
-    group_id: DataTypes.STRING
+  group_details.init({
+    id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: DataTypes.INTEGER
+    },
+    user_id: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      references: { model: 'users', key: 'id' }
+    },
+    group_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: 'groups', key: 'id' }
+    },
+    isBan: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    }
   }, {
     sequelize,
-    modelName: 'group_detail',
+    timestamps: false,
+    modelName: 'group_details',
   });
-  return group_detail;
+  return group_details;
 };

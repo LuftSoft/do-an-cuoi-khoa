@@ -21,12 +21,28 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER
     },
-    order: {
-      type: DataTypes.INTEGER(5)
+    test_id: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      references: {
+        model: 'tests',
+        key: 'id'
+      }
+    },
+    question_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'questions',
+        key: 'id'
+      }
     }
   }, {
     sequelize,
     timestamps: false,
+    uniqueKeys: {
+      field: ['test_id', 'question_id']
+    },
     modelName: 'test_details',
   });
   return test_details;

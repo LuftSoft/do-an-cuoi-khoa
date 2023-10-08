@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   chapters.init({
     id: { type: DataTypes.INTEGER, primaryKey: true },
     name: {
-      type: DataTypes.STRING(1024),
+      type: DataTypes.STRING,
       unique: true,
       allowNull: false,
     },

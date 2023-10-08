@@ -10,13 +10,18 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       test_id: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255),
+        references: { model: 'tests', key: 'id' },
+        allowNull: false
       },
       user_id: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255),
+        references: { model: 'users', key: 'id' },
+        allowNull: false
       },
       mark: {
-        type: Sequelize.DOUBLE
+        type: Sequelize.DOUBLE,
+        allowNull: false,
       },
       start_time: {
         type: Sequelize.DATE
@@ -26,14 +31,6 @@ module.exports = {
       },
       tab_switch: {
         type: Sequelize.INTEGER
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
       }
     });
   },

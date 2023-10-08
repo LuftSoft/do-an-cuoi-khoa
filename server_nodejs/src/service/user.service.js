@@ -50,7 +50,7 @@ module.exports = {
     getAll: async () => {
         var users = await userRepository.getAll();
         users.forEach(user => {
-            user.avatar = user.avatar.toString('base64');
+            user.avatar = user.avatar ? user.avatar.toString('base64') : user.avatar;
         })
         return users;
     },

@@ -48,25 +48,12 @@ dbContext.questions = require('../questions')(sequelize, DataTypes);
 dbContext.tests = require('../tests')(sequelize, DataTypes);
 dbContext.subjects = require('../subjects')(sequelize, DataTypes);
 dbContext.chapters = require('../chapters')(sequelize, DataTypes);
+dbContext.credit_classes = require('../credit_classes')(sequelize, DataTypes);
+dbContext.groups = require('../groups')(sequelize, DataTypes);
+dbContext.semesters = require('../semesters')(sequelize, DataTypes);
+dbContext.test_schedules = require('../test_schedules')(sequelize, DataTypes);
+dbContext.results = require('../results')(sequelize, DataTypes);
 dbContext.test_details = require('../test_details')(sequelize, DataTypes);
+dbContext.group_details = require('../group_details')(sequelize, DataTypes);
 
-/* DEFINE RELATIONSHIPS */
-// dbContext.sequelize.sync({ force: true })
-//     .then(() => {
-//         console.log('yes re-sync done!');
-//     })
-
-// 1 to Many Relation
-
-// db.products.hasMany(db.reviews, {
-//     foreignKey: 'product_id',
-//     as: 'review'
-// })
-
-// db.reviews.belongsTo(db.products, {
-//     foreignKey: 'product_id',
-//     as: 'product'
-// })
-
-
-module.exports = dbContext
+module.exports = dbContext;

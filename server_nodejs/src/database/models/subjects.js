@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   subjects.init({
     id: { type: DataTypes.STRING(255), primaryKey: true },
     name: {
-      type: DataTypes.STRING(512),
+      type: DataTypes.STRING,
       unique: true,
       allowNull: false
     },

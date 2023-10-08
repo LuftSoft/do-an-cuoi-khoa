@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class credit_class extends Model {
+  class credit_classes extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,13 +13,30 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  credit_class.init({
-    semester: DataTypes.INTEGER,
-    school_year: DataTypes.STRING,
-    subject_id: DataTypes.STRING
+  credit_classes.init({
+    id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: DataTypes.INTEGER
+    },
+    semester_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: 'semesters', key: 'id' }
+    },
+    quantity: {
+      type: DataTypes.INTEGER
+    },
+    subject_id: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      references: { model: 'subjects', key: 'id' }
+    }
   }, {
     sequelize,
-    modelName: 'credit_class',
+    timestamps: false,
+    modelName: 'credit_classes',
   });
-  return credit_class;
+  return credit_classes;
 };

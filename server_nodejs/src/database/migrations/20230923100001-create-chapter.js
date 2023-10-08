@@ -10,7 +10,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING(1024),
+        type: Sequelize.STRING,
         unique: true,
         allowNull: false,
       },
@@ -19,7 +19,7 @@ module.exports = {
         type: Sequelize.INTEGER(2)
       },
       subject_id: {
-        type: Sequelize.STRING(255),
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
           model: 'subjects',

@@ -39,17 +39,17 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BLOB,
         },
         passwordHash: {
-            type: DataTypes.STRING(512),
+            type: DataTypes.STRING,
             allowNull: false
         },
         refreshToken: {
-            type: DataTypes.STRING(512),
+            type: DataTypes.STRING,
         },
         oauthToken: {
-            type: DataTypes.STRING(512),
+            type: DataTypes.STRING,
         },
         resetPasswordToken: {
-            type: DataTypes.STRING(512),
+            type: DataTypes.STRING,
         }
     }, {
         sequelize,

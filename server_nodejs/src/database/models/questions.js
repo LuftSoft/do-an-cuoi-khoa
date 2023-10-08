@@ -31,6 +31,30 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false
     },
+    answer_a: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    answer_b: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    answer_c: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    answer_d: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    correct_answer: {
+      type: DataTypes.ENUM(Object.values(CONSTANTS.QUESTION.ANSWER)),
+      allowNull: false
+    },
+    image: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
     chapter_id: {
       type: DataTypes.INTEGER,
       allowNull: false,

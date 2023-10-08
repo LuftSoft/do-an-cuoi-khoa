@@ -32,7 +32,7 @@ module.exports = {
     await queryInterface.addConstraint('test_details', {
       fields: ['test_id', 'question_id'],
       type: 'unique',
-      name: 'unique_key_test_details_test_id_-question_id'
+      name: 'UK_TEST_DETAILS_TEST_ID_QUESTION_ID',
     })
   },
   async down(queryInterface, Sequelize) {

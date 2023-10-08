@@ -5,32 +5,36 @@ const { CONSTANTS } = require('../../shared/constant');
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('questions', {
+    await queryInterface.createTable('result_details', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      question: {
-        type: Sequelize.TEXT('long'),
-        allowNull: false
-      },
-      level: {
-        type: Sequelize.ENUM(Object.values(CONSTANTS.QUESTION.LEVEL)),
-        allowNull: false
-      },
-      chapter_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
+      test_id: {
+        type: Sequelize.STRING(255),
         references: {
-          model: 'chapters',
+          model: 'tests',
           key: 'id'
-        }
+        },
+        allowNull: false
+      },
+      question_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'questions',
+          key: 'id'
+        },
+        allowNull: false
+      },
+      choose: {
+        type: Sequelize.ENUM(Object.values(CONSTANTS.QUESTION.ANSWER)),
+        allowNull: false
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('questions');
+    await queryInterface.dropTable('result_details');
   }
 };

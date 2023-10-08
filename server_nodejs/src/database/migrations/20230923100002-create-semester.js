@@ -2,33 +2,32 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('result_details', {
+    await queryInterface.createTable('semesters', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      test_id: {
-        type: Sequelize.STRING
-      },
-      question_id: {
+      semester: {
         type: Sequelize.INTEGER
       },
-      answer_id: {
+      year: {
         type: Sequelize.INTEGER
       },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+      from_date: {
+        type: Sequelize.DATE,
       },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+      to_date: {
+        type: Sequelize.DATE,
       }
+    });
+    await queryInterface.addConstraint('semesters', {
+      fields: ['semester', 'year'],
+      type: 'unique', name: 'UK_SEMESTERS_SEMESTER_YEAR'
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('result_details');
+    await queryInterface.dropTable('semesters');
   }
 };

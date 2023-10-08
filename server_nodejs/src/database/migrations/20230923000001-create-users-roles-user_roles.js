@@ -30,17 +30,17 @@ module.exports = {
         type: Sequelize.BLOB('long'),
       },
       passwordHash: {
-        type: Sequelize.STRING(512),
+        type: Sequelize.STRING,
         allowNull: false
       },
       refreshToken: {
-        type: Sequelize.STRING(512),
+        type: Sequelize.STRING,
       },
       oauthToken: {
-        type: Sequelize.STRING(512),
+        type: Sequelize.STRING,
       },
       resetPasswordToken: {
-        type: Sequelize.STRING(512),
+        type: Sequelize.STRING,
       },
     }
     );

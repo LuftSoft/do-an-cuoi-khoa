@@ -10,18 +10,19 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       user_id: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255),
+        allowNull: false,
+        references: { model: 'users', key: 'id' }
       },
       group_id: {
-        type: Sequelize.STRING
-      },
-      createdAt: {
+        type: Sequelize.INTEGER,
         allowNull: false,
-        type: Sequelize.DATE
+        references: { model: 'groups', key: 'id' }
       },
-      updatedAt: {
+      isBan: {
+        type: Sequelize.BOOLEAN,
         allowNull: false,
-        type: Sequelize.DATE
+        defaultValue: false
       }
     });
   },

@@ -14,10 +14,30 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   semester.init({
-    semester: DataTypes.INTEGER,
-    year: DataTypes.INTEGER
+    id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: DataTypes.INTEGER
+    },
+    semester: {
+      type: DataTypes.INTEGER
+    },
+    year: {
+      type: DataTypes.INTEGER,
+    },
+    from_date: {
+      type: DataTypes.DATE,
+    },
+    to_date: {
+      type: DataTypes.DATE,
+    }
   }, {
+    uniqueKeys: {
+      fields: ['semester', 'year']
+    },
     sequelize,
+    timestamps: false,
     modelName: 'semester',
   });
   return semester;

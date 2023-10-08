@@ -65,6 +65,22 @@ module.exports = (sequelize, DataTypes) => {
     submit_when_switch_tab: {
       type: DataTypes.BOOLEAN,
       allowNull: false
+    },
+    user_id: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
+    },
+    subject_id: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      references: {
+        model: 'subjects',
+        key: 'id'
+      }
     }
   }, {
     sequelize,
