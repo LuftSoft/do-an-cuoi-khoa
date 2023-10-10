@@ -9,5 +9,7 @@ module.exports = api => {
     api.use(`${URL_CONFIG.API_V1}/credit-class`, require('./credit_class.controller'));
     api.use(`${URL_CONFIG.API_V1}/group`, require('./group.controller'));
     api.use(`${URL_CONFIG.API_V1}/test`, require('./test.controller'));
+    api.use(`${URL_CONFIG.API_V1}/test-schedule`, require('./test_schedule.controller'));
+    api.use(`${URL_CONFIG.API_V1}/result`, require('./result.controller'));
     // api.use(`${URL_CONFIG.API_V1}/question`, require('./question.controller'));
 };

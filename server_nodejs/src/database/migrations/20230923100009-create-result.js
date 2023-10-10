@@ -9,9 +9,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      test_id: {
-        type: Sequelize.STRING(255),
-        references: { model: 'tests', key: 'id' },
+      test_group_id: {
+        type: Sequelize.INTEGER,
+        references: { model: 'test_groups', key: 'id' },
         allowNull: false
       },
       user_id: {

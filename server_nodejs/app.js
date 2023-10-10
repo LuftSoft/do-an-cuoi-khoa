@@ -4,6 +4,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const path = require('path')
 const routes = require('./src/controller/controller.module');
+const { csv_parser } = require('./src/util/csv/seed.subject')
 //config constants
 const PORT = process.env.PORT || 3000;
 //init application
@@ -23,6 +24,8 @@ app.use(express.static(path.join(__dirname, './public')));
 //app.use('/', routes);
 require('./src/controller/controller.module')(app);
 //start server
+csv_parser.parser();
+
 app.listen(PORT, () => {
     console.log(`APP IS LISTENING IN PORT ${PORT}`);
 }); 

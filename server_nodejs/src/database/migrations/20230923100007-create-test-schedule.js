@@ -19,13 +19,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: { model: 'semesters', key: 'id' }
-      },
-      begin_time: {
-        type: Sequelize.DATE
       }
     });
     await queryInterface.addConstraint('test_schedules', {
-      fields: ['date', 'begin_time'], name: 'UK_TEST_SCHEDULES_DATE_BEGIN_TIME', type: 'unique'
+      fields: ['date', 'name'], name: 'UK_TEST_SCHEDULES_DATE_BEGIN_TIME', type: 'unique'
     });
   },
   async down(queryInterface, Sequelize) {

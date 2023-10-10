@@ -69,4 +69,82 @@ module.exports = {
             return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, err.message);
         }
     },
+    /**/
+    createTestGroup: async (testGroup) => {
+        try {
+            let data = await testRepository.createTestGroup(testGroup);
+            return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, data, null);
+        }
+        catch (err) {
+            logger.error(`create test group failed`);
+            console.log(err);
+            return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, err.message);
+        }
+    },
+    updateTestGroup: async (testGroup) => {
+        try {
+            let data = await testRepository.createTestGroup(testGroup);
+            return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, data, null);
+        }
+        catch (err) {
+            logger.error(`update test group failed`);
+            console.log(err);
+            return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, err.message);
+        }
+    },
+    deleteTestGroup: async (id) => {
+        try {
+            let data = await testRepository.delete(id);
+            return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, data, null);
+        }
+        catch (err) {
+            logger.error(`delete test group failed`);
+            console.log(err);
+            return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, err.message);
+        }
+    },
+
+    /**/
+    createTestQuestion: async (testQuestion) => {
+        try {
+            let data = await testRepository.createTestQuestion(testQuestion);
+            return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, data, null);
+        }
+        catch (err) {
+            logger.error('create test detail failed');
+            console.log(err);
+            return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, err.message);
+        }
+    },
+    updateTestQuestion: async (testQuestion) => {
+        try {
+            let testModel = await testRepository.getTestQuestionById(testQuestion.id);
+            if (!testModel) {
+                throw new Error('Chi tiết đề thi không tồn tại');
+            }
+            testConverter.convertDataToModel(testModel, test);
+            var data = await testRepository.update(testModel);
+            return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, data, null);
+        }
+        catch (err) {
+            logger.error(`update test question failed`);
+            console.log(err);
+            return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, err.message);
+        }
+    },
+    deleteTestQuestion: async () => {
+        try {
+            let testModel = await testRepository.getTestQuestionById(id);
+            if (!testModel) {
+                throw new Error('Chi tiết đề thi không tồn tại');
+            }
+            var data = await testRepository.delete(id);
+            return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, data, null);
+        }
+        catch (err) {
+            logger.error(`delete test question with id ${id} failed`);
+            console.log(err);
+            return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, err.message);
+        }
+    }
 }

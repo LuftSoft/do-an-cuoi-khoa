@@ -1,74 +1,70 @@
-const questionRepository = require('../repository/question.repository');
-const { getUserIdFromJWTToken } = require('../extension/middleware/index');
-var jwt = require('jsonwebtoken');
-const path = require('path');
-const authService = require('./common/auth.service');
+const resultRepository = require('../repository/result.repository');
 const BaseAPIResponse = require('../dto/baseApiResponse');
 const { CONFIG } = require('../shared/common.constants');
 const { Helpers, logger } = require('../extension/helper');
-const questionConverter = require('./converter/question.converter');
+const resultConverter = require('./converter/result.converter');
 
 module.exports = {
     getAll: async () => {
         try {
-            var data = await questionRepository.getAll();
+            var data = await resultRepository.getAll();
             return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, data, null);
         }
         catch (err) {
-            logger.error('get all question failed!');
+            logger.error('get all result failed!');
             console.log(err);
             return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, err.message);
         }
     },
     getOne: async (id) => {
         try {
-            var data = await questionRepository.getById(id);
+            var data = await resultRepository.getById(id);
             return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, data, null);
         }
         catch (err) {
-            logger.error(`get question with id "${id}" failed`);
+            logger.error(`get result with id "${id}" failed`);
             console.log(err);
             return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, err.message);
         }
     },
-    create: async (question) => {
+    create: async (result) => {
         try {
-            let data = await questionRepository.create(question);
+            let data = await resultRepository.create(result);
             return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, data, null);
         }
         catch (err) {
-            logger.error('create question failed');
+            logger.error('create result failed');
             console.log(err);
             return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, err.message);
         }
     },
-    update: async (question) => {
+    update: async (result) => {
         try {
-            let questionModel = await questionRepository.getById(question.id);
-            if (!questionModel) {
+            let resultModel = await resultRepository.getById(result.id);
+            if (!resultModel) {
                 throw new Error('Chương không tồn tại');
             }
-            questionConverter.convertDataToModel(questionModel, question);
-            var data = await questionRepository.update(questionModel);
+            resultConverter.convertDataToModel(resultModel, result);
+            var data = await resultRepository.update(resultModel);
             return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, data, null);
         }
         catch (err) {
-            logger.error(`update question failed`);
+            logger.error(`update result failed`);
             console.log(err);
             return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, err.message);
         }
     },
     delete: async (id) => {
         try {
-            let questionModel = await questionRepository.getById(id);
-            if (!questionModel) {
+            let resultModel = await resultRepository.getById(id);
+            if (!resultModel) {
                 throw new Error('Chương không tồn tại');
             }
-            var data = await questionRepository.delete(id);
+            var data = await resultRepository.delete(id);
             return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, data, null);
         }
         catch (err) {
-            logger.error(`delete question with id ${id} failed`);
+            logger.error(`delete result with id ${id} failed`);
             console.log(err);
             return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, err.message);
         }

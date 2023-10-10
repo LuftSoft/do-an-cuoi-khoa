@@ -1,20 +1,18 @@
 const dbContext = require('../database/models/config/dbContext');
 const { Helpers } = require('../extension/helper');
-const subjectConverter = require('../service/converter/subject.converter');
-const subjects = dbContext.subjects;
+const test_schedules = dbContext.test_schedules;
 
 module.exports = {
-    create: async (subject) => {
-        subject.id = Helpers.generateUiid(8);
-        const subjectCreate = await subjects.create(subject);
-        return subjectCreate;
+    create: async (test_schedule) => {
+        const test_scheduleCreate = await test_schedules.create(test_schedule);
+        return test_scheduleCreate;
     },
-    update: async (subject) => {
-        await subject.save();
-        return subject;
+    update: async (test_schedule) => {
+        await test_schedule.save();
+        return test_schedule;
     },
     delete: async (id) => {
-        const result = await subjects.destroy({
+        const result = await test_schedules.destroy({
             where: {
                 id: id
             },
@@ -23,11 +21,11 @@ module.exports = {
         return result;
     },
     getById: async (id) => {
-        const subject = await subjects.findByPk(id);
-        return subject;
+        const test_schedule = await test_schedules.findByPk(id);
+        return test_schedule;
     },
     getAll: async () => {
-        const listsubject = await subjects.findAll();
-        return listsubject;
+        const listtest_schedule = await test_schedules.findAll();
+        return listtest_schedule;
     }
 }

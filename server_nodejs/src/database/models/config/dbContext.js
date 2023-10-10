@@ -53,7 +53,9 @@ dbContext.groups = require('../groups')(sequelize, DataTypes);
 dbContext.semesters = require('../semesters')(sequelize, DataTypes);
 dbContext.test_schedules = require('../test_schedules')(sequelize, DataTypes);
 dbContext.results = require('../results')(sequelize, DataTypes);
+dbContext.result_details = require('../result_details')(sequelize, DataTypes);
 dbContext.test_details = require('../test_details')(sequelize, DataTypes);
+dbContext.test_groups = require('../test_groups')(sequelize, DataTypes);
 dbContext.group_details = require('../group_details')(sequelize, DataTypes);
 
 module.exports = dbContext;

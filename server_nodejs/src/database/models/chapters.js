@@ -16,16 +16,16 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   chapters.init({
-    id: { type: DataTypes.INTEGER, primaryKey: true },
+    id: { type: DataTypes.INTEGER, primaryKey: true, allowNull: false, autoIncrement: true },
     name: {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
     },
-    // index: {
-    //   allowNull: false,
-    //   type: DataTypes.INTEGER(2)
-    // },
+    index: {
+      allowNull: false,
+      type: DataTypes.INTEGER(2)
+    },
     subject_id: { type: DataTypes.STRING(255), allowNull: false },
   }, {
     sequelize,

@@ -30,14 +30,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: { model: 'semesters', key: 'id' }
-    },
-    begin_time: {
-      type: DataTypes.DATE
     }
   }, {
     sequelize,
     uniqueKeys: {
-      fields: ['date', 'begin_time']
+      fields: ['date', 'name']
     },
     timestamps: false,
     modelName: 'test_schedules',

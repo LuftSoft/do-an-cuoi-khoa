@@ -20,9 +20,9 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER
     },
-    test_id: {
+    test_group_id: {
       type: DataTypes.STRING(255),
-      references: { model: 'tests', key: 'id' },
+      references: { model: 'test_groups', key: 'id' },
       allowNull: false
     },
     user_id: {

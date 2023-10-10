@@ -1,0 +1,10 @@
+.container1 {
+  margin-top: 32px;
+}
+.inputContainer { 
+  margin-bottom: 8px;
+  padding : 0 6px;
+}
+.inputContainer > input {
+  width: 100%;
+}

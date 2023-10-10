@@ -17,17 +17,17 @@
 ## CMD
 - controller
 ```
-Copy-Item -Path "D:\visual_studio\last_dance\server_nodejs\src\controller\question.controller.js" -Destination "D:\visual_studio\last_dance\server_nodejs\src\controller\group.controller.js"
+Copy-Item -Path "D:\visual_studio\last_dance\server_nodejs\src\controller\test.controller.js" -Destination "D:\visual_studio\last_dance\server_nodejs\src\controller\group.controller.js"
 ```
 - service
 ```
-Copy-Item -Path "D:\visual_studio\last_dance\server_nodejs\src\service\question.service.js" -Destination "D:\visual_studio\last_dance\server_nodejs\src\service\credit_class.service.js"                   
+Copy-Item -Path "D:\visual_studio\last_dance\server_nodejs\src\service\test.service.js" -Destination "D:\visual_studio\last_dance\server_nodejs\src\service\credit_class.service.js"                   
 ```
 - converter
 ```
-Copy-Item -Path "D:\visual_studio\last_dance\server_nodejs\src\service\converter\question.converter.js" -Destination "D:\visual_studio\last_dance\server_nodejs\src\service\converter\group.converter.js"
+Copy-Item -Path "D:\visual_studio\last_dance\server_nodejs\src\service\converter\test.converter.js" -Destination "D:\visual_studio\last_dance\server_nodejs\src\service\converter\result.converter.js"
 ```
 - repository
 ```
-Copy-Item -Path "D:\visual_studio\last_dance\server_nodejs\src\repository\question.repository.js" -Destination "D:\visual_studio\last_dance\server_nodejs\src\repository\test_schedule.repository.js"     
+Copy-Item -Path "D:\visual_studio\last_dance\server_nodejs\src\repository\test.repository.js" -Destination "D:\visual_studio\last_dance\server_nodejs\src\repository\test_schedule.repository.js"     
 ```
