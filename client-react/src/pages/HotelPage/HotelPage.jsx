@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectAccessToken, selectRefreshToken, selectUser } from "../../redux/selectors";
 import { toast } from "react-toastify";
 import { getCategories } from "../../services/categoryServices";
+import "./HotelPage.css";
 
 export default function HotelPage() {
 	const currentUser = useSelector(selectUser);
@@ -52,6 +53,7 @@ export default function HotelPage() {
 						Authorization: "Bearer " + accessToken,
 					},
 				});
+				res;
 				listHotelState.refetch();
 				toast.update(toastId, {
 					render: "Xóa thành công!",
@@ -75,7 +77,7 @@ export default function HotelPage() {
 	return (
 		<div className="bg-light rounded h-100 p-4">
 			<div className="mb-4 d-flex justify-content-between align-items-center">
-				<h5 className="mb-0">Danh sách khách sạn</h5>
+				<h5 className="mb-0 test-class">Danh sách khách sạn</h5>
 				<Link to={routes.createHotel} className="btn btn-outline-primary">
 					Thêm khách sạn
 				</Link>

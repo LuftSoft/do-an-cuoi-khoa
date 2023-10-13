@@ -4,15 +4,14 @@ const results = dbContext.results;
 
 module.exports = {
     getAll: async () => {
-        const listresult = await results.findAll();
-        return listresult;
+        const data = await results.findAll();
+        return data;
     },
     getById: async (id) => {
         const result = await results.findByPk(id);
         return result;
     },
     create: async (result) => {
-        result.id = Helpers.generateUiid(8);
         const resultCreate = await results.create(result);
         return resultCreate;
     },
@@ -31,34 +30,34 @@ module.exports = {
     },
 
     /**/
-    getresultGroupById: async (id) => {
+    getResultGroupById: async (id) => {
         const result = await result_groups.findByPk(id);
         return result;
     },
-    createresultGroup: async () => {
+    createResultGroup: async () => {
 
     },
-    updateresultGroup: async () => {
+    updateResultGroup: async () => {
 
     },
-    deleteresultGroup: async () => {
+    deleteResultGroup: async () => {
 
     },
 
     /**/
-    getresultQuestionById: async (id) => {
+    getResultQuestionById: async (id) => {
         const result = await result_details.findByPk(id);
         return result;
     },
-    createresultQuestion: async (resultQuestion) => {
+    createResultQuestion: async (resultQuestion) => {
         const result = await result_details.create(resultQuestion);
         return result;
     },
-    updateresultQuestion: async (resultQuestion) => {
+    updateResultQuestion: async (resultQuestion) => {
         const result = await result_details.update(resultQuestion);
         return result;
     },
-    deleteresultQuestion: async (id) => {
+    deleteResultQuestion: async (id) => {
         const result = await result_details.destroy({
             where: {
                 id: id

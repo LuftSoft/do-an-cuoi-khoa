@@ -1,41 +1,94 @@
-import { Link } from "react-router-dom";
-import reactLogo from "../../assets/react.svg";
-import { routes } from "../../routes";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { selectUser } from "../../redux/selectors";
+import { routes } from "../../routes";
+import { CONST } from "../../utils/const";
+import { useEffect, useId, useRef, useState } from "react";
+import { generateUniqueId } from "../../utils/helpers";
+import "./Sidebar.css";
 
 export default function Sidebar() {
 	const currentUser = useSelector(selectUser);
+	const sideBarValue = CONST.SIDEBAR;
+	const id = "sideBarId";
+	const [selectedIndex, setSelectedIndex] = useState(null);
+	const [collapse, setCollapse] = useState([]);
+	const dropDownClass = "fa-solid fa-chevron-down sidebar-dropdown-collapse";
+	function toggleDropdown(index) {
+		console.log(collapse);
+		if (collapse.includes(index)) {
+			let tmp = collapse.filter((item) => item !== index);
+			setCollapse(tmp);
+		} else {
+			setCollapse([...collapse, index]);
+		}
+	}
+	function onSelectedItem(index) {
+		setSelectedIndex(index);
+	}
 	return (
 		<>
 			{/* Sidebar Start */}
 			<div className="sidebar pb-3 app-sidebar">
-				<nav className="navbar app-navbar">
-					<a href={routes.hotel} className="navbar-brand mx-4 mb-3">
+				<nav className="navbar p-0">
+					<a href={routes.hotel} className="navbar-brand m-0 bg-red w-100 ps-4">
 						<h3 className="text-default">Trang chủ</h3>
 					</a>
-					<div className="d-flex align-items-center ms-4 mb-4">
-						<div className="position-relative">
-							<img
-								className="rounded-circle"
-								src={currentUser.avatar || reactLogo}
-								alt=""
-								style={{ width: 40, height: 40 }}
-								onError={(e) => {
-									e.target.src = reactLogo;
-								}}
-							/>
-							<div className="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1" />
-						</div>
-						<div className="ms-3">
-							<h6 className="mb-0">{currentUser.firstName + " " + currentUser.lastName}</h6>
-							<span>Admin Hotel</span>
-						</div>
-					</div>
 					<div className="navbar-nav w-100">
-						<Link to={routes.hotel} className="nav-item nav-link active">
-							<i className="fa-solid fa-house"></i> Khách sạn
-						</Link>
+						{sideBarValue.map((item, index) => {
+							if (item.childs?.length > 0) {
+								return (
+									<ul className="list-unstyled ps-0 m-0" key={index}>
+										<li>
+											<button
+												onClick={($event) => toggleDropdown(index)}
+												className="btn-toggle nav-item nav-link active w-100 sidebar-btn-collapse"
+												data-bs-toggle="collapse"
+												data-bs-target={"#" + id + index}
+												aria-expanded="false">
+												<i className={item.icon}></i> {item.name}
+												<i
+													className={collapse.includes(index) ? dropDownClass + " dropdown-revert" : dropDownClass}></i>
+											</button>
+											<div className="collapse" id={id + index}>
+												<ul className="btn-toggle-nav list-unstyled">
+													{item.childs?.map((child, childIndex) => {
+														return (
+															<li
+																onClick={(e) => onSelectedItem(`${index.toString()}${childIndex.toString()}`)}
+																key={`${index.toString()}${childIndex.toString()}`}
+																className="sidebar-item-collapse">
+																<Link
+																	to={child.route}
+																	className={
+																		selectedIndex == `${index.toString()}${childIndex.toString()}`
+																			? "nav-item nav-link active selected-item"
+																			: "nav-item nav-link active"
+																	}>
+																	{child.name}
+																</Link>
+															</li>
+														);
+													})}
+												</ul>
+											</div>
+										</li>
+									</ul>
+								);
+							} else {
+								return (
+									<Link
+										onClick={(e) => onSelectedItem(index)}
+										to={item.route}
+										className={
+											selectedIndex == index ? "nav-item nav-link active selected-item" : "nav-item nav-link active"
+										}
+										key={index}>
+										<i className={item.icon}></i> {item.name}
+									</Link>
+								);
+							}
+						})}
 					</div>
 				</nav>
 			</div>

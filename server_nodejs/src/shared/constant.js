@@ -11,5 +11,11 @@ module.exports.CONSTANTS = {
             ANSWER_C: 'answer_c',
             ANSWER_D: 'answer_d',
         }
+    },
+    USER: {
+        TYPE: {
+            SV: 'SV',
+            GV: 'GV'
+        }
     }
 }

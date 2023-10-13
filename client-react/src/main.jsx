@@ -9,6 +9,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import App from "./App.jsx";
 import "./index.css";
 import { store, persistor } from "./redux/store";
+import { LoadingServiceProvider } from "./contexts/loadingContext";
 
 const queryClient = new QueryClient();
 
@@ -17,7 +18,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 		<Provider store={store}>
 			<PersistGate loading={null} persistor={persistor}>
 				<QueryClientProvider client={queryClient}>
-					<App />
+					<LoadingServiceProvider>
+						<App />
+					</LoadingServiceProvider>
 					<ReactQueryDevtools initialIsOpen={false} />
 				</QueryClientProvider>
 			</PersistGate>

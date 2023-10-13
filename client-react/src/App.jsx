@@ -1,20 +1,20 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { useSelector } from "react-redux";
+import "./App.css";
 
-import { renderRoutes } from "./utils/helpers";
-import { privateRoutes, publicRoutes, routes } from "./routes/routes";
-import { selectUser } from "./redux/selectors";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
+import { selectUser } from "./redux/selectors";
+import { privateRoutes, publicRoutes, routes } from "./routes/routes";
+import { renderRoutes } from "./utils/helpers";
 
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { initializeApp } from "firebase/app";
+import { Backdrop, CircularProgress } from "@mui/material";
+import React from "react";
+import { useLoadingService } from "./contexts/loadingContext";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -43,10 +43,14 @@ const ProtectedRoute = ({ redirectPath = "/sign-in" }) => {
 	}
 	return <Outlet />;
 };
-
 function App() {
+	const [open, setOpen] = React.useState(false);
+	const loadingService = useLoadingService();
 	return (
 		<BrowserRouter>
+			<Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loadingService.loading}>
+				<CircularProgress color="inherit" />
+			</Backdrop>
 			<ToastContainer />
 			<Routes>
 				<Route path="/" element={<Navigate to={routes.signIn} />} />

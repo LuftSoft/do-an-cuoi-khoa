@@ -1,0 +1,29 @@
+.sidebar-item-collapse{
+    line-height: 41px;
+}
+.sidebar-item-collapse a{
+    padding-left: 33px !important;
+}
+.sidebar-btn-collapse{
+    text-align: left;
+}
+.sidebar-dropdown-collapse{
+    transition: all 0.5s;
+    position: absolute;
+    right: 12px;
+}
+
+.dropdown-revert{
+    transform: rotate(180deg);
+}
+
+
+.selected-item{
+    background: var(--primary) !important;
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+.selected-item i{
+    color: var(--primary);
+}

@@ -4,12 +4,20 @@ const result_details = dbContext.result_details;
 
 module.exports = {
     getAll: async () => {
-        const listresult_detail = await result_details.findAll();
-        return listresult_detail;
+        const list_result_detail = await result_details.findAll();
+        return list_result_detail;
     },
     getById: async (id) => {
         const result_detail = await result_details.findByPk(id);
         return result_detail;
+    },
+    getByResultId: async (id) => {
+        const result_details = await result_details.findAll({
+            where: {
+                result_id: id
+            },
+            include: dbContext.questions
+        });
     },
     create: async (result_detail) => {
         const result_detailCreate = await result_details.create(result_detail);

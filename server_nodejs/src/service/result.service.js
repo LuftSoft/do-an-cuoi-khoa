@@ -3,6 +3,7 @@ const BaseAPIResponse = require('../dto/baseApiResponse');
 const { CONFIG } = require('../shared/common.constants');
 const { Helpers, logger } = require('../extension/helper');
 const resultConverter = require('./converter/result.converter');
+const resultDetailService = require('./result_detail.service');
 
 module.exports = {
     getAll: async () => {
@@ -19,6 +20,11 @@ module.exports = {
     getOne: async (id) => {
         try {
             var data = await resultRepository.getById(id);
+            if (!data) {
+                return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, CONFIG.ERROR.NOT_EXISTS);
+            }
+            const detail = await resultDetailService.getByResultId(id);
+            data.detail = detail;
             return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, data, null);
         }
         catch (err) {

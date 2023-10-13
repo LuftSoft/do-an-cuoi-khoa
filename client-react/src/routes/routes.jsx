@@ -11,6 +11,7 @@ import UpdateHotelPage from "../pages/UpdateHotelPage";
 import UpdateRoomPage from "../pages/UpdateRoomPage";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
+import TableComTest from "../pages/TableComTest";
 
 export const routes = {
 	signIn: "/sign-in",
@@ -36,6 +37,7 @@ export const publicRoutes = [
 
 export const privateRoutes = [
 	{ path: routes.hotel, page: HotelPage, layout: null },
+	{ path: 'test', page: TableComTest, layout: null },
 	{ path: routes.createHotel, page: CreateHotelPage, layout: null },
 	{ path: routes.updateHotel, page: UpdateHotelPage, layout: null },
 	{ path: routes.room, page: RoomPage, layout: null },

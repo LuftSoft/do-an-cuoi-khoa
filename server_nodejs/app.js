@@ -24,7 +24,6 @@ app.use(express.static(path.join(__dirname, './public')));
 //app.use('/', routes);
 require('./src/controller/controller.module')(app);
 //start server
-csv_parser.parser();
 
 app.listen(PORT, () => {
     console.log(`APP IS LISTENING IN PORT ${PORT}`);

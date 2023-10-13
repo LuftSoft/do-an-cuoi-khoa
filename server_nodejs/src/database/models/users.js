@@ -1,8 +1,10 @@
 'use strict';
 const {
-    Model
+    Model, ENUM
 } = require('sequelize');
 const tests = require('./tests');
+const { CONSTANTS } = require('../../shared/constant');
+const { CONFIG } = require('../../shared/common.constants');
 module.exports = (sequelize, DataTypes) => {
     class users extends Model {
         /**
@@ -41,6 +43,11 @@ module.exports = (sequelize, DataTypes) => {
         passwordHash: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        type: {
+            type: DataTypes.ENUM(Object.values(CONSTANTS.USER.TYPE)),
+            allowNull: false,
+            defaultValue: CONSTANTS.USER.TYPE.SV
         },
         refreshToken: {
             type: DataTypes.STRING,

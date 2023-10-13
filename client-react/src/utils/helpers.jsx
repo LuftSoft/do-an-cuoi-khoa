@@ -147,7 +147,18 @@ async function setFileInInput(url, inputId) {
 		console.log("Failed to fetch the file.");
 	}
 }
-
+export const generateUniqueId = (length) => {
+	if (length <= 0) length = 1;
+	let result = [];
+	for (let i = 0; i < length; i++) {
+		result.push(
+			Math.floor((Math.random() + 1) * 0x10000)
+				.toString(16)
+				.substring(1),
+		);
+	}
+	return result.join("-");
+};
 // Usage example
 const urlLogo =
 	"http://res.cloudinary.com/dnshdled2/image/upload/v1688477770/hotel_management/fileupload-2023-07-04-08-36-10_ghfiuh.jpg";

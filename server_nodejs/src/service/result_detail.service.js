@@ -27,6 +27,16 @@ module.exports = {
             return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, err.message);
         }
     },
+    getByResultId: async (id) => {
+        try {
+            const data = resultDetailRepository.getByResultId(id);
+            return data;
+        }
+        catch (err) {
+            logger.error(`get result detail for result id ${id} failed`);
+            throw new Error(`get result detail for result id ${id} failed`);
+        }
+    },
     create: async (resultDetail) => {
         try {
             let data = await resultDetailRepository.create(resultDetail);

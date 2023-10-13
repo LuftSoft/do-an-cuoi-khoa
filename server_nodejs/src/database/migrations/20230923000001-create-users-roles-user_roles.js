@@ -1,5 +1,6 @@
 'use strict';
 
+const { CONSTANTS } = require('../../shared/constant');
 const user_roles = require('../models/user_roles');
 
 /** @type {import('sequelize-cli').Migration} */
@@ -32,6 +33,11 @@ module.exports = {
       passwordHash: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      type: {
+        type: Sequelize.ENUM(Object.values(CONSTANTS.USER.TYPE)),
+        allowNull: false,
+        defaultValue: CONSTANTS.USER.TYPE.SV
       },
       refreshToken: {
         type: Sequelize.STRING,

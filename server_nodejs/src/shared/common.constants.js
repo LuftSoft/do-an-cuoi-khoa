@@ -1,6 +1,7 @@
 module.exports.CONFIG = {
     ERROR: {
-        VALIDATION_ERROR: 'validation error'
+        VALIDATION_ERROR: 'VALIDATION_ERROR',
+        NOT_EXISTS: 'NOT_EXISTS'
     },
     ERROR_RESPONSE: {
         USER: {

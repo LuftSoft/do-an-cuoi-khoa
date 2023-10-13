@@ -15,7 +15,7 @@ export default function DefaultLayout({ children }) {
 					}}>
 					{children}
 				</div>
-				<div className="container-fluid pt-4 px-4">
+				<div className="container-fluid pt-4 px-0">
 					<Footer />
 				</div>
 			</div>

@@ -1,8 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
-import reactLogo from "../../assets/react.svg";
+import reactLogo from "../../assets/default_avatar.png";
 import { logout } from "../../services/userServices";
 import { selectUser } from "../../redux/selectors";
+import { Avatar } from "@mui/material";
 
+function toggleButtonClasses() {
+	$(".sidebar, .content").toggleClass("open");
+}
 export default function Header() {
 	const currentUser = useSelector(selectUser);
 	const dispatch = useDispatch();
@@ -23,7 +27,7 @@ export default function Header() {
 					href="#"
 					onClick={(e) => {
 						e.preventDefault();
-						$(".sidebar, .content").toggleClass("open");
+						toggleButtonClasses();
 						return false;
 					}}
 					className="sidebar-toggler flex-shrink-0">
@@ -35,18 +39,10 @@ export default function Header() {
 				<div className="navbar-nav align-items-center ms-auto">
 					<div className="nav-item dropdown">
 						<a href="#" className="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-							<img
-								className="rounded-circle me-lg-2"
-								src={currentUser.avatar || reactLogo}
-								alt=""
-								style={{ width: 40, height: 40 }}
-								onError={(e) => {
-									e.target.src = reactLogo;
-								}}
-							/>
-							<span className="d-none d-lg-inline-flex">{currentUser.firstName + " " + currentUser.lastName}</span>
+							<i className="fa-solid fa-circle-user" style={{ fontSize: 40 }}></i>
 						</a>
 						<div className="dropdown-menu dropdown-menu-end bg-white border rounded m-0">
+							<span className="dropdown-item">{currentUser.firstName + " " + currentUser.lastName}</span>
 							<a href="#" className="dropdown-item">
 								Cài đặt
 							</a>

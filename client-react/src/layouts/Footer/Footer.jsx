@@ -1,23 +1,15 @@
 export default function Footer() {
 	return (
-		<div className="container-fluid p-0">
-			<div className="bg-light border-top border-bottom rounded-top p-4">
-				<div className="row">
-					<div className="col-12 col-sm-6 text-center text-sm-start">
-						&copy;
-						<a href="#">{" Your Site Name"}</a>
-						{", All Right Reserved."}
-					</div>
-					<div className="col-12 col-sm-6 text-center text-sm-end">
-						Designed By <a href="https://htmlcodex.com">HTML Codex</a>
-						<br />
-						Distributed By{" "}
-						<a className="border-bottom" href="https://themewagon.com" target="_blank">
-							ThemeWagon
-						</a>
-					</div>
-				</div>
+		<footer className="py-3 my-4 border-top">
+			<div className="container d-flex flex-wrap justify-content-between align-items-center">
+				<p className="col-md-4 mb-0 text-muted">&copy; 2023 PTITHCM, Ins</p>
+				<ul className="nav col-md-4 justify-content-end">
+					<li className="nav-item"><a href="#" className="nav-link px-2 text-muted">Trang chủ</a></li>
+					<li className="nav-item"><a href="#" className="nav-link px-2 text-muted">Chính sách</a></li>
+					<li className="nav-item"><a href="#" className="nav-link px-2 text-muted">Giới thiệu</a></li>
+					<li className="nav-item"><a href="#" className="nav-link px-2 text-muted">FAQs</a></li>
+				</ul>
 			</div>
-		</div>
+		</footer>
 	);
 }

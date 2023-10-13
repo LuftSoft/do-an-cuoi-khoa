@@ -27,29 +27,29 @@ router.delete('/:id', async (req, res) => {
     res.send(await resultService.delete(id));
 });
 
-/* API giao đề thi cho từng nhóm */
+/* Chi tiet ket qua */
 router.get('/detail', async (req, res) => {
-    res.send(await resultService.getAll());
+    res.send(await resultDetailService.getAll());
 });
 
 router.get('/detail/:id', async (req, res) => {
     const id = req.params.id;
-    res.send(await resultService.getOne(id));
+    res.send(await resultDetailService.getOne(id));
 });
 
 router.post('/detail', async (req, res) => {
     const result = req.body;
-    res.send(await resultService.create(result));
+    res.send(await resultDetailService.create(result));
 });
 
 router.put('/detail', async (req, res) => {
     const result = req.body;
-    res.send(await resultService.update(result));
+    res.send(await resultDetailService.update(result));
 });
 
 router.delete('/detail/:id', async (req, res) => {
     const id = req.params.id;
-    res.send(await resultService.delete(id));
+    res.send(await resultDetailService.delete(id));
 });
 
 module.exports = router;
