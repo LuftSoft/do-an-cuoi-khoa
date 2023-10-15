@@ -1,9 +1,9 @@
-export const CONST = {
+const CONST = {
 	SIDEBAR: [
 		{
 			icon: "fa-solid fa-house",
 			name: "Tổng quan",
-			route: "/",
+			route: "/overview",
 			permissions: [],
 			childs: [],
 		},
@@ -14,40 +14,40 @@ export const CONST = {
 			permissions: [],
 			childs: [
 				{
-					name: "Giảng viên",
-					route: "",
+					name: "Tài khoản",
+					route: "/user",
 				},
 				{
-					name: "Sinh viên",
-					route: "",
+					name: "Phân quyền",
+					route: "/permission",
 				},
 			],
 		},
 		{
 			icon: "fa-solid fa-book",
 			name: "Môn học",
-			route: "",
+			route: "/subject",
 			permissions: [],
 			childs: [],
 		},
 		{
 			icon: "fa-solid fa-clipboard-question",
 			name: "Câu hỏi",
-			route: "",
+			route: "/question",
 			permissions: [],
 			childs: [],
 		},
 		{
 			icon: "fa-solid fa-users",
 			name: "Lớp tín chỉ",
-			route: "",
+			route: "/credit-class",
 			permissions: [],
 			childs: [],
 		},
 		{
 			icon: "fa-solid fa-calendar-days",
 			name: "Lịch kiểm tra",
-			route: "",
+			route: "/test-schedule",
 			permissions: [],
 			childs: [],
 		},
@@ -59,13 +59,40 @@ export const CONST = {
 			childs: [
 				{
 					name: "Đề kiểm tra",
-					route: "",
+					route: "/test",
 				},
 				{
 					name: "Kết quả",
-					route: "",
+					route: "/result",
 				},
 			],
 		},
 	],
+	BASE_URL: "http://localhost:3000/api/v1",
+	ROUTES: {
+		signIn: "/sign-in",
+		signUp: "/sign-up",
+		forgotPassword: "/forgot-password",
+		resetPassword: "/reset-password",
+
+		hotel: "/hotel",
+		createHotel: "/hotel/create",
+		updateHotel: "/hotel/:hotelId",
+		room: "/hotel/:hotelId/room",
+		createRoom: "/hotel/:hotelId/room/create",
+		updateRoom: "/hotel/:hotelId/room/:roomId",
+		booking: "/hotel/:hotelId/booking",
+		//new project
+		OVERVIEW: "/overview",
+		USER: "/user",
+		SUBJECT: "/subject",
+		QUESTION: "/question",
+		CREDIT_CLASS: "/credit-class",
+		TEST_SCHEDULE: "/test-schedule",
+		TEST: "/test",
+		RESULT: "/result",
+		CHAPTER: "/chapter",
+	},
 };
+
+export { CONST };

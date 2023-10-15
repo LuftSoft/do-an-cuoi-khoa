@@ -15,7 +15,6 @@ export default function Sidebar() {
 	const [collapse, setCollapse] = useState([]);
 	const dropDownClass = "fa-solid fa-chevron-down sidebar-dropdown-collapse";
 	function toggleDropdown(index) {
-		console.log(collapse);
 		if (collapse.includes(index)) {
 			let tmp = collapse.filter((item) => item !== index);
 			setCollapse(tmp);
@@ -26,6 +25,7 @@ export default function Sidebar() {
 	function onSelectedItem(index) {
 		setSelectedIndex(index);
 	}
+	var currentUrl = window.location.pathname;
 	return (
 		<>
 			{/* Sidebar Start */}
@@ -61,7 +61,7 @@ export default function Sidebar() {
 																<Link
 																	to={child.route}
 																	className={
-																		selectedIndex == `${index.toString()}${childIndex.toString()}`
+																		child.route.includes(currentUrl)
 																			? "nav-item nav-link active selected-item"
 																			: "nav-item nav-link active"
 																	}>
@@ -78,10 +78,12 @@ export default function Sidebar() {
 							} else {
 								return (
 									<Link
-										onClick={(e) => onSelectedItem(index)}
+										onClick={(e) => onSelectedItem(index.toString())}
 										to={item.route}
 										className={
-											selectedIndex == index ? "nav-item nav-link active selected-item" : "nav-item nav-link active"
+											item.route.includes(currentUrl)
+												? "nav-item nav-link active selected-item"
+												: "nav-item nav-link active"
 										}
 										key={index}>
 										<i className={item.icon}></i> {item.name}
