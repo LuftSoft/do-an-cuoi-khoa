@@ -1,4 +1,19 @@
 const CONST = {
+	API_RESPONSE: {
+		SUCCESS: "SUCCESS",
+		ERROR: "ERROR",
+	},
+	QUESTION: {
+		LEVEL: ["EASY", "MEDIUM", "DIFFICULT"],
+		LEVEL_OBJ: { Dễ: "EASY", Vừa: "MEDIUM", Khó: "DIFFICULT" },
+		CORRECT_ANSWER: ["answer_a", "answer_b", "answer_c", "answer_d"],
+		CORRECT_ANSWER_OBJ: [
+			{ "Đáp án A": "answer_a" },
+			{ "Đáp án B": "answer_b" },
+			{ "Đáp án C": "answer_c" },
+			{ "Đáp án D": "answer_d" },
+		],
+	},
 	SIDEBAR: [
 		{
 			icon: "fa-solid fa-house",

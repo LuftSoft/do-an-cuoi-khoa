@@ -1,9 +1,7 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-const subject = require('./subjects');
-const questions = require('./questions');
+"use strict";
+const { Model } = require("sequelize");
+const subject = require("./subjects");
+const questions = require("./questions");
 module.exports = (sequelize, DataTypes) => {
   class chapters extends Model {
     /**
@@ -15,26 +13,42 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  chapters.init({
-    id: { type: DataTypes.INTEGER, primaryKey: true, allowNull: false, autoIncrement: true },
-    name: {
-      type: DataTypes.STRING,
-      unique: true,
-      allowNull: false,
+  chapters.init(
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+        autoIncrement: true,
+      },
+      name: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+      },
+      index: {
+        allowNull: false,
+        type: DataTypes.INTEGER(2),
+      },
+      subject_id: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        references: {
+          model: "subjects",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+      },
     },
-    index: {
-      allowNull: false,
-      type: DataTypes.INTEGER(2)
-    },
-    subject_id: { type: DataTypes.STRING(255), allowNull: false },
-  }, {
-    sequelize,
-    timestamps: false,
-    modelName: 'chapters',
-  });
-  chapters.associate = (models) => {
-    chapters.belongsTo(models.subjects, { as: 'subjects' });
-    chapters.hasMany(models.questions, { as: 'questions' });
-  }
+    {
+      sequelize,
+      timestamps: false,
+      modelName: "chapters",
+    }
+  );
+  // chapters.associate = (models) => {
+  //   chapters.belongsTo(models.subjects, { as: 'subjects' });
+  //   chapters.hasMany(models.questions, { as: 'questions' });
+  // }
   return chapters;
 };

@@ -62,6 +62,7 @@ export default function CommonTableComponent(props) {
 			<Table sx={{ minWidth: 700 }} aria-label="customized table">
 				<TableHead>
 					<TableRow>
+						<StyledTableCell>STT</StyledTableCell>
 						{columnDef.map((col, index) => (
 							<StyledTableCell key={id + index}>{col.colName}</StyledTableCell>
 						))}
@@ -72,6 +73,7 @@ export default function CommonTableComponent(props) {
 					{(rowsPerPage > 0 ? dataSource.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : dataSource).map(
 						(row, index) => (
 							<StyledTableRow key={index}>
+								<StyledTableCell key={index}>{++index}</StyledTableCell>
 								{columnDef.map((col, index) => (
 									<StyledTableCell key={id + index}>{row[col.colDef]}</StyledTableCell>
 								))}

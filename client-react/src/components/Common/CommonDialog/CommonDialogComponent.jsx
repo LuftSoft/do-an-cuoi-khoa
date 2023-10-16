@@ -8,7 +8,7 @@ const CommonDialogComponent = ({ open, onClose, width, height, children, title, 
 		onClose();
 	}
 	function handleSubmit(data) {
-		console.log("function is submitttt", data);
+		//console.log("function is submitttt", data);
 	}
 	return (
 		<Dialog open={open} onSubmit={handleSubmit} onClose={onClose} fullWidth={false} maxWidth={width || "sm"}>

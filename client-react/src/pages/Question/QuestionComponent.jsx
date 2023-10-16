@@ -12,6 +12,8 @@ import { SubjectService } from "../Subject/SubjectService";
 import { CreateSubjectComponent } from "../Subject";
 import { CreateQuestionComponent } from ".";
 import { QuestionService } from "./QuestionService";
+import { CONST } from "../../utils/const";
+import { toast } from "react-toastify";
 export default function QuestionComponent() {
 	const title = "Danh sách câu hỏi";
 	const buttons = [
@@ -24,22 +26,40 @@ export default function QuestionComponent() {
 	const loadingService = useLoadingService();
 	const dispatch = useDispatch();
 	const [openCreateQuestionDialog, setOpenCreateQuestionDialog] = useState(false);
-	const listQuestionState = useQuery({
-		queryKey: ["subject"],
-		queryFn: async () => {
-			try {
-				loadingService.setLoading(true);
-				const res = await QuestionService.getAllQuestion();
-				loadingService.setLoading(false);
-				return res;
-			} catch (error) {
-				console.log(error);
-				return Promise.reject(error);
-			}
-		},
-	});
+	const [dataSource, setDataSource] = useState([]);
+	getQuestions();
+	// const listQuestionState = useQuery({
+	// 	queryKey: ["subject"],
+	// 	queryFn: async () => {
+	// 		try {
+	// 			loadingService.setLoading(true);
+	// 			const res = await QuestionService.getAllQuestion();
+	// 			loadingService.setLoading(false);
+	// 			return res;
+	// 		} catch (error) {
+	// 			console.log(error);
+	// 			return Promise.reject(error);
+	// 		}
+	// 	},
+	// });
+	function getQuestions() {
+		loadingService.setLoading(true);
+		QuestionService.getAllQuestion()
+			.then((response) => {
+				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+					setDataSource(response.data?.data);
+				} else {
+					toast.error("Không tìm thấy câu hỏi.");
+				}
+			})
+			.catch((err) => {
+				console.log("get all question failed, error: ", err);
+				toast.error("Không tìm thấy câu hỏi.");
+			});
+		loadingService.setLoading(false);
+	}
 	function handleClose(data) {
-		if (data.data.code === "SUCCESS") {
+		if (data?.code === CONST.API_RESPONSE.SUCCESS) {
 			setOpenCreateQuestionDialog(false);
 		} else {
 			setOpenCreateQuestionDialog(true);
@@ -51,15 +71,15 @@ export default function QuestionComponent() {
 	const columnDef = [
 		{
 			colName: "Nội dung",
-			colDef: "name",
+			colDef: "question",
 		},
 		{
 			colName: "Môn học",
-			colDef: "subject",
+			colDef: "subject_name",
 		},
 		{
 			colName: "Chương",
-			colDef: "chapter",
+			colDef: "chapter_name",
 		},
 		{
 			colName: "Độ khó",
@@ -67,10 +87,6 @@ export default function QuestionComponent() {
 		},
 	];
 
-	var dataSource = [];
-	if (listQuestionState?.data?.data && listQuestionState?.isSuccess) {
-		dataSource = listQuestionState.data.data.data;
-	}
 	function handleButtonClick() {
 		setOpenCreateQuestionDialog(true);
 		console.log("is clicked");

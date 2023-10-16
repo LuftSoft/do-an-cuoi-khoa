@@ -20,6 +20,12 @@ export const SubjectService = {
 	getAllChapter: async () => {
 		return await axios.get(CHAPTER_ROUTE, {});
 	},
+	getOneChapter: async () => {
+		return await axios.get(CHAPTER_ROUTE, {});
+	},
+	getChapterBySubjectId: async (id) => {
+		return await axios.get(CHAPTER_ROUTE + CONST.ROUTES.SUBJECT + `/${id}`, {});
+	},
 	createChapter: async (data) => {
 		return await axios.post(CHAPTER_ROUTE, data);
 	},

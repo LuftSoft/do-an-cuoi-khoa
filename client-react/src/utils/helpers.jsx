@@ -165,3 +165,12 @@ const urlLogo =
 
 const inputId = "myFileInput";
 // setFileInInput(urlLogo, inputId);
+
+export const FeHelpers = {
+	isStringEmpty(str) {
+		if (typeof str === "string") {
+			return !str || str.trim() === 0;
+		}
+		return str ? false : true;
+	},
+};

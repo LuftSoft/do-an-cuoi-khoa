@@ -8,6 +8,7 @@ import TitleButtonComponent from "../../components/Common/CommonHeader/CommonHea
 import { useLoadingService } from "../../contexts/loadingContext";
 import { SubjectService } from "./SubjectService";
 import CreateChapter from "./CreateChapterComponent";
+import { CONST } from "../../utils/const";
 
 export default function ChapterComponent() {
 	const title = "Danh sách môn học";
@@ -21,23 +22,22 @@ export default function ChapterComponent() {
 	const loadingService = useLoadingService();
 	const dispatch = useDispatch();
 	const [openCreateChapterDialog, setOpenCreateChapterDialog] = useState(false);
-	const listSubjectState = useQuery({
-		queryKey: ["subject"],
-		queryFn: async () => {
-			try {
-				loadingService.setLoading(true);
-				const res = await SubjectService.getAllChapter();
-				loadingService.setLoading(false);
-				return res;
-			} catch (error) {
-				console.log(error);
-				return Promise.reject(error);
-			}
-		},
-	});
+	function getChapters() {
+		loadingService.setLoading(true);
+		SubjectService.getAllChapter()
+			.then((response) => {
+				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+					const data = response.data?.data ? response.data?.data : [];
+					setDataSource(data);
+				}
+			})
+			.catch((err) => console.log(err));
+		loadingService.setLoading(false);
+	}
 	function handleClose(data) {
 		if (data.data.code === "SUCCESS") {
 			setOpenCreateChapterDialog(false);
+			getChapters();
 		} else {
 			setOpenCreateChapterDialog(true);
 		}
@@ -52,18 +52,16 @@ export default function ChapterComponent() {
 		},
 		{
 			colName: "Môn học",
-			colDef: "credit",
+			colDef: "subject_name",
 		},
 		{
 			colName: "Chương số",
-			colDef: "theoretical_lesson",
+			colDef: "index",
 		},
 	];
 
-	var dataSource = [];
-	if (listSubjectState?.data?.data && listSubjectState?.isSuccess) {
-		dataSource = listSubjectState.data.data.data;
-	}
+	var [dataSource, setDataSource] = useState([]);
+	getChapters();
 	function handleButtonClick() {
 		setOpenCreateChapterDialog(true);
 	}

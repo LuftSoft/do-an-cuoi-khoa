@@ -31,7 +31,7 @@ export default function SignInPage() {
 
 	if (currentUser) {
 		//call api get new refresh-token and access-token
-		return <Navigate to={routes.hotel} />;
+		return <Navigate to={routes.OVERVIEW} />;
 	}
 
 	const handleSubmit = (e) => {
@@ -63,7 +63,7 @@ export default function SignInPage() {
 								replace: true,
 							});
 						} else {
-							navigate(routes.hotel);
+							navigate(routes.OVERVIEW);
 						}
 					} else {
 						if (userRes.isBlock) {
