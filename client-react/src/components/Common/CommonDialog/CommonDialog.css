@@ -1,3 +1,13 @@
+:root {
+    --primary: #1976d2;
+    --light: #FFFFFF;
+    --dark: #191C24;
+    --bg-primary: #1976d2;
+    --white: #fff
+}
+.custom-dialog{
+    border-top: 8px solid var(--primary);
+}
 .title-contain{
     display: flex;
     justify-content: space-between;

@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { CommonDialogComponent, CommonTableComponent } from "../../components/Common";
 import { useLoadingService } from "../../contexts/loadingContext";
@@ -27,7 +27,6 @@ export default function QuestionComponent() {
 	const dispatch = useDispatch();
 	const [openCreateQuestionDialog, setOpenCreateQuestionDialog] = useState(false);
 	const [dataSource, setDataSource] = useState([]);
-	getQuestions();
 	// const listQuestionState = useQuery({
 	// 	queryKey: ["subject"],
 	// 	queryFn: async () => {
@@ -91,6 +90,11 @@ export default function QuestionComponent() {
 		setOpenCreateQuestionDialog(true);
 		console.log("is clicked");
 	}
+	//init data
+	useEffect(() => {
+		console.log("call effect");
+		getQuestions();
+	}, []);
 	return (
 		<Box>
 			<div>

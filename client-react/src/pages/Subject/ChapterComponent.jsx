@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { CreateChapterComponent, CreateSubjectComponent } from ".";
 import { CommonDialogComponent, CommonTableComponent } from "../../components/Common";
@@ -19,11 +19,11 @@ export default function ChapterComponent() {
 			onClick: handleButtonClick,
 		},
 	];
-	const loadingService = useLoadingService();
+	const { loading, setLoading } = useLoadingService();
 	const dispatch = useDispatch();
 	const [openCreateChapterDialog, setOpenCreateChapterDialog] = useState(false);
 	function getChapters() {
-		loadingService.setLoading(true);
+		setLoading(true);
 		SubjectService.getAllChapter()
 			.then((response) => {
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
@@ -32,7 +32,7 @@ export default function ChapterComponent() {
 				}
 			})
 			.catch((err) => console.log(err));
-		loadingService.setLoading(false);
+		setLoading(false);
 	}
 	function handleClose(data) {
 		if (data.data.code === "SUCCESS") {
@@ -61,7 +61,9 @@ export default function ChapterComponent() {
 	];
 
 	var [dataSource, setDataSource] = useState([]);
-	getChapters();
+	useEffect(() => {
+		getChapters();
+	}, []);
 	function handleButtonClick() {
 		setOpenCreateChapterDialog(true);
 	}

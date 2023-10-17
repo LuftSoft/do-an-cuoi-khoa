@@ -107,6 +107,7 @@ const CONST = {
 		TEST: "/test",
 		RESULT: "/result",
 		CHAPTER: "/chapter",
+		SEMESTER: "/semester",
 	},
 };
 
