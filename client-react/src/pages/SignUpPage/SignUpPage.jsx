@@ -5,6 +5,7 @@ import { routes } from "../../routes";
 import { useRef, useState } from "react";
 import { axiosPost, url } from "../../utils/httpRequest";
 import { validateEmail, validatePassword } from "../../utils/helpers";
+import "./Signup.css";
 
 const initErrors = {
 	firstName: "",

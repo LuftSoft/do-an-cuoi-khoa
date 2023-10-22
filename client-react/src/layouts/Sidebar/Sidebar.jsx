@@ -9,6 +9,8 @@ import "./Sidebar.css";
 
 export default function Sidebar() {
 	const currentUser = useSelector(selectUser);
+	const permissions = [];
+	(currentUser?.permissions[0] || []).forEach((item) => permissions.push(item.name));
 	const sideBarValue = CONST.SIDEBAR;
 	const id = "sideBarId";
 	const [selectedIndex, setSelectedIndex] = useState(null);
@@ -25,19 +27,22 @@ export default function Sidebar() {
 	function onSelectedItem(index) {
 		setSelectedIndex(index);
 	}
+	function checkPermission(permission, userPermissions) {
+		return permission.every((item) => userPermissions.includes(item));
+	}
 	var currentUrl = window.location.pathname;
 	return (
 		<>
 			{/* Sidebar Start */}
 			<div className="sidebar pb-3 app-sidebar">
 				<nav className="navbar p-0">
-					<a href={routes.hotel} className="navbar-brand m-0 bg-red w-100 ps-4">
+					<a href={routes.OVERVIEW} className="navbar-brand m-0 bg-red w-100 ps-4">
 						<h3 className="text-default">Trang chủ</h3>
 					</a>
-					<div className="navbar-nav w-100">
+					<div className="navbar-nav w-100 custom-nav-border">
 						{sideBarValue.map((item, index) => {
 							if (item.childs?.length > 0) {
-								return (
+								return checkPermission(item.permissions, permissions) ? (
 									<ul className="list-unstyled ps-0 m-0" key={index}>
 										<li>
 											<button
@@ -52,8 +57,8 @@ export default function Sidebar() {
 											</button>
 											<div className="collapse" id={id + index}>
 												<ul className="btn-toggle-nav list-unstyled">
-													{item.childs?.map((child, childIndex) => {
-														return (
+													{item.childs?.map((child, childIndex) =>
+														checkPermission(child.permissions, permissions) ? (
 															<li
 																onClick={(e) => onSelectedItem(`${index.toString()}${childIndex.toString()}`)}
 																key={`${index.toString()}${childIndex.toString()}`}
@@ -61,34 +66,32 @@ export default function Sidebar() {
 																<Link
 																	to={child.route}
 																	className={
-																		child.route.includes(currentUrl)
+																		child.route === currentUrl
 																			? "nav-item nav-link active selected-item"
 																			: "nav-item nav-link active"
 																	}>
 																	{child.name}
 																</Link>
 															</li>
-														);
-													})}
+														) : null,
+													)}
 												</ul>
 											</div>
 										</li>
 									</ul>
-								);
+								) : null;
 							} else {
-								return (
+								return checkPermission(item.permissions, permissions) ? (
 									<Link
 										onClick={(e) => onSelectedItem(index.toString())}
 										to={item.route}
 										className={
-											item.route.includes(currentUrl)
-												? "nav-item nav-link active selected-item"
-												: "nav-item nav-link active"
+											item.route === currentUrl ? "nav-item nav-link active selected-item" : "nav-item nav-link active"
 										}
 										key={index}>
 										<i className={item.icon}></i> {item.name}
 									</Link>
-								);
+								) : null;
 							}
 						})}
 					</div>

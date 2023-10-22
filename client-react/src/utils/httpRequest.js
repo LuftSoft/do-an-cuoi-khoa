@@ -3,7 +3,7 @@ import jwtDecode from "jwt-decode";
 
 export const axiosInstance = axios.create({
 	baseURL: import.meta.env.VITE_BASE_URL,
-	CORE_URL: import.meta.env.CORE_URL
+	CORE_URL: import.meta.env.CORE_URL,
 });
 
 /**

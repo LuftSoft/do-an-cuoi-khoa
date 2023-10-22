@@ -19,11 +19,11 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      // class_code: {
-      //   type: DataTypes.STRING,
-      //   unique: true,
-      //   allowNull: false,
-      // },
+      class_code: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+      },
       semester_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

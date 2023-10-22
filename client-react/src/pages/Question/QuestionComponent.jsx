@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CommonDialogComponent, CommonTableComponent } from "../../components/Common";
 import { useLoadingService } from "../../contexts/loadingContext";
 
@@ -14,6 +14,8 @@ import { CreateQuestionComponent } from ".";
 import { QuestionService } from "./QuestionService";
 import { CONST } from "../../utils/const";
 import { toast } from "react-toastify";
+import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
+import { selectAccessToken } from "../../redux/selectors";
 export default function QuestionComponent() {
 	const title = "Danh sách câu hỏi";
 	const buttons = [
@@ -22,11 +24,16 @@ export default function QuestionComponent() {
 			onClick: handleButtonClick,
 		},
 	];
-	const createTitle = "Tạo câu hỏi";
 	const loadingService = useLoadingService();
 	const dispatch = useDispatch();
 	const [openCreateQuestionDialog, setOpenCreateQuestionDialog] = useState(false);
 	const [dataSource, setDataSource] = useState([]);
+	//set type of dialog open;
+	const [type, setType] = useState(CONST.DIALOG.TYPE.CREATE);
+	const [confirmDialog, setConfirmDialog] = useState(false);
+	const [deleteId, setDeleteId] = useState("");
+	const [question, setQuestion] = useState({});
+	const accessToken = useSelector(selectAccessToken);
 	// const listQuestionState = useQuery({
 	// 	queryKey: ["subject"],
 	// 	queryFn: async () => {
@@ -46,6 +53,26 @@ export default function QuestionComponent() {
 		QuestionService.getAllQuestion()
 			.then((response) => {
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+					let data = response.data?.data;
+					//set style for level
+					data.forEach((item) => {
+						item.className = {};
+						switch (item?.level) {
+							case CONST.QUESTION.LEVEL[0]:
+								item.level = "DỄ";
+								item.className.level = "bg-easy";
+								break;
+							case CONST.QUESTION.LEVEL[1]:
+								item.level = "VỪA";
+								item.className.level = "bg-medium";
+								break;
+							case CONST.QUESTION.LEVEL[2]:
+								item.level = "KHÓ";
+								item.className.level = "bg-difficult";
+								break;
+						}
+					});
+					console.log(data);
 					setDataSource(response.data?.data);
 				} else {
 					toast.error("Không tìm thấy câu hỏi.");
@@ -59,13 +86,15 @@ export default function QuestionComponent() {
 	}
 	function handleClose(data) {
 		if (data?.code === CONST.API_RESPONSE.SUCCESS) {
+			getQuestions();
 			setOpenCreateQuestionDialog(false);
 		} else {
 			setOpenCreateQuestionDialog(true);
 		}
 	}
-	function onCloseCreateSubjectForm() {
+	function onClose() {
 		setOpenCreateQuestionDialog(false);
+		setConfirmDialog(false);
 	}
 	const columnDef = [
 		{
@@ -87,12 +116,61 @@ export default function QuestionComponent() {
 	];
 
 	function handleButtonClick() {
+		setType(CONST.DIALOG.TYPE.CREATE);
 		setOpenCreateQuestionDialog(true);
-		console.log("is clicked");
+	}
+	function handleView(question) {
+		setType(CONST.DIALOG.TYPE.VIEW);
+		setOpenCreateQuestionDialog(true);
+		console.log(question);
+	}
+	function handleEdit(question) {
+		setQuestion(question);
+		setType(CONST.DIALOG.TYPE.EDIT);
+		setOpenCreateQuestionDialog(true);
+	}
+	function handleDelete(question) {
+		setDeleteId(question.id);
+		setConfirmDialog(true);
+	}
+	function handleConfirmDialog(value) {
+		setConfirmDialog(false);
+		if (value) {
+			deleteQuestion(deleteId);
+		}
+	}
+	function deleteQuestion(id) {
+		loadingService.setLoading(true);
+		QuestionService.deleteQuestion(id, accessToken)
+			.then((response) => {
+				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+					toast.success("Xóa câu hỏi thành công");
+				} else {
+					toast.error(response.data?.message);
+				}
+				loadingService.setLoading(false);
+			})
+			.catch((err) => {
+				loadingService.setLoading(false);
+			});
+	}
+	function getDialogTitle() {
+		let title = "";
+		switch (type) {
+			case CONST.DIALOG.TYPE.CREATE:
+				title = "Tạo câu hỏi";
+				break;
+			case CONST.DIALOG.TYPE.VIEW:
+				title = "Chi tiết câu hỏi";
+				break;
+			case CONST.DIALOG.TYPE.EDIT:
+				title = "Chỉnh sửa câu hỏi";
+				break;
+		}
+		return title;
 	}
 	//init data
 	useEffect(() => {
-		console.log("call effect");
 		getQuestions();
 	}, []);
 	return (
@@ -100,15 +178,29 @@ export default function QuestionComponent() {
 			<div>
 				<TitleButtonComponent title={title} buttons={buttons} />
 			</div>
-			<CommonTableComponent columnDef={columnDef} dataSource={dataSource}></CommonTableComponent>
+			<CommonTableComponent
+				columnDef={columnDef}
+				dataSource={dataSource}
+				onDelete={handleDelete}
+				onView={handleView}
+				onEdit={handleEdit}></CommonTableComponent>
 			<CommonDialogComponent
 				open={openCreateQuestionDialog}
-				title={createTitle}
+				title={getDialogTitle()}
 				icon="fa-solid fa-circle-plus"
-				width="70vw"
+				width="45vw"
 				height="50vh"
-				onClose={onCloseCreateSubjectForm}>
-				<CreateQuestionComponent onSubmit={handleClose} />
+				onClose={onClose}>
+				<CreateQuestionComponent data={question} onSubmit={handleClose} type={type} />
+			</CommonDialogComponent>
+			<CommonDialogComponent
+				open={confirmDialog}
+				title="Xác nhận"
+				icon="fa-solid fa-circle-plus"
+				width="30vw"
+				height="50vh"
+				onClose={onClose}>
+				<ConfirmDialog message="Bạn muốn xóa câu hỏi này?" handleClose={handleConfirmDialog}></ConfirmDialog>
 			</CommonDialogComponent>
 		</Box>
 	);

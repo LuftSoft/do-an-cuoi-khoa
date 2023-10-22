@@ -27,7 +27,6 @@ export default function CreditClass() {
 		loadingService.setLoading(true);
 		CreditClassService.getAllCreditClass()
 			.then((response) => {
-				console.log(response);
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 					setDataSource(response.data?.data);
 				} else {
@@ -75,7 +74,6 @@ export default function CreditClass() {
 	}
 	//init data
 	useEffect(() => {
-		console.log("call effect");
 		getCreditClasses();
 	}, []);
 	return (
@@ -88,7 +86,7 @@ export default function CreditClass() {
 				open={openCreateCreditClassDialog}
 				title={createTitle}
 				icon="fa-solid fa-circle-plus"
-				width="70vw"
+				width="45vw"
 				height="50vh"
 				onClose={onCloseCreateCreditClassForm}>
 				<CreateCreditClass onSubmit={handleClose} />

@@ -1,0 +1,7 @@
+.row-2 {
+	display: flex;
+	gap: 12px;
+}
+.row-2 > div {
+	width: 50%;
+}

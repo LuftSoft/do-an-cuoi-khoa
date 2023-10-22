@@ -42,12 +42,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function CommonTableComponent(props) {
 	const id = useId();
-	const { columnDef, dataSource } = props;
+	const { columnDef, dataSource, onDelete, onView, onEdit } = props;
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-	// Avoid a layout jump when reaching the last page with empty rows.
-	const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+	// // Avoid a layout jump when reaching the last page with empty rows.
+	// const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
 	const handleChangePage = (event, newPage) => {
 		setPage(newPage);
@@ -75,12 +75,31 @@ export default function CommonTableComponent(props) {
 							<StyledTableRow key={index}>
 								<StyledTableCell key={index}>{++index}</StyledTableCell>
 								{columnDef.map((col, index) => (
-									<StyledTableCell key={id + index}>{row[col.colDef]}</StyledTableCell>
+									<StyledTableCell key={id + index}>
+										<span className={row.className ? (row.className[col.colDef] ? row.className[col.colDef] : "") : ""}>
+											{row[col.colDef]}
+										</span>
+									</StyledTableCell>
 								))}
 								<StyledTableCell>
-									<RemoveRedEyeIcon titleAccess="Chi tiết" className="icon" />
-									<EditIcon titleAccess="Chi tiết" className="icon" />
-									<ClearIcon titleAccess="Xóa" className="icon" />
+									<span
+										onClick={() => {
+											onView(row);
+										}}>
+										<RemoveRedEyeIcon titleAccess="Chi tiết" className="icon" />
+									</span>
+									<span
+										onClick={() => {
+											onEdit(row);
+										}}>
+										<EditIcon titleAccess="Chỉnh sửa" className="icon" />
+									</span>
+									<span
+										onClick={() => {
+											onDelete(row);
+										}}>
+										<ClearIcon titleAccess="Xóa" className="icon" />
+									</span>
 								</StyledTableCell>
 							</StyledTableRow>
 						),

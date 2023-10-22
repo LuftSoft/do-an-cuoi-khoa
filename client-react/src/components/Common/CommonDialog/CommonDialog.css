@@ -1,23 +1,38 @@
 :root {
-    --primary: #1976d2;
-    --light: #FFFFFF;
-    --dark: #191C24;
-    --bg-primary: #1976d2;
-    --white: #fff
+	--primary: #1976d2;
+	--light: #ffffff;
+	--dark: #191c24;
+	--bg-primary: #1976d2;
+	--white: #fff;
 }
-.custom-dialog{
-    border-top: 8px solid var(--primary);
+.custom-dialog {
+	border-top: 8px solid var(--primary);
 }
-.title-contain{
-    display: flex;
-    justify-content: space-between;
-    padding: 24px 24px 0 24px;
+.title-contain {
+	display: flex;
+	justify-content: space-between;
+	padding: 24px 24px 0 24px;
 }
-.title-contain .cancel-icon{
-    cursor: pointer;
-    font-size: 30px;
+.title-contain .cancel-icon {
+	cursor: pointer;
+	font-size: 30px;
 }
 
 .title-contain i {
-    margin-right: 12px;
+	margin-right: 12px;
+}
+.confirm-container {
+	padding: 12px 24px 24px 24px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+.confirm-btn-container {
+	display: flex;
+	gap: 12px;
+}
+.confirm-msg {
+	padding-bottom: 12px;
 }

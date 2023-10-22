@@ -27,3 +27,6 @@
 .selected-item i{
     color: var(--primary);
 }
+.custom-nav-border :first-child{
+    border-top: 1px solid #fff;
+}

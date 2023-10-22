@@ -1,7 +1,9 @@
 import { Outlet, Route } from "react-router-dom";
 
 import DefaultLayout from "../layouts/DefaultLayout";
-
+import { useSelector } from "react-redux";
+import { selectUser } from "../redux/selectors";
+import { publicRoutes } from "../routes";
 export const renderRoutes = (routes) => {
 	let reactElements = null;
 	if (Array.isArray(routes)) {
@@ -84,16 +86,20 @@ export const formatDate = (date, pattern = "yyyy-mm-dd", seperater = "-") => {
 	}
 };
 export const validateEmail = (errors, username) => {
+	const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 	if (username === "") {
-		errors.email = "Vui lòng nhập email!";
+		errors.email = "Vui lòng nhập email";
+	} else if (!regex.test(username)) {
+		errors[key] = "Email không đúng định dạng";
 	}
 };
 export const validatePassword = (errors, password, key = "password") => {
-	const decimal = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{6,}$/;
+	// const decimal = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{6,}$/;
+	const decimal = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{6,}$/;
 	if (password === "") {
-		errors[key] = "Vui lòng nhập mật khẩu!";
+		errors[key] = "Vui lòng nhập mật khẩu";
 	} else if (!decimal.test(password)) {
-		errors[key] = "Mật khẩu tối thiểu 6 ký tự. Chứa ít nhất 1 ký tự in hoa, 1 ký tự số và 1 ký tự đặc biệt";
+		errors[key] = "Mật khẩu tối thiểu 6 ký tự. Chứa ít nhất 1 ký tự in hoa và 1 ký tự số";
 	}
 };
 export const validatePhone = (errors, phone) => {

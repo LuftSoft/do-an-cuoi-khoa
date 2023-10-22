@@ -52,6 +52,19 @@ module.exports = {
           key: "id",
         },
       },
+      is_admin_create: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
+      },
+      user_create: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        references: {
+          model: "users",
+          key: "id",
+        },
+      },
     });
   },
   async down(queryInterface, Sequelize) {

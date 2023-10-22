@@ -1,4 +1,17 @@
+const PERMISSION = {
+	ADMIN: "admin",
+	GV: "gv",
+	SV: "sv",
+};
 const CONST = {
+	DIALOG: {
+		TYPE: {
+			CREATE: "create",
+			EDIT: "edit",
+			DELETE: "delete",
+			VIEW: "view",
+		},
+	},
 	API_RESPONSE: {
 		SUCCESS: "SUCCESS",
 		ERROR: "ERROR",
@@ -19,22 +32,24 @@ const CONST = {
 			icon: "fa-solid fa-house",
 			name: "Tổng quan",
 			route: "/overview",
-			permissions: [],
+			permissions: [PERMISSION.ADMIN],
 			childs: [],
 		},
 		{
 			icon: "fa-solid fa-user",
 			name: "Người dùng",
 			route: "",
-			permissions: [],
+			permissions: [PERMISSION.ADMIN],
 			childs: [
 				{
 					name: "Tài khoản",
 					route: "/user",
+					permissions: [PERMISSION.ADMIN],
 				},
 				{
 					name: "Phân quyền",
 					route: "/permission",
+					permissions: [PERMISSION.ADMIN],
 				},
 			],
 		},
@@ -42,43 +57,45 @@ const CONST = {
 			icon: "fa-solid fa-book",
 			name: "Môn học",
 			route: "/subject",
-			permissions: [],
+			permissions: [PERMISSION.GV, PERMISSION.ADMIN],
 			childs: [],
 		},
 		{
 			icon: "fa-solid fa-clipboard-question",
 			name: "Câu hỏi",
 			route: "/question",
-			permissions: [],
+			permissions: [PERMISSION.GV, PERMISSION.ADMIN],
 			childs: [],
 		},
 		{
 			icon: "fa-solid fa-users",
 			name: "Lớp tín chỉ",
 			route: "/credit-class",
-			permissions: [],
+			permissions: [PERMISSION.GV, PERMISSION.ADMIN],
 			childs: [],
 		},
 		{
 			icon: "fa-solid fa-calendar-days",
 			name: "Lịch kiểm tra",
 			route: "/test-schedule",
-			permissions: [],
+			permissions: [PERMISSION.GV, PERMISSION.ADMIN],
 			childs: [],
 		},
 		{
 			icon: "fa-solid fa-file-lines",
 			name: "Đề kiểm tra",
 			route: "",
-			permissions: [],
+			permissions: [PERMISSION.GV, PERMISSION.ADMIN],
 			childs: [
 				{
 					name: "Đề kiểm tra",
 					route: "/test",
+					permissions: [PERMISSION.GV, PERMISSION.ADMIN],
 				},
 				{
 					name: "Kết quả",
 					route: "/result",
+					permissions: [PERMISSION.GV, PERMISSION.ADMIN],
 				},
 			],
 		},
@@ -108,6 +125,11 @@ const CONST = {
 		RESULT: "/result",
 		CHAPTER: "/chapter",
 		SEMESTER: "/semester",
+	},
+	PERMISSION: {
+		ADMIN: "admin",
+		SV: "sv",
+		GV: "gv",
 	},
 };
 

@@ -12,7 +12,7 @@ const CommonDialogComponent = ({ open, onClose, width, height, children, title, 
 	}
 	return (
 		<Dialog open={open} onSubmit={handleSubmit} onClose={onClose} fullWidth={false} maxWidth={width || "sm"}>
-			<div className="custom-dialog">
+			<div className="custom-dialog" style={{ width: width ? width : "" }}>
 				<div className="title-contain">
 					<h4>
 						<i className={icon ? icon : ""}></i>

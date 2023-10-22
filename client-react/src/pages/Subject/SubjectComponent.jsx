@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { CommonDialogComponent, CommonTableComponent } from "../../components/Common";
 import { useLoadingService } from "../../contexts/loadingContext";
@@ -8,6 +8,8 @@ import { SubjectService } from "./SubjectService";
 import styled from "@emotion/styled";
 import TitleButtonComponent from "../../components/Common/CommonHeader/CommonHeaderComponent";
 import { CreateSubjectComponent } from ".";
+import { toast } from "react-toastify";
+import { CONST } from "../../utils/const";
 
 export default function SubjectComponent() {
 	const title = "Danh sách môn học";
@@ -18,8 +20,20 @@ export default function SubjectComponent() {
 		},
 	];
 	const loadingService = useLoadingService();
-	const dispatch = useDispatch();
 	const [openCreateSubjectDialog, setOpenCreateSubjectDialog] = useState(false);
+	function getSubjects() {
+		SubjectService.getAllSubject()
+			.then((response) => {
+				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+					setDataSource(response.data?.data);
+				} else {
+					toast.error(response.data?.message);
+				}
+			})
+			.catch((err) => {
+				toast.error(err.message);
+			});
+	}
 	const listSubjectState = useQuery({
 		queryKey: ["subject"],
 		queryFn: async () => {
@@ -36,6 +50,7 @@ export default function SubjectComponent() {
 	});
 	function handleClose(data) {
 		if (data.data.code === "SUCCESS") {
+			getSubjects();
 			setOpenCreateSubjectDialog(false);
 		} else {
 			setOpenCreateSubjectDialog(true);
@@ -63,10 +78,10 @@ export default function SubjectComponent() {
 		},
 	];
 
-	var dataSource = [];
-	if (listSubjectState?.data?.data && listSubjectState?.isSuccess) {
-		dataSource = listSubjectState.data.data.data;
-	}
+	const [dataSource, setDataSource] = useState([]);
+	useEffect(() => {
+		getSubjects();
+	}, []);
 	function handleButtonClick() {
 		setOpenCreateSubjectDialog(true);
 		console.log("is clicked");
@@ -81,7 +96,7 @@ export default function SubjectComponent() {
 				open={openCreateSubjectDialog}
 				title="Tạo môn học"
 				icon="fa-solid fa-circle-plus"
-				width="70vw"
+				width="45vw"
 				height="50vh"
 				onClose={onCloseCreateSubjectForm}>
 				<CreateSubjectComponent onSubmit={handleClose} />

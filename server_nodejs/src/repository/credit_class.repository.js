@@ -5,7 +5,28 @@ const credit_classes = dbContext.credit_classes;
 
 module.exports = {
   create: async (credit_class) => {
-    const credit_classCreate = await credit_classes.create(credit_class);
+    const transaction = await credit_classes.sequelize.transaction();
+    var credit_classCreate = {};
+    try {
+      const query = `SET @class_code = (SELECT cc.class_code FROM credit_classes AS cc ORDER BY class_code DESC LIMIT 1);
+    SET @class_code =(CASE WHEN @class_code IS NOT NULL THEN CONCAT(SUBSTRING(@class_code, 1,4),CONVERT(((CONVERT(SUBSTRING(@class_code, 5), SIGNED)) + 1), CHAR))ELSE 'PTIT1001'END);
+    INSERT INTO credit_classes(class_code, semester_id, subject_id) values(@class_code,${credit_class.semester_id},'${credit_class.subject_id}');`;
+      const newest_class_code = await credit_classes.sequelize.query(
+        `SELECT cc.class_code FROM credit_classes AS cc ORDER BY class_code DESC LIMIT 1`,
+        { type: QueryTypes.SELECT }
+      );
+      let tmp = newest_class_code[0].class_code;
+      let new_class_code =
+        tmp.substring(0, 4) + (Number.parseInt(tmp.slice(4)) + 1).toString();
+      credit_classCreate = await credit_classes.sequelize.query(
+        `INSERT INTO credit_classes(class_code, semester_id, subject_id) values('${new_class_code}',${credit_class.semester_id},'${credit_class.subject_id}')`,
+        { type: QueryTypes.INSERT }
+      );
+      await transaction.commit();
+    } catch (err) {
+      console.log(err);
+      await transaction.rollback();
+    }
     return credit_classCreate;
   },
   update: async (credit_class) => {

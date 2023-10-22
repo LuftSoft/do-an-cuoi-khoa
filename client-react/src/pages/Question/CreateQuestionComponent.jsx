@@ -9,6 +9,9 @@ import { toast } from "react-toastify";
 import { useLoadingService } from "../../contexts/loadingContext";
 import { FeHelpers } from "../../utils/helpers";
 import { QuestionService } from "./QuestionService";
+import "./Question.css";
+import { useSelector } from "react-redux";
+import { selectAccessToken, selectUser } from "../../redux/selectors";
 
 const initialValues = {
 	question: "",
@@ -24,7 +27,8 @@ const initialValues = {
 const levels = CONST.QUESTION.LEVEL_OBJ;
 const correctAnswers = CONST.QUESTION.CORRECT_ANSWER_OBJ;
 
-const CreateQuestion = ({ onSubmit }) => {
+const CreateQuestion = ({ onSubmit, data }) => {
+	const accessToken = useSelector(selectAccessToken);
 	const [subject, setSubject] = useState("");
 	const [chapters, setChapters] = useState([]);
 	const [subjects, setSubjects] = useState([]);
@@ -82,7 +86,7 @@ const CreateQuestion = ({ onSubmit }) => {
 			setErrors(errors);
 			return;
 		}
-		QuestionService.createQuestion(formData)
+		QuestionService.createQuestion(formData, accessToken)
 			.then((response) => {
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 					toast.success("Tạo câu hỏi thành công!");
@@ -115,7 +119,7 @@ const CreateQuestion = ({ onSubmit }) => {
 					))}
 				</TextField>
 				<TextField
-					label="Chapter ID"
+					label="Chương"
 					variant="outlined"
 					name="chapter_id"
 					error={Boolean(errors.chapter_id)}
@@ -133,33 +137,19 @@ const CreateQuestion = ({ onSubmit }) => {
 					))}
 				</TextField>
 				<TextField
-					label="Question"
+					label="Câu hỏi"
 					variant="outlined"
 					name="question"
 					error={Boolean(errors.question)}
 					value={formData.question}
 					onChange={handleChange}
 					fullWidth
+					rows={3}
+					multiline
 					margin="normal"
 				/>
 				<TextField
-					select
-					label="Level"
-					variant="outlined"
-					name="level"
-					error={Boolean(errors.level)}
-					value={formData.level}
-					onChange={handleChange}
-					fullWidth
-					margin="normal">
-					{Object.keys(levels).map((level) => (
-						<MenuItem key={level} value={levels[level]}>
-							{level}
-						</MenuItem>
-					))}
-				</TextField>
-				<TextField
-					label="Answer A"
+					label="Câu trả lời A"
 					variant="outlined"
 					name="answer_a"
 					error={Boolean(errors.answer_a)}
@@ -169,7 +159,7 @@ const CreateQuestion = ({ onSubmit }) => {
 					margin="normal"
 				/>
 				<TextField
-					label="Answer B"
+					label="Câu trả lời B"
 					variant="outlined"
 					name="answer_b"
 					error={Boolean(errors.answer_b)}
@@ -179,7 +169,7 @@ const CreateQuestion = ({ onSubmit }) => {
 					margin="normal"
 				/>
 				<TextField
-					label="Answer C"
+					label="Câu trả lời C"
 					variant="outlined"
 					name="answer_c"
 					error={Boolean(errors.answer_c)}
@@ -189,7 +179,7 @@ const CreateQuestion = ({ onSubmit }) => {
 					margin="normal"
 				/>
 				<TextField
-					label="Answer D"
+					label="Câu trả lời D"
 					variant="outlined"
 					name="answer_d"
 					error={Boolean(errors.answer_d)}
@@ -198,23 +188,39 @@ const CreateQuestion = ({ onSubmit }) => {
 					fullWidth
 					margin="normal"
 				/>
-				<TextField
-					select
-					label="Correct Answer"
-					variant="outlined"
-					name="correct_answer"
-					error={Boolean(errors.correct_answer)}
-					value={formData.correct_answer}
-					onChange={handleChange}
-					fullWidth
-					margin="normal">
-					{correctAnswers.map((answer, index) => (
-						<MenuItem key={index} value={Object.values(answer)[0]}>
-							{Object.keys(answer)[0]}
-						</MenuItem>
-					))}
-				</TextField>
-				<Button type="submit" variant="contained" color="primary">
+				<div className="row-2">
+					<TextField
+						select
+						label="Độ khó"
+						variant="outlined"
+						name="level"
+						error={Boolean(errors.level)}
+						value={formData.level}
+						onChange={handleChange}
+						margin="normal">
+						{Object.keys(levels).map((level) => (
+							<MenuItem key={level} value={levels[level]}>
+								{level}
+							</MenuItem>
+						))}
+					</TextField>
+					<TextField
+						select
+						label="Đáp án"
+						variant="outlined"
+						name="correct_answer"
+						error={Boolean(errors.correct_answer)}
+						value={formData.correct_answer}
+						onChange={handleChange}
+						margin="normal">
+						{correctAnswers.map((answer, index) => (
+							<MenuItem key={index} value={Object.values(answer)[0]}>
+								{Object.keys(answer)[0]}
+							</MenuItem>
+						))}
+					</TextField>
+				</div>
+				<Button type="submit" variant="contained" color="primary" className="mt-3">
 					Tạo mới
 				</Button>
 			</form>

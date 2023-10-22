@@ -13,6 +13,7 @@ export default function Header() {
 	const handleLogout = (e) => {
 		e.preventDefault();
 		logout(dispatch);
+		window.location.href = "/sign-in";
 	};
 	return (
 		<>
