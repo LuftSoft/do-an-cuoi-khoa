@@ -8,11 +8,11 @@ module.exports = {
     const transaction = await credit_classes.sequelize.transaction();
     var credit_classCreate = {};
     try {
-      const query = `SET @class_code = (SELECT cc.class_code FROM credit_classes AS cc ORDER BY class_code DESC LIMIT 1);
+      const query = `COALESCE((SELECT cc.class_code FROM credit_classes AS cc ORDER BY class_code DESC LIMIT 1),'PTITHCM100000');
     SET @class_code =(CASE WHEN @class_code IS NOT NULL THEN CONCAT(SUBSTRING(@class_code, 1,4),CONVERT(((CONVERT(SUBSTRING(@class_code, 5), SIGNED)) + 1), CHAR))ELSE 'PTIT1001'END);
     INSERT INTO credit_classes(class_code, semester_id, subject_id) values(@class_code,${credit_class.semester_id},'${credit_class.subject_id}');`;
       const newest_class_code = await credit_classes.sequelize.query(
-        `SELECT cc.class_code FROM credit_classes AS cc ORDER BY class_code DESC LIMIT 1`,
+        `SELECT (COALESCE((SELECT cc.class_code FROM credit_classes AS cc ORDER BY class_code DESC LIMIT 1),'LTC100000')) as class_code`,
         { type: QueryTypes.SELECT }
       );
       let tmp = newest_class_code[0].class_code;

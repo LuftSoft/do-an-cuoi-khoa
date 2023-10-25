@@ -7,7 +7,7 @@ import CreditClassComponent from "../pages/CreditClass/CreditClassComponent";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage";
 import HotelPage from "../pages/HotelPage";
 import OverviewComponent from "../pages/Overview/OverviewComponent";
-import { default as QuestionComponent, default as UserComponent } from "../pages/Question/QuestionComponent";
+import QuestionComponent from "../pages/Question/QuestionComponent";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
 import ResultComponent from "../pages/Result/ResultComponent";
 import RoomPage from "../pages/RoomPage";
@@ -20,6 +20,7 @@ import TestComponent from "../pages/Test/TestComponent";
 import TestScheduleComponent from "../pages/TestSchedule/TestScheduleComponent";
 import UpdateHotelPage from "../pages/UpdateHotelPage";
 import UpdateRoomPage from "../pages/UpdateRoomPage";
+import { UserComponent } from "../pages/User";
 
 export const routes = {
 	signIn: "/sign-in",

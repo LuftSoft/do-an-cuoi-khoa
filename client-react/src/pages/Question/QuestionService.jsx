@@ -7,11 +7,14 @@ export const QuestionService = {
 	getAllQuestion: async () => {
 		return await axios.get(QUESTION_ROUTE);
 	},
+	getOneQuestion: async (id) => {
+		return await axios.get(`${QUESTION_ROUTE}/${id}`);
+	},
 	createQuestion: async (data, token) => {
 		return await axios.post(QUESTION_ROUTE, data, { headers: { Authorization: "Bearer " + token } });
 	},
-	updateQuestion: async () => {
-		return await axios.post(QUESTION_ROUTE, {});
+	updateQuestion: async (data, token) => {
+		return await axios.put(QUESTION_ROUTE, data, { headers: { Authorization: "Bearer " + token } });
 	},
 	deleteQuestion: async (id, token) => {
 		return await axios.delete(`${QUESTION_ROUTE}/${id}`, { headers: { Authorization: `Bearer ${token}` } });

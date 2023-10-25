@@ -72,7 +72,6 @@ export default function QuestionComponent() {
 								break;
 						}
 					});
-					console.log(data);
 					setDataSource(response.data?.data);
 				} else {
 					toast.error("Không tìm thấy câu hỏi.");
@@ -120,9 +119,9 @@ export default function QuestionComponent() {
 		setOpenCreateQuestionDialog(true);
 	}
 	function handleView(question) {
+		setQuestion(question);
 		setType(CONST.DIALOG.TYPE.VIEW);
 		setOpenCreateQuestionDialog(true);
-		console.log(question);
 	}
 	function handleEdit(question) {
 		setQuestion(question);

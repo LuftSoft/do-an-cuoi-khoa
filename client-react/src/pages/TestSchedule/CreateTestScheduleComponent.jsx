@@ -170,7 +170,7 @@ const CreateTestSchedule = ({ onSubmit }) => {
 					margin="normal"
 				/>
 				<Button type="submit" variant="contained" color="primary">
-					Tạo mới
+					<i class="fa-solid fa-floppy-disk me-2"></i>Lưu
 				</Button>
 			</form>
 		</Container>

@@ -5,3 +5,14 @@
 .row-2 > div {
 	width: 50%;
 }
+.form-footer {
+	display: flex;
+	justify-content: flex-end;
+}
+.disable-field {
+	pointer-events: none;
+}
+
+.disable-field > div {
+	color: #949494;
+}

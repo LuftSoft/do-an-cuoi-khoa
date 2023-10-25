@@ -1,173 +1,170 @@
 /********** Template CSS **********/
 :root {
-    --primary: #1976d2;
-    --light: #FFFFFF;
-    --dark: #191C24;
-    --bg-primary: #1976d2;
-    --white: #fff
+	--primary: #1976d2;
+	--light: #ffffff;
+	--dark: #191c24;
+	--bg-primary: #1976d2;
+	--white: #fff;
 }
 
 .back-to-top {
-    position: fixed;
-    display: none;
-    right: 45px;
-    bottom: 45px;
-    z-index: 99;
+	position: fixed;
+	display: none;
+	right: 45px;
+	bottom: 45px;
+	z-index: 99;
 }
 
 .text-default {
-    color: var(--white) !important;
+	color: var(--white) !important;
 }
 
 /*** Spinner ***/
 #spinner {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity .5s ease-out, visibility 0s linear .5s;
-    z-index: 99999;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.5s ease-out, visibility 0s linear 0.5s;
+	z-index: 99999;
 }
 
 #spinner.show {
-    transition: opacity .5s ease-out, visibility 0s linear 0s;
-    visibility: visible;
-    opacity: 1;
+	transition: opacity 0.5s ease-out, visibility 0s linear 0s;
+	visibility: visible;
+	opacity: 1;
 }
-
 
 /*** Button ***/
 .btn {
-    transition: .5s;
+	transition: 0.5s;
 }
 
 .btn.btn-primary {
-    color: #FFFFFF;
+	color: #ffffff;
 }
 
 .btn-square {
-    width: 38px;
-    height: 38px;
+	width: 38px;
+	height: 38px;
 }
 
 .btn-sm-square {
-    width: 32px;
-    height: 32px;
+	width: 32px;
+	height: 32px;
 }
 
 .btn-lg-square {
-    width: 48px;
-    height: 48px;
+	width: 48px;
+	height: 48px;
 }
 
 .btn-square,
 .btn-sm-square,
 .btn-lg-square {
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: normal;
-    border-radius: 50px;
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: normal;
+	border-radius: 50px;
 }
-
 
 /*** Layout ***/
 .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 250px;
-    height: 100vh;
-    overflow-y: auto;
-    transition: 0.5s;
-    z-index: 999;
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 250px;
+	height: 100vh;
+	overflow-y: auto;
+	transition: 0.5s;
+	z-index: 999;
 }
 
 .content {
-    margin-left: 250px;
-    min-height: 100vh;
-    background: #FFFFFF;
-    transition: 0.5s;
+	margin-left: 250px;
+	min-height: 100vh;
+	background: #ffffff;
+	transition: 0.5s;
 }
 
 @media (min-width: 992px) {
-    .sidebar {
-        margin-left: 0;
-    }
+	.sidebar {
+		margin-left: 0;
+	}
 
-    .sidebar.open {
-        margin-left: -250px;
-    }
+	.sidebar.open {
+		margin-left: -250px;
+	}
 
-    .content {
-        width: calc(100% - 250px);
-    }
+	.content {
+		width: calc(100% - 250px);
+	}
 
-    .content.open {
-        width: 100%;
-        margin-left: 0;
-    }
+	.content.open {
+		width: 100%;
+		margin-left: 0;
+	}
 }
 
 @media (max-width: 991.98px) {
-    .sidebar {
-        margin-left: -250px;
-    }
+	.sidebar {
+		margin-left: -250px;
+	}
 
-    .sidebar.open {
-        margin-left: 0;
-    }
+	.sidebar.open {
+		margin-left: 0;
+	}
 
-    .content {
-        width: 100%;
-        margin-left: 0;
-    }
+	.content {
+		width: 100%;
+		margin-left: 0;
+	}
 }
-
 
 /*** Navbar ***/
 .app-navbar {
-    background-color: var(--bg-primary);
+	background-color: var(--bg-primary);
 }
 
 .app-sidebar {
-    background-color: var(--white);
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+	background-color: var(--white);
+	box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 
 .bg-red {
-    background-color: var(--bg-primary) !important;
+	background-color: var(--bg-primary) !important;
 }
 
 .navbar-brand {
-    height: 66px;
-    display: flex;
-    align-items: center;
+	height: 66px;
+	display: flex;
+	align-items: center;
 }
 
 .sidebar .navbar .navbar-nav .nav-link {
-    padding: 7px 20px;
-    color: var(--dark);
-    font-weight: 500;
-    /* border-left: 3px solid var(--light); */
-    /* border-radius: 0 30px 30px 0; */
-    outline: none;
-    border-bottom: 1px solid #ccc !important;
+	padding: 7px 20px;
+	color: var(--dark);
+	font-weight: 500;
+	/* border-left: 3px solid var(--light); */
+	/* border-radius: 0 30px 30px 0; */
+	outline: none;
+	border-bottom: 1px solid #ccc !important;
 }
 
 .sidebar .navbar .navbar-nav .nav-link:hover,
 .sidebar .navbar .navbar-nav .nav-link.active {
-    background: #FFFFFF;
+	background: #ffffff;
 }
 
 .sidebar .navbar .navbar-nav .nav-link i {
-    width: 40px;
-    height: 40px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #FFFFFF;
-    border-radius: 40px;
+	width: 40px;
+	height: 40px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: #ffffff;
+	border-radius: 40px;
 }
 
 /* .sidebar .navbar .navbar-nav .nav-link:hover i,
@@ -176,8 +173,8 @@
 } */
 
 .sidebar .navbar .dropdown-toggle::after {
-    display: none;
-    /*top: 15px;
+	display: none;
+	/*top: 15px;
     right: 15px;
     border: none;
     content: "\f107";
@@ -186,42 +183,42 @@
     transition: .5s; */
 }
 
-.sidebar .navbar .dropdown-toggle[aria-expanded=true]::after {
-    transform: rotate(-180deg);
+.sidebar .navbar .dropdown-toggle[aria-expanded="true"]::after {
+	transform: rotate(-180deg);
 }
 
 .sidebar .navbar .dropdown-item {
-    padding-left: 25px;
-    border-radius: 0 30px 30px 0;
+	padding-left: 25px;
+	border-radius: 0 30px 30px 0;
 }
 
 .content .navbar .navbar-nav .nav-link {
-    margin-left: 25px;
-    padding: 12px 0;
-    color: var(--dark);
-    outline: none;
+	margin-left: 25px;
+	padding: 12px 0;
+	color: var(--dark);
+	outline: none;
 }
 
 .content .navbar .navbar-nav .nav-link:hover,
 .content .navbar .navbar-nav .nav-link.active {
-    color: var(--primary);
+	color: var(--primary);
 }
 
 .content .navbar .sidebar-toggler,
 .content .navbar .navbar-nav .nav-link i {
-    width: 40px;
-    height: 40px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #FFFFFF;
-    border-radius: 40px;
-    color: var(--primary)
+	width: 40px;
+	height: 40px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: #ffffff;
+	border-radius: 40px;
+	color: var(--primary);
 }
 
 .content .navbar .dropdown-toggle::after {
-    display: none;
-    /* margin-left: 6px;
+	display: none;
+	/* margin-left: 6px;
     vertical-align: middle;
     border: none;
     content: "\f107";
@@ -230,72 +227,99 @@
     transition: .5s; */
 }
 
-.content .navbar .dropdown-toggle[aria-expanded=true]::after {
-    transform: rotate(-180deg);
+.content .navbar .dropdown-toggle[aria-expanded="true"]::after {
+	transform: rotate(-180deg);
 }
 
 @media (max-width: 575.98px) {
-    .content .navbar .navbar-nav .nav-link {
-        margin-left: 15px;
-    }
+	.content .navbar .navbar-nav .nav-link {
+		margin-left: 15px;
+	}
 }
-
 
 /*** Date Picker ***/
 .bootstrap-datetimepicker-widget.bottom {
-    top: auto !important;
+	top: auto !important;
 }
 
 .bootstrap-datetimepicker-widget .table * {
-    border-bottom-width: 0px;
+	border-bottom-width: 0px;
 }
 
 .bootstrap-datetimepicker-widget .table th {
-    font-weight: 500;
+	font-weight: 500;
 }
 
 .bootstrap-datetimepicker-widget.dropdown-menu {
-    padding: 10px;
-    border-radius: 2px;
+	padding: 10px;
+	border-radius: 2px;
 }
 
 .bootstrap-datetimepicker-widget table td.active,
 .bootstrap-datetimepicker-widget table td.active:hover {
-    background: var(--primary);
+	background: var(--primary);
 }
 
 .bootstrap-datetimepicker-widget table td.today::before {
-    border-bottom-color: var(--primary);
+	border-bottom-color: var(--primary);
 }
-
 
 /*** Testimonial ***/
 .progress .progress-bar {
-    width: 0px;
-    transition: 2s;
+	width: 0px;
+	transition: 2s;
 }
-
 
 /*** Testimonial ***/
 .testimonial-carousel .owl-dots {
-    margin-top: 24px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
+	margin-top: 24px;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
 }
 
 .testimonial-carousel .owl-dot {
-    position: relative;
-    display: inline-block;
-    margin: 0 5px;
-    width: 15px;
-    height: 15px;
-    border: 5px solid var(--primary);
-    border-radius: 15px;
-    transition: .5s;
+	position: relative;
+	display: inline-block;
+	margin: 0 5px;
+	width: 15px;
+	height: 15px;
+	border: 5px solid var(--primary);
+	border-radius: 15px;
+	transition: 0.5s;
 }
 
 .testimonial-carousel .owl-dot.active {
-    background: var(--dark);
-    border-color: var(--primary);
+	background: var(--dark);
+	border-color: var(--primary);
+}
+.w-7 {
+	width: 70% !important;
+}
+.w-6 {
+	width: 60% !important;
+}
+.w-5 {
+	width: 50% !important;
+}
+.w-4 {
+	width: 40% !important;
+}
+.w-3 {
+	width: 30% !important;
+}
+.w-2 {
+	width: 20% !important;
+}
+.w-1 {
+	width: 10% !important;
+}
+.w-8 {
+	width: 80% !important;
+}
+.w-9 {
+	width: 90% !important;
+}
+.w-10 {
+	width: 100% !important;
 }

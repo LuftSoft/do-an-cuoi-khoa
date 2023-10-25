@@ -113,7 +113,7 @@ export default function CreateChapter({ onSubmit }) {
 					helperText={error.message}
 				/> */}
 				<Button className="mt-3" variant="contained" color="primary" type="submit">
-					Tạo mới
+					<i class="fa-solid fa-floppy-disk me-2"></i> Lưu
 				</Button>
 			</form>
 		</Container>

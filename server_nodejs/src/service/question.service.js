@@ -77,7 +77,7 @@ module.exports = {
   },
   update: async (question) => {
     try {
-      let questionModel = await questionRepository.getById(question.id);
+      let questionModel = await questionRepository.findByPk(question.id);
       if (!questionModel) {
         throw new Error("Chương không tồn tại");
       }

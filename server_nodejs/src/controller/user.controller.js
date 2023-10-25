@@ -93,8 +93,14 @@ router.put("/reset-password", async (req, res) => {
 router.post("/refresh-token", async (req, res) => {
   const user = req.body;
 });
-router.get("/", authorize([]), async (req, res) => {
-  res.send(await userService.getAll());
+router.get("/", async (req, res) => {
+  res.send(
+    new BaseAPIResponse(
+      CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+      await userService.getAll(),
+      ""
+    )
+  );
 });
 router.get("/:id", authorize([]), async (req, res) => {
   const user = await userService.getById(req.params.id);

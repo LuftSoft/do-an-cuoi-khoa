@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import { selectAccessToken, selectUser } from "../../redux/selectors";
 
 const initialValues = {
+	id: "",
 	question: "",
 	level: "",
 	answer_a: "",
@@ -22,35 +23,70 @@ const initialValues = {
 	answer_d: "",
 	correct_answer: "",
 	chapter_id: "",
+	subject_id: "",
 };
 
 const levels = CONST.QUESTION.LEVEL_OBJ;
 const correctAnswers = CONST.QUESTION.CORRECT_ANSWER_OBJ;
 
-const CreateQuestion = ({ onSubmit, data }) => {
+const CreateQuestion = ({ onSubmit, data, type, btnTitle }) => {
+	console.log(data, type);
+	const [formData, setFormData] = useState(initialValues);
 	const accessToken = useSelector(selectAccessToken);
 	const [subject, setSubject] = useState("");
 	const [chapters, setChapters] = useState([]);
 	const [subjects, setSubjects] = useState([]);
 	const [errors, setErrors] = useState({});
 	const loadingService = useLoadingService();
+
 	async function getAllSubject() {
 		loadingService.setLoading(true);
 		const subject = await SubjectService.getAllSubject();
 		loadingService.setLoading(false);
 		return subject;
 	}
+	//init value
 	useEffect(() => {
-		getAllSubject().then((response) => {
-			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-				setSubjects(response.data?.data);
-			} else {
-				toast.error("Tải danh sách môn học thất bại");
+		const fetchData = async () => {
+			let res = {};
+			getAllSubject().then((response) => {
+				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+					setSubjects(response.data?.data);
+				} else {
+					toast.error("Tải danh sách môn học thất bại");
+				}
+			});
+			switch (type) {
+				case CONST.DIALOG.TYPE.CREATE:
+					break;
+				case CONST.DIALOG.TYPE.EDIT:
+					res = await getQuestion(data.id);
+					getChapterBySubject(data.subject_id).then(() => {
+						convertToFromData(res.data?.data);
+					});
+					break;
+				case CONST.DIALOG.TYPE.VIEW:
+					res = await getQuestion(data.id);
+					getChapterBySubject(data.subject_id).then(() => {
+						convertToFromData(res.data?.data);
+					});
+					break;
+				default:
+					break;
+			}
+		};
+		fetchData();
+	}, []);
+
+	function convertToFromData(question) {
+		let tmp = {};
+		Object.keys(question).forEach((key) => {
+			if (formData[key] != undefined) {
+				tmp[key] = question[key] || "";
 			}
 		});
-	}, []);
-	const [formData, setFormData] = useState(initialValues);
-
+		setFormData(tmp);
+	}
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setFormData({ ...formData, [name]: value });
@@ -59,19 +95,22 @@ const CreateQuestion = ({ onSubmit, data }) => {
 	const handleSubjectChange = (e) => {
 		formData.chapter_id = "";
 		if (e.target?.value) {
-			setSubject(e.target.value);
-			SubjectService.getChapterBySubjectId(e.target.value)
-				.then((response) => {
-					if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-						setChapters(response.data?.data ? response.data?.data : []);
-					}
-				})
-				.catch((err) => {
-					console.log(err);
-					toast.error("Tải danh sách chương thất bại");
-				});
+			setFormData({ ...formData, subject_id: e.target?.value });
+			getChapterBySubject(e.target?.value);
 		}
 	};
+	function getChapterBySubject(id) {
+		return SubjectService.getChapterBySubjectId(id)
+			.then((response) => {
+				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+					setChapters(response.data?.data ? response.data?.data : []);
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+				toast.error("Tải danh sách chương thất bại");
+			});
+	}
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		const errors = {};
@@ -86,19 +125,43 @@ const CreateQuestion = ({ onSubmit, data }) => {
 			setErrors(errors);
 			return;
 		}
-		QuestionService.createQuestion(formData, accessToken)
-			.then((response) => {
-				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-					toast.success("Tạo câu hỏi thành công!");
-					onSubmit(response.data);
-				} else {
-					toast.error(
-						`Tạo câu hỏi thất bại. Lỗi: ${response.data.message ? response.data.message : "Không xác định!"}`,
-					);
-				}
-			})
-			.catch((err) => console.log("Error when create question: ", err));
+		switch (type) {
+			case CONST.DIALOG.TYPE.EDIT:
+				QuestionService.updateQuestion(formData, accessToken)
+					.then((response) => {
+						if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+							toast.success("Chỉnh sửa câu hỏi thành công!");
+							onSubmit(response.data);
+						} else {
+							toast.error(
+								`Chỉnh sửa câu hỏi thất bại. Lỗi: ${response.data.message ? response.data.message : "Không xác định!"}`,
+							);
+						}
+					})
+					.catch((err) => console.log("Error when create question: ", err));
+				break;
+			case CONST.DIALOG.TYPE.CREATE:
+				QuestionService.createQuestion(formData, accessToken)
+					.then((response) => {
+						if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+							toast.success("Tạo câu hỏi thành công!");
+							onSubmit(response.data);
+						} else {
+							toast.error(
+								`Tạo câu hỏi thất bại. Lỗi: ${response.data.message ? response.data.message : "Không xác định!"}`,
+							);
+						}
+					})
+					.catch((err) => console.log("Error when create question: ", err));
+				break;
+		}
 	};
+	function isView() {
+		return type === CONST.DIALOG.TYPE.VIEW;
+	}
+	async function getQuestion() {
+		return await QuestionService.getOneQuestion(data.id);
+	}
 
 	return (
 		<Container style={{ padding: "0 24px 24px 24px" }}>
@@ -108,7 +171,8 @@ const CreateQuestion = ({ onSubmit, data }) => {
 					variant="outlined"
 					name="subject_id"
 					select
-					value={subject}
+					className={isView() ? "disable-field" : ""}
+					value={formData.subject_id}
 					onChange={handleSubjectChange}
 					fullWidth
 					margin="normal">
@@ -119,6 +183,7 @@ const CreateQuestion = ({ onSubmit, data }) => {
 					))}
 				</TextField>
 				<TextField
+					className={isView() ? "disable-field" : ""}
 					label="Chương"
 					variant="outlined"
 					name="chapter_id"
@@ -126,7 +191,6 @@ const CreateQuestion = ({ onSubmit, data }) => {
 					select
 					value={formData.chapter_id}
 					onChange={handleChange}
-					disabled={!subject}
 					fullWidth
 					margin="normal">
 					{!chapters || chapters.length === 0 ? <MenuItem key="default-chapter">Không có dữ liệu</MenuItem> : ""}
@@ -137,6 +201,7 @@ const CreateQuestion = ({ onSubmit, data }) => {
 					))}
 				</TextField>
 				<TextField
+					className={isView() ? "disable-field" : ""}
 					label="Câu hỏi"
 					variant="outlined"
 					name="question"
@@ -149,6 +214,7 @@ const CreateQuestion = ({ onSubmit, data }) => {
 					margin="normal"
 				/>
 				<TextField
+					className={isView() ? "disable-field" : ""}
 					label="Câu trả lời A"
 					variant="outlined"
 					name="answer_a"
@@ -159,6 +225,7 @@ const CreateQuestion = ({ onSubmit, data }) => {
 					margin="normal"
 				/>
 				<TextField
+					className={isView() ? "disable-field" : ""}
 					label="Câu trả lời B"
 					variant="outlined"
 					name="answer_b"
@@ -169,6 +236,7 @@ const CreateQuestion = ({ onSubmit, data }) => {
 					margin="normal"
 				/>
 				<TextField
+					className={isView() ? "disable-field" : ""}
 					label="Câu trả lời C"
 					variant="outlined"
 					name="answer_c"
@@ -187,6 +255,7 @@ const CreateQuestion = ({ onSubmit, data }) => {
 					onChange={handleChange}
 					fullWidth
 					margin="normal"
+					className={isView() ? "disable-field" : ""}
 				/>
 				<div className="row-2">
 					<TextField
@@ -205,6 +274,7 @@ const CreateQuestion = ({ onSubmit, data }) => {
 						))}
 					</TextField>
 					<TextField
+						className={isView() ? "disable-field" : ""}
 						select
 						label="Đáp án"
 						variant="outlined"
@@ -220,9 +290,13 @@ const CreateQuestion = ({ onSubmit, data }) => {
 						))}
 					</TextField>
 				</div>
-				<Button type="submit" variant="contained" color="primary" className="mt-3">
-					Tạo mới
-				</Button>
+				{isView() ? null : (
+					<div className="form-footer">
+						<Button type="submit" variant="contained" color="primary" className="mt-3 px-4">
+							<i class="fa-solid fa-floppy-disk me-2"></i> {btnTitle || "Lưu"}
+						</Button>
+					</div>
+				)}
 			</form>
 		</Container>
 	);
