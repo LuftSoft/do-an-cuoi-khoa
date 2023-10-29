@@ -11,16 +11,16 @@ import CreateCreditClass from "./CreateCreditClassComponent";
 import { CONST } from "../../utils/const";
 import { QuestionService } from "../Question/QuestionService";
 import { CreditClassService } from "./CreditClassService";
-export default function CreditClassComponent() {
+import CreateAssignComponent from "./CreateAssignComponent";
+export default function AssignClassComponent() {
 	const title = "Danh sách lớp tín chỉ";
 	const buttons = [
 		{
-			name: "Tạo lớp tín chỉ",
+			name: "Phân công",
 			onClick: handleButtonClick,
 		},
 	];
-	const actions = [{ name: "", icon: "", onClick: "" }];
-	const createTitle = "Tạo lớp tín chỉ";
+	const createTitle = "Phân công giảng viên";
 	const loadingService = useLoadingService();
 	const [openCreateCreditClassDialog, setOpenCreateCreditClassDialog] = useState(false);
 	const [dataSource, setDataSource] = useState([]);
@@ -53,6 +53,10 @@ export default function CreditClassComponent() {
 	}
 	const columnDef = [
 		{
+			colName: "Tên giảng viên",
+			colDef: "user_namme",
+		},
+		{
 			colName: "Năm học",
 			colDef: "semester_year",
 		},
@@ -61,12 +65,12 @@ export default function CreditClassComponent() {
 			colDef: "semester_semester",
 		},
 		{
-			colName: "Môn học",
-			colDef: "subject_name",
+			colName: "Lớp tín chỉ",
+			colDef: "credit_class_name",
 		},
 		{
-			colName: "Số lượng",
-			colDef: "quantity",
+			colName: "Môn học",
+			colDef: "subject_name",
 		},
 	];
 
@@ -87,10 +91,10 @@ export default function CreditClassComponent() {
 				open={openCreateCreditClassDialog}
 				title={createTitle}
 				icon="fa-solid fa-circle-plus"
-				width="45vw"
+				width="30vw"
 				height="50vh"
 				onClose={onCloseCreateCreditClassForm}>
-				<CreateCreditClass onSubmit={handleClose} />
+				<CreateAssignComponent onSubmit={handleClose} />
 			</CommonDialogComponent>
 		</Box>
 	);

@@ -3,6 +3,7 @@ import reactLogo from "../../assets/default_avatar.png";
 import { logout } from "../../services/userServices";
 import { selectUser } from "../../redux/selectors";
 import { Avatar } from "@mui/material";
+import { Link } from "react-router-dom";
 
 function toggleButtonClasses() {
 	$(".sidebar, .content").toggleClass("open");
@@ -13,7 +14,6 @@ export default function Header() {
 	const handleLogout = (e) => {
 		e.preventDefault();
 		logout(dispatch);
-		window.location.href = "/sign-in";
 	};
 	return (
 		<>
@@ -44,9 +44,9 @@ export default function Header() {
 						</a>
 						<div className="dropdown-menu dropdown-menu-end bg-white border rounded m-0">
 							<span className="dropdown-item">{currentUser.firstName + " " + currentUser.lastName}</span>
-							<a href="#" className="dropdown-item">
+							<Link to={"/setting"} className="dropdown-item">
 								Cài đặt
-							</a>
+							</Link>
 							<a onClick={handleLogout} href="#" className="dropdown-item">
 								Đăng xuất
 							</a>

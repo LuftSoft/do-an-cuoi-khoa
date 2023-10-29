@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('chapters', {
+    await queryInterface.createTable("chapters", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       name: {
         type: Sequelize.STRING,
@@ -16,20 +16,25 @@ module.exports = {
       },
       index: {
         allowNull: false,
-        type: Sequelize.INTEGER(2)
+        type: Sequelize.INTEGER(2),
       },
       subject_id: {
         type: Sequelize.STRING,
         allowNull: false,
         references: {
-          model: 'subjects',
-          key: 'id',
+          model: "subjects",
+          key: "id",
         },
-        onDelete: 'CASCADE'
-      }
+        onDelete: "CASCADE",
+      },
+    });
+    await queryInterface.addConstraint("chapters", {
+      fields: ["subject_id", "index"],
+      type: "unique",
+      name: "UK_CHAPTERS_SUBJECT_ID_INDEX",
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('chapters');
-  }
+    await queryInterface.dropTable("chapters");
+  },
 };

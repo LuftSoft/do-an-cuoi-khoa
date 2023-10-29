@@ -13,7 +13,6 @@ import { selectAccessToken } from "../../redux/selectors";
 import { CONST } from "../../utils/const";
 import { UserService } from "./UserService";
 export default function UserComponent() {
-	console.log("cc sao ko render vao dayy");
 	const title = "Danh sách tài khoản";
 	const buttons = [
 		{
@@ -39,6 +38,7 @@ export default function UserComponent() {
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 					response.data?.data.forEach((user) => {
 						user.full_name = `${user.firstName} ${user.lastName}`;
+						user.avatar = `<img src="${user.avatar}" alt="avatar" />`;
 					});
 					setDataSource(response.data?.data);
 				} else {

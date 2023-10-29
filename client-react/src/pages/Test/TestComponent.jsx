@@ -36,6 +36,7 @@ export default function TestComponent() {
 		};
 		fetchData();
 	}, []);
+	console.log(tests);
 	function getTests() {
 		return TestService.getAllTest()
 			.then((response) => {
@@ -53,7 +54,10 @@ export default function TestComponent() {
 	function handleCreateTest() {
 		setOpenCreateTestDialog(true);
 	}
-	function handleCloseDialog() {}
+	async function handleCloseDialog() {
+		setOpenCreateTestDialog(false);
+		await getTests();
+	}
 	function getDialogTitle() {
 		switch (type) {
 			case CONST.DIALOG.TYPE.CREATE:
@@ -70,6 +74,8 @@ export default function TestComponent() {
 	function onClose() {
 		setOpenCreateTestDialog(false);
 	}
+	function showResult(param) {}
+	function showDetail(param) {}
 	return (
 		<Box>
 			<div>
@@ -77,30 +83,31 @@ export default function TestComponent() {
 			</div>
 			<div className="test-container my-3">
 				{tests.map((test, index) => (
-					<Card sx={{ maxWidth: 345, maxHeight: 400 }}>
+					<Card sx={{ maxWidth: 345, maxHeight: 400 }} className="custom-card" label="Delete">
+						<i className="fa-solid fa-trash delete_test"></i>
 						<CardMedia component="img" height="100" className="bg-radient" />
 						<CardContent className="pb-3">
 							<Typography gutterBottom variant="h5" component="div" className="card-two-row">
-								Lizard
+								{test.name}
 							</Typography>
 							<Typography variant="body1" color="text.secondary">
 								Môn học:
 								<Typography variant="h6" color="MenuText" className="card-two-row">
-									Cấu trúc dữ liệu và giải thuật Cấu trúc dữ liệu và giải thuật Cấu trúc dữ liệu và giải thuật Cấu trúc
-									dữ liệu và giải thuật Cấu trúc dữ liệu và giải thuật
+									{test.subject_name}
 								</Typography>
 							</Typography>
 							<Typography variant="body1" color="text.secondary">
 								Thời gian bắt đầu:
+								<div>{test.start_time}</div>
 							</Typography>
 							<Typography variant="body1" color="text.secondary">
-								Thời gian làm bài:
+								Thời gian làm bài: {test.schedule_time} phut
 							</Typography>
 							<CardActions className="card-action p-0 mt-3">
-								<Button size="small" color="info" variant="outlined">
+								<Button size="small" color="info" className="btn-opt" variant="outlined" onClick={showDetail}>
 									Xem chi tiết
 								</Button>
-								<Button size="small" color="primary" variant="outlined">
+								<Button size="small" color="primary" className="btn-opt" variant="outlined" onClick={showResult}>
 									Thống kê kết quả
 								</Button>
 							</CardActions>

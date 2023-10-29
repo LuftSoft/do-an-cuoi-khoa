@@ -27,6 +27,16 @@ const CONST = {
 			{ "Đáp án D": "answer_d" },
 		],
 	},
+	USER: {
+		GENDER: {
+			MALE: "MALE",
+			FEMALE: "FEMALE",
+		},
+		TYPE: {
+			SV: "SV",
+			GV: "GV",
+		},
+	},
 	SIDEBAR: [
 		{
 			icon: "fa-solid fa-house",
@@ -125,6 +135,7 @@ const CONST = {
 		RESULT: "/result",
 		CHAPTER: "/chapter",
 		SEMESTER: "/semester",
+		SIGNUP: "/signup",
 	},
 	PERMISSION: {
 		ADMIN: "admin",

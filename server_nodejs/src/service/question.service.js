@@ -28,6 +28,9 @@ module.exports = {
       );
     }
   },
+  getBySubjectId: async (id) => {
+    return await questionRepository.getBySubjectId(id);
+  },
   getOne: async (id) => {
     try {
       var data = await questionRepository.getById(id);

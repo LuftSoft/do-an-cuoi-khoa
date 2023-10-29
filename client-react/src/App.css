@@ -1,101 +1,101 @@
 .Container {
-  width: 960px;
-  margin-left: auto;
-  margin-right: auto;
-  min-height: calc(100vh - 232px);
+	width: 960px;
+	margin-left: auto;
+	margin-right: auto;
+	min-height: calc(100vh - 232px);
 }
 
 .active[data-bs-slide-to] {
-  border: 2px solid var(--primary-color);
+	border: 2px solid var(--primary-color);
 }
 
 .cursor-pointer {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 .cursor-not-allowed {
-  cursor: not-allowed;
+	cursor: not-allowed;
 }
 
 .form-check-label {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 .star-active {
-  color: orange !important;
+	color: orange !important;
 }
 
 .star-no {
-  color: gainsboro;
+	color: gainsboro;
 }
 
 .skeleton {
-  position: relative;
-  background-color: rgb(221, 219, 221);
-  animation: skeleton-loading 1s linear infinite alternate;
+	position: relative;
+	background-color: rgb(221, 219, 221);
+	animation: skeleton-loading 1s linear infinite alternate;
 }
 
 .form-control::-ms-reveal {
-  display: none;
+	display: none;
 }
 
 .input-right-icon {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--secondary-color);
-  cursor: pointer;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	color: var(--secondary-color);
+	cursor: pointer;
 }
 
 .input-right-icon.row-label {
-  right: calc(1.5em);
+	right: calc(1.5em);
 }
 
 .input-right-icon.col-label {
-  right: calc(0.75rem);
+	right: calc(0.75rem);
 }
 
-.form-control.is-invalid+.input-right-icon {
-  display: none;
+.form-control.is-invalid + .input-right-icon {
+	display: none;
 }
 
 @keyframes skeleton-loading {
-  0% {
-    opacity: 0.3;
-  }
+	0% {
+		opacity: 0.3;
+	}
 
-  100% {
-    opacity: 1;
-  }
+	100% {
+		opacity: 1;
+	}
 }
 
 .skeleton-text {
-  width: 100%;
-  height: 1.6rem;
-  margin-bottom: 0.5rem;
-  border-radius: 0.25rem;
+	width: 100%;
+	height: 1.6rem;
+	margin-bottom: 0.5rem;
+	border-radius: 0.25rem;
 }
 
 .skeleton-text__body {
-  width: 75%;
+	width: 75%;
 }
 
 .skeleton-footer {
-  width: 30%;
+	width: 30%;
 }
 
 @keyframes active {
-  0% {
-    transform: scale(0);
-  }
+	0% {
+		transform: scale(0);
+	}
 
-  100% {
-    transform: scale(1);
-  }
+	100% {
+		transform: scale(1);
+	}
 }
 
 @media (min-width: 960px) {
-  /* .nav-link.active {
+	/* .nav-link.active {
     color: var(--bs-black);
   }
 
@@ -122,4 +122,7 @@
     background-color: var(--primary-color);
     animation: active 0.4s;
   } */
+}
+.biggest-z-index {
+	z-index: 2147483647;
 }

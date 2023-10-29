@@ -11,7 +11,9 @@ router.post("/signup", async (req, res) => {
   const user = req.body;
   try {
     const response = await userService.create(user);
-    res.send(new BaseAPIResponse(res.statusCode, response, ""));
+    res.send(
+      new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, response, "")
+    );
   } catch (err) {
     logger.error(
       `Singup failed - Email: "${user.email}" - Error: ${
@@ -20,7 +22,7 @@ router.post("/signup", async (req, res) => {
     );
     res.send(
       new BaseAPIResponse(
-        res.statusCode,
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
         null,
         err.message || CONFIG.ERROR.VALIDATION_ERROR
       )
@@ -62,7 +64,7 @@ router.post("/forgot-password", async (req, res) => {
     );
     res.send(
       new BaseAPIResponse(
-        res.statusCode,
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
         null,
         err?.message || CONFIG.ERROR.VALIDATION_ERROR
       )
@@ -102,14 +104,15 @@ router.get("/", async (req, res) => {
     )
   );
 });
-router.get("/:id", authorize([]), async (req, res) => {
+//authorize([]),
+router.get("/:id", async (req, res) => {
   const user = await userService.getById(req.params.id);
   let msg = "";
   if (!user) {
     msg = "user not found";
     logger.error(msg);
   }
-  res.send(new BaseAPIResponse(res.statusCode, user, msg));
+  res.send(new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, user, msg));
 });
 router.put("/avatar", uploadUtil.upload.single("avatar"), async (req, res) => {
   const token = Helpers.getAuthToken(req);
@@ -125,7 +128,17 @@ router.put("/password", async (req, res) => {
   );
   res.send(result);
 });
+router.put("", uploadUtil.upload.single("avatar"), async (req, res) => {
+  const user = req.body;
+  const avatar = req.file;
+  const token = req.accessToken;
+  res.send(await userService.updateInformation(user, avatar, token));
+});
 router.delete("", async (req, res) => {
   const user = req.body;
+});
+router.get("/type/:type", async (req, res) => {
+  const type = req.params.type;
+  res.send(await userService.getAllByType(type));
 });
 module.exports = router;

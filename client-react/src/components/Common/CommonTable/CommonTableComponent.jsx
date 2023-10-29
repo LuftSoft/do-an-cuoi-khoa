@@ -82,24 +82,30 @@ export default function CommonTableComponent(props) {
 									</StyledTableCell>
 								))}
 								<StyledTableCell>
-									<span
-										onClick={() => {
-											onView(row);
-										}}>
-										<RemoveRedEyeIcon titleAccess="Chi tiết" className="icon" />
-									</span>
-									<span
-										onClick={() => {
-											onEdit(row);
-										}}>
-										<EditIcon titleAccess="Chỉnh sửa" className="icon" />
-									</span>
-									<span
-										onClick={() => {
-											onDelete(row);
-										}}>
-										<ClearIcon titleAccess="Xóa" className="icon" />
-									</span>
+									{onView ? (
+										<span
+											onClick={() => {
+												onView(row);
+											}}>
+											<RemoveRedEyeIcon titleAccess="Chi tiết" className="icon" />
+										</span>
+									) : null}
+									{onEdit ? (
+										<span
+											onClick={() => {
+												onEdit(row);
+											}}>
+											<EditIcon titleAccess="Chỉnh sửa" className="icon" />
+										</span>
+									) : null}
+									{onDelete ? (
+										<span
+											onClick={() => {
+												onDelete(row);
+											}}>
+											<ClearIcon titleAccess="Xóa" className="icon" />
+										</span>
+									) : null}
 								</StyledTableCell>
 							</StyledTableRow>
 						),

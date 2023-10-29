@@ -6,8 +6,8 @@ export const TestService = {
 	getAllTest: async () => {
 		return await axios.get(TEST_ROUTE);
 	},
-	createTest: async (data) => {
-		return await axios.post(TEST_ROUTE, data);
+	createTest: async (data, token) => {
+		return await axios.post(TEST_ROUTE, data, { headers: { Authorization: "Bearer " + token } });
 	},
 	updateTest: async () => {
 		return await axios.post(TEST_ROUTE, {});

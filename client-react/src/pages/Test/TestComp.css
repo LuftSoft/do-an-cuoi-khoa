@@ -25,3 +25,25 @@
 	display: flex;
 	gap: 12px;
 }
+.readonly-field {
+	pointer-events: none;
+}
+.test-container {
+	gap: 12px;
+	display: grid;
+	padding-bottom: 24px;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+.delete_test {
+	position: absolute;
+	right: 6px;
+	top: 6px;
+	color: #fff;
+	cursor: pointer;
+}
+.custom-card {
+	position: relative;
+}
+.btn-opt {
+	font-size: 12px !important;
+}

@@ -4,6 +4,7 @@ import DefaultLayout from "../layouts/DefaultLayout";
 import { useSelector } from "react-redux";
 import { selectUser } from "../redux/selectors";
 import { publicRoutes } from "../routes";
+import { CONST } from "./const";
 export const renderRoutes = (routes) => {
 	let reactElements = null;
 	if (Array.isArray(routes)) {
@@ -178,5 +179,56 @@ export const FeHelpers = {
 			return !str || str.trim() === 0;
 		}
 		return str ? false : true;
+	},
+	getDate() {
+		const now = new Date();
+		return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+	},
+	translateGender(gender) {
+		let result = undefined;
+		switch (gender) {
+			case CONST.USER.GENDER.MALE:
+				result = "Nam";
+				break;
+			case CONST.USER.GENDER.FEMALE:
+				result = "Nữ";
+				break;
+			default:
+				break;
+		}
+		return result;
+	},
+	translateUserType(type) {
+		let result = undefined;
+		switch (type) {
+			case CONST.USER.TYPE.GV:
+				result = "Giảng viên";
+				break;
+			case CONST.USER.TYPE.SV:
+				result = "Sinh viên";
+				break;
+			default:
+				break;
+		}
+		return result;
+	},
+	getBase64(file, cb) {
+		let reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = function () {
+			cb(reader.result);
+		};
+		reader.onerror = function (error) {
+			console.log("Error: ", error);
+		};
+	},
+	arrayBufferToBase64(buffer) {
+		var binary = "";
+		var bytes = new Uint8Array(buffer);
+		var len = bytes.byteLength;
+		for (var i = 0; i < len; i++) {
+			binary += String.fromCharCode(bytes[i]);
+		}
+		return window.btoa(binary);
 	},
 };

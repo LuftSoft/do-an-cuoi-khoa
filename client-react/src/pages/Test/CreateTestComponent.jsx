@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
@@ -12,18 +12,31 @@ import { QuestionService } from "../Question/QuestionService";
 import "../Question/Question.css";
 import { useSelector } from "react-redux";
 import { selectAccessToken, selectUser } from "../../redux/selectors";
+import { TestScheduleService } from "../TestSchedule/TetsScheduleService";
+import { TestService } from "./TestService";
 
 const initialValues = {
 	id: "",
-	question: "",
-	level: "",
-	answer_a: "",
-	answer_b: "",
-	answer_c: "",
-	answer_d: "",
-	correct_answer: "",
-	chapter_id: "",
+	name: "",
+	test_schedule_id: "",
+	password: "",
+	start_time: "",
+	schedule_time: "",
+	end_time: "",
+	total_question: 0,
+	easy_question: 0,
+	medium_question: 0,
+	difficult_question: 0,
 	subject_id: "",
+	user_id: "",
+	chapters: "",
+	total_mark: "",
+	auto_generate_question: true,
+	swap_question: true,
+	swap_answer: true,
+	show_mark: true,
+	show_correct_answer: true,
+	submit_when_switch_tab: true,
 };
 const IOSSwitch = styled((props) => <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />)(
 	({ theme }) => ({
@@ -73,17 +86,15 @@ const IOSSwitch = styled((props) => <Switch focusVisibleClassName=".Mui-focusVis
 	}),
 );
 
-const levels = CONST.QUESTION.LEVEL_OBJ;
-const correctAnswers = CONST.QUESTION.CORRECT_ANSWER_OBJ;
-
 const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
-	console.log(data, type);
+	// console.log(data, type);
 	const [formData, setFormData] = useState(initialValues);
 	const accessToken = useSelector(selectAccessToken);
-	const [subject, setSubject] = useState("");
 	const [chapters, setChapters] = useState([]);
 	const [subjects, setSubjects] = useState([]);
 	const [errors, setErrors] = useState({});
+	const [testSchedules, setTestSchedules] = useState([]);
+	const total_question = useRef(0);
 	const loadingService = useLoadingService();
 
 	async function getAllSubject() {
@@ -103,6 +114,7 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 					toast.error("Tải danh sách môn học thất bại");
 				}
 			});
+			setTestSchedules(await getTestSchedule());
 			switch (type) {
 				case CONST.DIALOG.TYPE.CREATE:
 					break;
@@ -135,8 +147,25 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 		setFormData(tmp);
 	}
 	const handleChange = (e) => {
+		let total = 0;
 		const { name, value } = e.target;
 		setFormData({ ...formData, [name]: value });
+		if (["easy_question", "medium_question", "difficult_question"].includes(name)) {
+			total_question.current =
+				Number.parseInt(formData.easy_question || 0) +
+				Number.parseInt(formData.medium_question || 0) +
+				Number.parseInt(formData.difficult_question || 0) +
+				Number.parseInt(value || 0) -
+				Number.parseInt(formData[name] || 0);
+		}
+	};
+
+	const handleSwitchChange = (name, value) => {
+		setFormData({ ...formData, [name]: value });
+	};
+
+	const handleAutocompleteChange = (event, newValue) => {
+		setFormData({ ...formData, chapters: newValue.map((item) => item.id).join(",") });
 	};
 
 	const handleSubjectChange = (e) => {
@@ -160,42 +189,46 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 	}
 	const handleSubmit = (e) => {
 		e.preventDefault();
+		console.log(formData, type);
 		const errors = {};
-		Object.keys(formData).forEach((item) => {
-			if (FeHelpers.isStringEmpty(formData[item])) {
-				errors[item] = `Vui lòng nhập dữ liệu cho ${item}.`;
-			}
-		});
-		// console.log(formData);
-		// console.log(errors);
-		if (Object.keys(errors).length > 0) {
-			setErrors(errors);
-			return;
-		}
+		formData.start_time = testSchedules.filter((t) => t.id === formData.test_schedule_id)[0]?.date;
+		formData.end_time = new Date(
+			new Date(formData.start_time).getTime() + Number.parseInt(formData.schedule_time) * 60000,
+		);
+		console.log(formData);
+		// Object.keys(formData).forEach((item) => {
+		// 	if (FeHelpers.isStringEmpty(formData[item])) {
+		// 		errors[item] = `Vui lòng nhập dữ liệu cho ${item}.`;
+		// 	}
+		// });
+		// if (Object.keys(errors).length > 0) {
+		// 	setErrors(errors);
+		// 	return;
+		// }
 		switch (type) {
 			case CONST.DIALOG.TYPE.EDIT:
 				QuestionService.updateQuestion(formData, accessToken)
 					.then((response) => {
 						if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-							toast.success("Chỉnh sửa câu hỏi thành công!");
+							toast.success("Chỉnh sửa đề thi thành công!");
 							onSubmit(response.data);
 						} else {
 							toast.error(
-								`Chỉnh sửa câu hỏi thất bại. Lỗi: ${response.data.message ? response.data.message : "Không xác định!"}`,
+								`Chỉnh sửa đề thi thất bại. Lỗi: ${response.data.message ? response.data.message : "Không xác định!"}`,
 							);
 						}
 					})
 					.catch((err) => console.log("Error when create question: ", err));
 				break;
 			case CONST.DIALOG.TYPE.CREATE:
-				QuestionService.createQuestion(formData, accessToken)
+				TestService.createTest(formData, accessToken)
 					.then((response) => {
 						if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-							toast.success("Tạo câu hỏi thành công!");
+							toast.success("Tạo đề thi thành công!");
 							onSubmit(response.data);
 						} else {
 							toast.error(
-								`Tạo câu hỏi thất bại. Lỗi: ${response.data.message ? response.data.message : "Không xác định!"}`,
+								`Tạo đề thi thất bại. Lỗi: ${response.data.message ? response.data.message : "Không xác định!"}`,
 							);
 						}
 					})
@@ -209,7 +242,20 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 	async function getQuestion() {
 		return await QuestionService.getOneQuestion(data.id);
 	}
-
+	function getChapterOpt(option) {
+		console.log(option);
+		setFormData({ ...formData, chapter_id: option.id });
+		return option.name;
+	}
+	async function getTestSchedule() {
+		const response = await TestScheduleService.getAllTestSchedule();
+		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+			return response.data?.data;
+		} else {
+			toast.error("Get test schedule failed");
+			return [];
+		}
+	}
 	return (
 		<Container style={{ padding: "0 24px 24px 24px" }}>
 			<form onSubmit={handleSubmit}>
@@ -218,52 +264,13 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 					variant="outlined"
 					name="name"
 					className={isView() ? "disable-field" : ""}
-					value={formData.subject_id}
-					onChange={handleSubjectChange}
+					value={formData.name}
+					error={Boolean(errors.name)}
+					onChange={handleChange}
 					fullWidth
 					margin="normal"
 				/>
-				<div className="row-flex">
-					<TextField
-						className={isView() ? "disable-field w-7" : "w-7"}
-						label="Chọn ca thi"
-						variant="outlined"
-						name="chapter_id"
-						error={Boolean(errors.chapter_id)}
-						select
-						value={formData.chapter_id}
-						onChange={handleChange}
-						fullWidth
-						margin="normal">
-						{!chapters || chapters.length === 0 ? <MenuItem key="default-chapter">Không có dữ liệu</MenuItem> : ""}
-						{chapters.map((c) => (
-							<MenuItem key={c.id} value={c.id}>
-								{c.name}
-							</MenuItem>
-						))}
-					</TextField>
-					<TextField
-						fullWidth
-						label="Thời gian làm bài (phút)"
-						name="question"
-						type="number"
-						margin="normal"
-						variant="outlined"
-						onChange={handleChange}
-						value={formData.question}
-						error={Boolean(errors.question)}
-						InputProps={{ inputProps: { min: 0 } }}
-						className={isView() ? "disable-field w-5" : " w-5"}>
-						<Button
-							variant="solid"
-							color="primary"
-							loading={data.status === "loading"}
-							type="submit"
-							sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}>
-							Subscribe
-						</Button>
-					</TextField>
-				</div>
+
 				<div className="row-flex">
 					<TextField
 						label="Môn học"
@@ -284,66 +291,122 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 					<TextField
 						fullWidth
 						label="Tổng điểm"
-						name="answer_c"
+						name="total_mark"
 						margin="normal"
+						type="number"
+						InputProps={{ inputProps: { min: 0 } }}
 						variant="outlined"
 						onChange={handleChange}
-						value={formData.answer_c}
-						error={Boolean(errors.answer_c)}
+						value={formData.total_mark}
+						error={Boolean(errors.total_mark)}
 						className={isView() ? "disable-field w-4" : "w-4"}
 					/>
 				</div>
+
 				<Autocomplete
 					multiple
 					id="tags-outlined"
 					options={chapters}
 					filterSelectedOptions
-					getOptionLabel={(option) => option.title}
+					getOptionLabel={(option) => option.name}
+					onChange={handleAutocompleteChange}
 					style={{ marginTop: 16, marginBottom: 8 }}
 					renderInput={(params) => <TextField {...params} label="Chương" placeholder="Có thể chọn nhiều chương..." />}
 				/>
+
+				<div className="row-flex">
+					<TextField
+						className={isView() ? "disable-field w-7" : "w-7"}
+						label="Chọn ca thi"
+						variant="outlined"
+						name="test_schedule_id"
+						error={Boolean(errors.test_schedule_id)}
+						select
+						value={formData.test_schedule_id}
+						onChange={handleChange}
+						fullWidth
+						margin="normal">
+						{!testSchedules || testSchedules.length === 0 ? (
+							<MenuItem key="default-chapter">Không có dữ liệu</MenuItem>
+						) : (
+							""
+						)}
+						{testSchedules.map((c) => (
+							<MenuItem key={c.id} value={c.id}>
+								{c.name}({c.date})
+							</MenuItem>
+						))}
+					</TextField>
+					<TextField
+						fullWidth
+						label="Thời gian làm bài (phút)"
+						name="schedule_time"
+						type="number"
+						margin="normal"
+						variant="outlined"
+						onChange={handleChange}
+						value={formData.schedule_time}
+						error={Boolean(errors.schedule_time)}
+						InputProps={{ inputProps: { min: 0 } }}
+						className={isView() ? "disable-field w-5" : " w-5"}>
+						<Button
+							variant="solid"
+							color="primary"
+							loading={data.status === "loading"}
+							type="submit"
+							sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}>
+							Subscribe
+						</Button>
+					</TextField>
+				</div>
+
 				<div className="row-flex">
 					<TextField
 						fullWidth
 						label="Tổng số câu hỏi"
 						margin="normal"
-						name="answer_c"
+						name="total_question"
 						variant="outlined"
-						onChange={handleChange}
-						value={formData.answer_c}
-						error={Boolean(errors.answer_c)}
-						className={isView() ? "disable-field w-4" : " w-4"}
+						type="number"
+						value={total_question.current}
+						className="w-4 readonly-field"
 					/>
 					<TextField
 						fullWidth
 						label="Số câu dễ"
-						name="answer_d"
+						name="easy_question"
 						margin="normal"
 						variant="outlined"
+						type="number"
+						InputProps={{ inputProps: { min: 0 } }}
 						onChange={handleChange}
-						value={formData.answer_d}
-						error={Boolean(errors.answer_d)}
+						value={formData.easy_question}
+						error={Boolean(errors.easy_question)}
 						className={isView() ? "disable-field w-4" : " w-4"}
 					/>
 					<TextField
 						fullWidth
-						name="level"
+						name="medium_question"
 						label="Số câu trung bình"
 						margin="normal"
 						variant="outlined"
-						value={formData.level}
+						type="number"
+						InputProps={{ inputProps: { min: 0 } }}
+						value={formData.medium_question}
 						onChange={handleChange}
-						error={Boolean(errors.level)}
+						error={Boolean(errors.medium_question)}
 						className={isView() ? "disable-field w-4" : " w-4"}
 					/>
 					<TextField
 						fullWidth
 						label="Số câu khó"
-						name="correct_answer"
+						name="difficult_question"
 						variant="outlined"
+						type="number"
+						InputProps={{ inputProps: { min: 0 } }}
 						onChange={handleChange}
-						value={formData.correct_answer}
-						error={Boolean(errors.correct_answer)}
+						value={formData.difficult_question}
+						error={Boolean(errors.difficult_question)}
 						className={isView() ? "disable-field w-4" : " w-4"}
 						margin="normal"
 					/>
@@ -353,36 +416,73 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 						<FormControlLabel
 							control={<IOSSwitch sx={{ m: 1 }} defaultChecked />}
 							label="Tự động lấy từ ngân hàng câu hỏi"
+							name="auto_generate_question"
+							value={formData.auto_generate_question}
+							onChange={(e) => handleSwitchChange("auto_generate_question", !formData.auto_generate_question)}
 						/>
 					</div>
 					<div className="w-3">
-						<FormControlLabel control={<IOSSwitch sx={{ m: 1 }} defaultChecked />} label="Xem điểm sau khi thi" />
+						<FormControlLabel
+							control={<IOSSwitch sx={{ m: 1 }} defaultChecked />}
+							label="Xem điểm sau khi thi"
+							name="show_mark"
+							value={formData.show_mark}
+							onChange={(e) => handleSwitchChange("show_mark", !formData.show_mark)}
+						/>
 					</div>
 					<div className="w-3">
-						<FormControlLabel control={<IOSSwitch sx={{ m: 1 }} defaultChecked />} label="Đảo đáp án" />
+						<FormControlLabel
+							control={
+								<IOSSwitch
+									sx={{ m: 1 }}
+									defaultChecked
+									name="swap_answer"
+									value={formData.swap_answer}
+									onChange={(e) => handleSwitchChange("swap_answer", !formData.swap_answer)}
+								/>
+							}
+							label="Đảo đáp án"
+						/>
 					</div>
 				</div>
 				<div className="row-flex">
 					<div className="w-3">
-						<FormControlLabel control={<IOSSwitch sx={{ m: 1 }} defaultChecked />} label="Đảo câu hỏi" />
+						<FormControlLabel
+							control={
+								<IOSSwitch
+									sx={{ m: 1 }}
+									defaultChecked
+									name="swap_question"
+									value={formData.swap_question}
+									onChange={(e) => handleSwitchChange("swap_question", !formData.swap_question)}
+								/>
+							}
+							label="Đảo câu hỏi"
+						/>
 					</div>
 					<div className="w-3">
 						<FormControlLabel
 							control={<IOSSwitch sx={{ m: 1 }} defaultChecked />}
 							label="Xem kết quả chi tiết sau khi thi"
+							name="show_correct_answer"
+							value={formData.show_correct_answer}
+							onChange={(e) => handleSwitchChange("show_correct_answer", !formData.show_correct_answer)}
 						/>
 					</div>
 					<div className="w-3">
 						<FormControlLabel
 							control={<IOSSwitch sx={{ m: 1 }} defaultChecked />}
 							label="Tự động nộp bài khi chuyển tab"
+							name="submit_when_switch_tab"
+							value={formData.submit_when_switch_tab}
+							onChange={(e) => handleSwitchChange("submit_when_switch_tab", !formData.submit_when_switch_tab)}
 						/>
 					</div>
 				</div>
 				{isView() ? null : (
 					<div className="form-footer">
 						<Button type="submit" variant="contained" color="primary" className="mt-3 px-4">
-							<i class="fa-solid fa-floppy-disk me-2"></i> {btnTitle || "Lưu"}
+							<i className="fa-solid fa-floppy-disk me-2"></i> {btnTitle || "Lưu"}
 						</Button>
 					</div>
 				)}

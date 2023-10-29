@@ -20,7 +20,7 @@ module.exports = {
         allowNull: false,
       },
       schedule_time: {
-        type: Sequelize.DATE,
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
       end_time: {
@@ -74,6 +74,25 @@ module.exports = {
           model: "test_schedules",
           key: "id",
         },
+      },
+      chapters: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      swap_question: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+      swap_answer: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+      total_mark: {
+        type: Sequelize.DOUBLE,
+        allowNull: false,
+        defaultValue: 0,
       },
     });
   },

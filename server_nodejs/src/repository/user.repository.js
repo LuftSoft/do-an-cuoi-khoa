@@ -67,4 +67,10 @@ module.exports = {
     const listUser = await users.findAll();
     return listUser;
   },
+  getByType: async (type) => {
+    const listUser = await users.findAll({
+      where: { type: type.toUpperCase() },
+    });
+    return listUser;
+  },
 };

@@ -15,13 +15,22 @@ module.exports = {
     return listquestion;
   },
   getById: async (id) => {
-    const query = `SELECT questions.*, chapters.name as chapter_name, subjects.name as subject_name,subjects.id as subject_id 
+    const query = `SELECT questions.id, questions.level, questions.chapter_id, subjects.id as subject_id 
         FROM questions, chapters, subjects 
-        WHERE questions.id = ${id} AND questions.chapter_id = chapters.id AND chapters.subject_id = subjects.id`;
+        WHERE questions.chapter_id = chapters.id AND chapters.subject_id = subjects.id AND questions.id = ${id}`;
     const question = await questions.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
     return question[0];
+  },
+  getBySubjectId: async (id) => {
+    const query = `SELECT questions.*, chapters.name as chapter_name, subjects.name as subject_name,subjects.id as subject_id 
+    FROM questions, subjects, chapters 
+    WHERE questions.chapter_id = chapters.id AND chapters.subject_id = '${id}'`;
+    const question = await questions.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return question;
   },
   findByPk: async (id) => {
     return await questions.findByPk(id);

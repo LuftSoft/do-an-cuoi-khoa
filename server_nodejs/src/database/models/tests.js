@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       schedule_time: {
-        type: DataTypes.DATE,
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
       end_time: {
@@ -88,6 +88,25 @@ module.exports = (sequelize, DataTypes) => {
           model: "test_schedules",
           key: "id",
         },
+      },
+      chapters: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      swap_question: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+      swap_answer: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+      total_mark: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+        defaultValue: 0,
       },
     },
     {

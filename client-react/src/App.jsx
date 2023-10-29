@@ -48,7 +48,10 @@ function App() {
 	const loadingService = useLoadingService();
 	return (
 		<BrowserRouter>
-			<Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loadingService.loading}>
+			<Backdrop
+				className="biggest-z-index"
+				sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+				open={loadingService.loading}>
 				<CircularProgress color="inherit" />
 			</Backdrop>
 			<ToastContainer />

@@ -30,7 +30,6 @@ const levels = CONST.QUESTION.LEVEL_OBJ;
 const correctAnswers = CONST.QUESTION.CORRECT_ANSWER_OBJ;
 
 const CreateQuestion = ({ onSubmit, data, type, btnTitle }) => {
-	console.log(data, type);
 	const [formData, setFormData] = useState(initialValues);
 	const accessToken = useSelector(selectAccessToken);
 	const [subject, setSubject] = useState("");
@@ -112,10 +111,12 @@ const CreateQuestion = ({ onSubmit, data, type, btnTitle }) => {
 			});
 	}
 	const handleSubmit = (e) => {
+		const listPrevent = ["id"];
 		e.preventDefault();
 		const errors = {};
 		Object.keys(formData).forEach((item) => {
-			if (FeHelpers.isStringEmpty(formData[item])) {
+			if (!listPrevent.includes(item) && FeHelpers.isStringEmpty(formData[item])) {
+				console.log(`Vui lòng nhập dữ liệu cho ${item}.`);
 				errors[item] = `Vui lòng nhập dữ liệu cho ${item}.`;
 			}
 		});
@@ -141,6 +142,7 @@ const CreateQuestion = ({ onSubmit, data, type, btnTitle }) => {
 					.catch((err) => console.log("Error when create question: ", err));
 				break;
 			case CONST.DIALOG.TYPE.CREATE:
+				formData.id = 0;
 				QuestionService.createQuestion(formData, accessToken)
 					.then((response) => {
 						if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {

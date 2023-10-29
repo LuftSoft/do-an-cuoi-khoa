@@ -66,6 +66,28 @@ module.exports = {
     });
     return users;
   },
+  getAllByType: async (type) => {
+    try {
+      const users = await userRepository.getAll(type);
+      users.forEach((user) => {
+        user.avatar = user.avatar
+          ? user.avatar.toString("base64")
+          : user.avatar;
+      });
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        users,
+        "Get user list success"
+      );
+    } catch (err) {
+      logger.error(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        "Failed when get users"
+      );
+    }
+  },
   getById: async (id) => {
     const user = await userRepository.getById(id);
     user.roles = await userRepository.getRoles(user.id);
@@ -221,6 +243,28 @@ module.exports = {
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
         userUpdate,
         "Thay đổi ảnh đại diện thành công"
+      );
+    } catch (err) {
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+  updateInformation: async (userInfo, avatar, token) => {
+    try {
+      const user = await userRepository.getById(userInfo?.id);
+      if (!user) {
+        throw new Error("User is not exist");
+      }
+      user.avatar = avatar ? avatar.buffer : null;
+      const userUpdate = await userRepository.update(user);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        userUpdate,
+        "Cập nhật thông tin cá nhân thành công"
       );
     } catch (err) {
       console.log(err);

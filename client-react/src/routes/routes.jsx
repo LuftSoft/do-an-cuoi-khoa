@@ -4,6 +4,7 @@ import BookingRoomPage from "../pages/BookingRoomPage";
 import CreateHotelPage from "../pages/CreateHotelPage";
 import CreateRoomPage from "../pages/CreateRoomPage";
 import CreditClassComponent from "../pages/CreditClass/CreditClassComponent";
+import CreditClassLayoutComponent from "../pages/CreditClass/CreditClassLayoutComponent";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage";
 import HotelPage from "../pages/HotelPage";
 import OverviewComponent from "../pages/Overview/OverviewComponent";
@@ -20,7 +21,7 @@ import TestComponent from "../pages/Test/TestComponent";
 import TestScheduleComponent from "../pages/TestSchedule/TestScheduleComponent";
 import UpdateHotelPage from "../pages/UpdateHotelPage";
 import UpdateRoomPage from "../pages/UpdateRoomPage";
-import { UserComponent } from "../pages/User";
+import { UserComponent, UserSettingComponent } from "../pages/User";
 
 export const routes = {
 	signIn: "/sign-in",
@@ -47,6 +48,7 @@ export const routes = {
 	RESULT: "/result",
 	LOGIN: "/login",
 	UNAUTHORIZE: "/unauthorize",
+	SETTING: "/setting",
 };
 
 export const publicRoutes = [
@@ -69,9 +71,10 @@ export const privateRoutes = [
 	{ path: routes.OVERVIEW, page: OverviewComponent, layout: null, permissions: [] },
 	{ path: routes.SUBJECT, page: SubjectLayoutComponent, layout: null, permissions: [] },
 	{ path: routes.USER, page: UserComponent, layout: null, permissions: [] },
+	{ path: routes.SETTING, page: UserSettingComponent, layout: null, permissions: [] },
 	{ path: routes.PERMISSION, page: UserComponent, layout: null, permissions: [] },
 	{ path: routes.QUESTION, page: QuestionComponent, layout: null, permissions: [] },
-	{ path: routes.CREDIT_CLASS, page: CreditClassComponent, layout: null, permissions: [] },
+	{ path: routes.CREDIT_CLASS, page: CreditClassLayoutComponent, layout: null, permissions: [] },
 	{ path: routes.TEST_SCHEDULE, page: TestScheduleComponent, layout: null, permissions: [] },
 	{ path: routes.RESULT, page: ResultComponent, layout: null, permissions: [] },
 	{ path: routes.TEST, page: TestComponent, layout: null, permissions: [] },
