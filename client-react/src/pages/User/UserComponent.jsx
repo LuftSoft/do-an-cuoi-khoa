@@ -12,6 +12,7 @@ import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import { selectAccessToken } from "../../redux/selectors";
 import { CONST } from "../../utils/const";
 import { UserService } from "./UserService";
+import { FeHelpers } from "../../utils/helpers";
 export default function UserComponent() {
 	const title = "Danh sách tài khoản";
 	const buttons = [
@@ -38,7 +39,21 @@ export default function UserComponent() {
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 					response.data?.data.forEach((user) => {
 						user.full_name = `${user.firstName} ${user.lastName}`;
-						user.avatar = `<img src="${user.avatar}" alt="avatar" />`;
+						user.dateOfBirth = user.dateOfBirth.substring(0, 10);
+						user.gender_translate = FeHelpers.translateGender(user.gender);
+						user.type_translate = FeHelpers.translateUserType(user.type);
+						user.className = {};
+						switch (user?.type) {
+							case CONST.USER.TYPE.SV:
+								user.className.type_translate = "bg-easy";
+								break;
+							case CONST.USER.TYPE.GV:
+								user.className.type_translate = "bg-medium";
+								break;
+							default:
+								break;
+						}
+						user.avatar = `<img class="avatar-small" src="data:image/png;base64,${user.avatar}" alt="avatar" />`;
 					});
 					setDataSource(response.data?.data);
 				} else {
@@ -77,16 +92,20 @@ export default function UserComponent() {
 			colDef: "email",
 		},
 		{
+			colName: "Loại",
+			colDef: "type_translate",
+		},
+		{
 			colName: "Hình ảnh",
 			colDef: "avatar",
 		},
 		{
 			colName: "Giới tính",
-			colDef: "gender",
+			colDef: "gender_translate",
 		},
 		{
 			colName: "Ngày sinh",
-			colDef: "age",
+			colDef: "dateOfBirth",
 		},
 	];
 

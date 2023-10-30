@@ -11,6 +11,7 @@ const { Helpers, logger } = require("../extension/helper");
 module.exports = {
   create: async (user) => {
     user.passwordHash = authService.hashPassword(user.password);
+    user.code = user.email?.split("@")[0].toUpperCase();
     return await userRepository.create(user);
   },
   login: async (userLogin) => {
@@ -68,7 +69,7 @@ module.exports = {
   },
   getAllByType: async (type) => {
     try {
-      const users = await userRepository.getAll(type);
+      const users = await userRepository.getByType(type);
       users.forEach((user) => {
         user.avatar = user.avatar
           ? user.avatar.toString("base64")
@@ -259,7 +260,9 @@ module.exports = {
       if (!user) {
         throw new Error("User is not exist");
       }
-      user.avatar = avatar ? avatar.buffer : null;
+      if (avatar) {
+        user.avatar = avatar.buffer;
+      }
       const userUpdate = await userRepository.update(user);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,

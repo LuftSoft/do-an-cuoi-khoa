@@ -8,6 +8,7 @@ module.exports = {
         id: "11e6-fe27-df22-c78c-3137-46a3-7bf3-5c23",
         firstName: "Admin",
         lastName: "Account",
+        code: "ADMIN",
         email: "admin@ptithcm.edu.vn",
         age: null,
         dateOfBirth: "1999-10-22",
@@ -20,6 +21,7 @@ module.exports = {
       },
       {
         id: "e0d2-446f-6170-e42e-e085-64a9-0467-2b33",
+        code: "GV",
         firstName: "Teacher",
         lastName: "Account",
         email: "gv@ptithcm.edu.vn",
@@ -36,6 +38,7 @@ module.exports = {
         id: "bc7d-1e2d-863b-0256-7539-dc5e-cc3e-899e",
         firstName: "Student",
         lastName: "Account",
+        code: "SV",
         email: "sv@student.ptithcm.edu.vn",
         age: null,
         dateOfBirth: "1988-10-22",

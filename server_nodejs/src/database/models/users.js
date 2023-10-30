@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(255),
         primaryKey: true,
       },
+      code: {
+        type: DataTypes.STRING(255),
+        unique: true,
+      },
       firstName: {
         type: DataTypes.STRING(255),
         allowNull: false,

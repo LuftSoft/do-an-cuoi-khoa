@@ -1,4 +1,4 @@
-import { Container } from "@mui/material";
+import { Autocomplete, Container } from "@mui/material";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
@@ -19,6 +19,7 @@ import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 const initialValues = {
 	id: "",
 	user_id: "",
+	users: "",
 	credit_class_id: "",
 };
 
@@ -27,7 +28,7 @@ const QUANTITY = {
 	MAX: 1000,
 };
 
-export default function CreateAssignComponent(props) {
+export default function CreditClassDetailComponent(props) {
 	const [errors, setErrors] = useState({});
 	const { loading, setLoading } = useLoadingService();
 	const [users, setUsers] = useState([]);
@@ -45,11 +46,11 @@ export default function CreateAssignComponent(props) {
 	}
 	const columnDef = [
 		{
-			colName: "Tên giảng viên",
+			colName: "Tên sinh viên",
 			colDef: "name",
 		},
 		{
-			colName: "Mã nhân viên",
+			colName: "Mã sinh viên",
 			colDef: "user_code",
 		},
 	];
@@ -71,7 +72,7 @@ export default function CreateAssignComponent(props) {
 		}
 	};
 	const getUsers = async () => {
-		const response = await UserService.getAllGV();
+		const response = await UserService.getAllSV();
 		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 			setUsers(response.data?.data);
 		}
@@ -87,7 +88,7 @@ export default function CreateAssignComponent(props) {
 
 	const getClassAssign = async () => {
 		try {
-			const response = await CreditClassService.getAssignClass(props.data?.id);
+			const response = await CreditClassService.getCreditClassDetail(props.data?.id);
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 				const users = response.data?.data;
 				users?.forEach((user) => {
@@ -99,29 +100,30 @@ export default function CreateAssignComponent(props) {
 	};
 	const handleSubmit = async (e) => {
 		try {
-			const listPrevent = ["id"];
+			const listPrevent = ["id", "user_id"];
 			e.preventDefault();
 			const errors = {};
 			Object.keys(formData).forEach((item) => {
 				if (!listPrevent.includes(item) && FeHelpers.isStringEmpty(formData[item])) {
 					errors[item] = `Vui lòng nhập dữ liệu cho ${item}.`;
+					console.log(`Vui lòng nhập dữ liệu cho ${item}.`);
 				}
 			});
 			if (Object.keys(errors).length > 0) {
 				setErrors(errors);
 				return;
 			}
-			dataSource.forEach((item) => {
-				if (formData.user_id === item.user_id) {
-					toast.error("Giảng viên đã được phân công.");
+			for (let item of dataSource) {
+				if (formData.users.includes(item.user_id)) {
+					toast.error("Sinh viên đã được phân công.");
 					return;
 				}
-			});
+			}
 			setLoading(true);
-			if (formData.id.length === 0) formData.id = 0;
-			const response = await CreditClassService.assignClass(formData);
+			formData.users = formData.users.split(",");
+			const response = await CreditClassService.createListUserClassDetail(formData);
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-				toast.success("Phân công thành công");
+				toast.success("Thêm sinh viên thành công");
 				await getClassAssign(props.data.id);
 			}
 		} catch (err) {
@@ -136,12 +138,15 @@ export default function CreateAssignComponent(props) {
 		setUserRemove(data);
 		setConfirmRemoveUserDialog(true);
 	}
+	const handleAutocompleteChange = (event, newValue) => {
+		setFormData({ ...formData, users: newValue.map((item) => item.id).join(",") });
+	};
 	async function handleConfirmDialog(data) {
 		setConfirmRemoveUserDialog(false);
 		try {
 			if (data) {
 				setLoading(true);
-				const response = await CreditClassService.removeUserAssign(userRemove?.id);
+				const response = await CreditClassService.removeUserClass(userRemove?.id);
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 					toast.success("Hủy phân công thành công");
 					await getClassAssign(props.data.id);
@@ -174,32 +179,23 @@ export default function CreateAssignComponent(props) {
 						</MenuItem>
 					))}
 				</TextField>
-				<TextField
-					select
-					label="Giảng viên"
-					variant="outlined"
-					name="user_id"
-					value={formData.user_id}
-					onChange={handleChange}
-					fullWidth
-					margin="normal"
-					error={Boolean(errors.user_id)}>
-					{users.length === 0 ? (
-						<MenuItem key={"no-opt"} value="">
-							Chưa có giảng viên nào
-						</MenuItem>
-					) : null}
-					{users.map((user, index) => (
-						<MenuItem key={index} value={user.id}>
-							{user.firstName} {user.lastName}
-						</MenuItem>
-					))}
-				</TextField>
+				<Autocomplete
+					multiple
+					id="tags-outlined"
+					options={users}
+					filterSelectedOptions
+					getOptionLabel={(option) => `${option.code} - ${option.firstName} ${option.lastName}`}
+					onChange={handleAutocompleteChange}
+					style={{ marginTop: 16, marginBottom: 8 }}
+					renderInput={(params) => (
+						<TextField {...params} label="Sinh viên" placeholder="Có thể chọn nhiều sinh viên..." />
+					)}
+				/>
 				<Button type="submit" variant="contained" color="primary">
-					Phân công
+					<i className="fa-solid fa-plus me-2"></i>Thêm sinh viên
 				</Button>
 			</form>
-			<h4 className="mt-3 mb-2">Danh sách đã phân công</h4>
+			<h4 className="mt-3 mb-2">Danh sách lớp</h4>
 			<CommonTableComponent
 				columnDef={columnDef}
 				dataSource={dataSource}
@@ -212,7 +208,7 @@ export default function CreateAssignComponent(props) {
 				height="50vh"
 				onClose={handleConfirmDialog}>
 				<ConfirmDialog
-					message="Bạn muốn hủy phân công giảng viên này?"
+					message="Bạn muốn hủy phân công sinh viên này?"
 					handleClose={handleConfirmDialog}></ConfirmDialog>
 			</CommonDialogComponent>
 		</Container>

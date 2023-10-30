@@ -136,6 +136,7 @@ const CONST = {
 		CHAPTER: "/chapter",
 		SEMESTER: "/semester",
 		SIGNUP: "/signup",
+		ASSIGN: "/assign",
 	},
 	PERMISSION: {
 		ADMIN: "admin",

@@ -7,8 +7,12 @@ const router = express.Router();
 const { CONFIG } = require("../shared/common.constants");
 const { uploadUtil } = require("../util/upload.util");
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", uploadUtil.upload.single("avatar"), async (req, res) => {
   const user = req.body;
+  const avatar = req.file;
+  if (avatar) {
+    user.avatar = avatar.buffer;
+  }
   try {
     const response = await userService.create(user);
     res.send(

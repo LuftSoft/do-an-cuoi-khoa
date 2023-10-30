@@ -120,17 +120,23 @@ const UserSettingComponent = () => {
 			})
 			.catch((err) => console.log("Error when updating user: ", err));
 	};
-
+	const getPreviewStr = (previewAvatar) => {
+		if (previewAvatar.substring(0, 4) === "blob") {
+			return previewAvatar;
+		} else {
+			return `data:image/png;base64,${previewAvatar}`;
+		}
+	};
 	return (
 		<Container style={{ padding: "0 24px 24px 24px" }}>
 			<div className="mb-3">
-				<TitleButtonComponent title={"xinchao"} buttons={[]} />
+				<TitleButtonComponent title={"thông tin cá nhân"} buttons={[]} />
 			</div>
 			<div className="row">
 				<div className="col-3 mt-16 center-item">
 					<Avatar
 						alt="Remy Sharp"
-						src={previewAvatar ? `data:image/png;base64,${previewAvatar}` : "../../../public/img/user-avatar.png"}
+						src={previewAvatar ? getPreviewStr(previewAvatar) : "../../../public/img/user-avatar.png"}
 						sx={{ width: 220, height: 220 }}
 					/>
 					<div>

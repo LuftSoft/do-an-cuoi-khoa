@@ -35,14 +35,14 @@ router.delete("/:id", async (req, res) => {
 });
 
 /* API giao đề thi cho từng nhóm */
-router.post("/group", async (req, res) => {
+router.post("/credit-class", async (req, res) => {
   const testGroup = req.body;
   res.send(await testService.createTestGroup(testGroup));
 });
 /*
 Nếu đã có bài nộp thì không được sửa
 */
-router.put("/group", async (req, res) => {
+router.put("/credit-class", async (req, res) => {
   const testGroup = req.body;
   res.send(await testService.updateTestGroup(testGroup));
 });
@@ -50,7 +50,7 @@ router.put("/group", async (req, res) => {
 Nếu có bài làm rồi thì sẽ không được xóa.
 Admin or người tạo có thể xóa
 */
-router.delete("/group/:id", async (req, res) => {
+router.delete("/credit-class/:id", async (req, res) => {
   const id = req.params.id;
   res.send(await testService.updateTestGroup(id));
 });

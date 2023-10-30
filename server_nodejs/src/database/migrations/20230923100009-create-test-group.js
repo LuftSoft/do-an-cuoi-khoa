@@ -14,10 +14,10 @@ module.exports = {
         allowNull: false,
         references: { model: "tests", key: "id" },
       },
-      group_id: {
+      credit_class_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: { model: "groups", key: "id" },
+        references: { model: "credit_classes", key: "id" },
       },
       test_schedule_id: {
         type: Sequelize.INTEGER,
@@ -32,7 +32,7 @@ module.exports = {
       },
     });
     await queryInterface.addConstraint("test_groups", {
-      fields: ["test_id", "group_id", "test_schedule_id"],
+      fields: ["test_id", "credit_class_id", "test_schedule_id"],
       type: "unique",
       name: "UK_TEST_GROUPS_TEST_ID_GROUP_ID_TEST_SCHEDULE_ID",
     });

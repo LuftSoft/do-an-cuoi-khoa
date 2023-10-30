@@ -11,6 +11,10 @@ module.exports = {
         type: Sequelize.STRING(255),
         primaryKey: true,
       },
+      code: {
+        type: Sequelize.STRING(255),
+        unique: true,
+      },
       firstName: {
         type: Sequelize.STRING(255),
         allowNull: false,

@@ -55,4 +55,16 @@ module.exports = {
     });
     return listcredit_class;
   },
+  //lấy danh sách lớp tín chỉ kèm tất cả assign của lớp tín chỉ đấy (không sử dụng nữa)
+  /*
+  getAllAssign: async (id) => {
+    const query = `SELECT cc.*, sj.name as subject_name, sm.semester as semester_semester, sm.year as semester_year
+    FROM credit_classes as cc,subjects as sj, semesters as sm, assigns as asg
+    WHERE cc.subject_id = sj.id AND cc.semester_id = sm.id and asg.credit_class_id = ${id}`;
+    const listcredit_class = await credit_classes.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return listcredit_class;
+  },
+  */
 };

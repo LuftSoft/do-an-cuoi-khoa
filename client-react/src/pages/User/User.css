@@ -9,3 +9,8 @@
 	flex-direction: column;
 	align-items: center !important;
 }
+
+.avatar-small {
+	width: 24px !important;
+	height: 24px !important;
+}

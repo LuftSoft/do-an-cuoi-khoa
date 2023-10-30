@@ -18,7 +18,9 @@ export const UserService = {
 		return await axios.get(`${USER_ROUTE}/${id}`);
 	},
 	createUser: async (data, token) => {
-		return await axios.post(`${USER_ROUTE}${CONST.ROUTES.SIGNUP}`, data);
+		return await axios.post(`${USER_ROUTE}${CONST.ROUTES.SIGNUP}`, data, {
+			headers: { "Content-Type": "multipart/form-data" },
+		});
 	},
 	updateUser: async (data, token) => {
 		console.log(data);

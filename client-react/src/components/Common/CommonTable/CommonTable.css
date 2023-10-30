@@ -9,7 +9,9 @@
 .icon {
 	margin: 0 4px;
 	cursor: pointer;
-	background-color: #f0f0f0;
+	background-color: #d6d5d5;
+	padding: 1px;
+	border-radius: 5px;
 }
 .bg-easy {
 	color: #fff;

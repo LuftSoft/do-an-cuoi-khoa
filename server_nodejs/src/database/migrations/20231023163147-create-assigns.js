@@ -26,6 +26,11 @@ module.exports = {
         },
       },
     });
+    queryInterface.addConstraint("assigns", {
+      fields: ["credit_class_id", "user_id"],
+      type: "unique",
+      name: "UK_ASSIGN_USER_ID_CREDIT_CLASS_ID",
+    });
   },
 
   async down(queryInterface, Sequelize) {

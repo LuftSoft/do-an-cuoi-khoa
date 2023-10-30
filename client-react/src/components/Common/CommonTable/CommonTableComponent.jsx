@@ -1,4 +1,4 @@
-import { TablePagination } from "@mui/material";
+import { Button, TablePagination } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -76,9 +76,11 @@ export default function CommonTableComponent(props) {
 								<StyledTableCell key={index}>{++index}</StyledTableCell>
 								{columnDef.map((col, index) => (
 									<StyledTableCell key={id + index}>
-										<span className={row.className ? (row.className[col.colDef] ? row.className[col.colDef] : "") : ""}>
-											{row[col.colDef]}
-										</span>
+										<span
+											dangerouslySetInnerHTML={{ __html: row[col.colDef] }}
+											className={
+												row.className ? (row.className[col.colDef] ? row.className[col.colDef] : "") : ""
+											}></span>
 									</StyledTableCell>
 								))}
 								<StyledTableCell>
@@ -106,6 +108,18 @@ export default function CommonTableComponent(props) {
 											<ClearIcon titleAccess="Xóa" className="icon" />
 										</span>
 									) : null}
+									{props.actions
+										? props.actions.map((action, index) => (
+												<span
+													onClick={() => {
+														action.onClick(row);
+													}}>
+													<Button size="small" className="mx-1" variant={action.variant || "contained"} color="primary">
+														{action.name}
+													</Button>
+												</span>
+										  ))
+										: null}
 								</StyledTableCell>
 							</StyledTableRow>
 						),

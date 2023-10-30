@@ -152,7 +152,7 @@ const CreateUserComponent = ({ onSubmit, data, type, btnTitle }) => {
 					margin="normal">
 					{Object.keys(GENDER).map((gender, index) => (
 						<MenuItem key={index} value={GENDER[gender]}>
-							{GENDER[gender]}
+							{FeHelpers.translateGender(GENDER[gender])}
 						</MenuItem>
 					))}
 				</TextField>
@@ -168,7 +168,7 @@ const CreateUserComponent = ({ onSubmit, data, type, btnTitle }) => {
 					margin="normal">
 					{Object.keys(TYPE).map((type, index) => (
 						<MenuItem key={index} value={TYPE[type]}>
-							{TYPE[type]}
+							{FeHelpers.translateUserType(TYPE[type])}
 						</MenuItem>
 					))}
 				</TextField>

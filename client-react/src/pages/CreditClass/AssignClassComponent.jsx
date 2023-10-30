@@ -12,20 +12,35 @@ import { CONST } from "../../utils/const";
 import { QuestionService } from "../Question/QuestionService";
 import { CreditClassService } from "./CreditClassService";
 import CreateAssignComponent from "./CreateAssignComponent";
+import CreditClassDetailComponent from "./CreditClassDetailComponent";
 export default function AssignClassComponent() {
-	const title = "Danh sách lớp tín chỉ";
+	const title = "Phân công giảng viên";
 	const buttons = [
 		{
-			name: "Phân công",
+			name: "Phân công giảng dạy",
 			onClick: handleButtonClick,
 		},
 	];
+	const actions = [
+		{
+			name: "Phân công giảng dạy",
+			variant: "contained",
+			onClick: handleClassAssign,
+		},
+		{
+			name: "Danh sách lớp",
+			variant: "contained",
+			onClick: handleClassDetail,
+		},
+	];
 	const createTitle = "Phân công giảng viên";
-	const loadingService = useLoadingService();
+	const { loading, setLoading } = useLoadingService();
 	const [openCreateCreditClassDialog, setOpenCreateCreditClassDialog] = useState(false);
+	const [openCreditClassDetailDialog, setOpenCreditClassDetailDialog] = useState(false);
 	const [dataSource, setDataSource] = useState([]);
+	const [creditClass, setCreditClass] = useState({});
 	function getCreditClasses() {
-		loadingService.setLoading(true);
+		setLoading(true);
 		CreditClassService.getAllCreditClass()
 			.then((response) => {
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
@@ -37,8 +52,22 @@ export default function AssignClassComponent() {
 			.catch((err) => {
 				console.log("get all credit class failed, error: ", err);
 				toast.error("Không tìm thấy lớp tín chỉ.");
+			})
+			.finally(() => {
+				setLoading(false);
 			});
-		loadingService.setLoading(false);
+	}
+	//init data
+	useEffect(() => {
+		getCreditClasses();
+	}, []);
+	function handleClassAssign(data) {
+		if (data) setCreditClass(data);
+		setOpenCreateCreditClassDialog(true);
+	}
+	function handleClassDetail(data) {
+		if (data) setCreditClass(data);
+		setOpenCreditClassDetailDialog(true);
 	}
 	function handleClose(data) {
 		if (data?.code === CONST.API_RESPONSE.SUCCESS) {
@@ -50,6 +79,9 @@ export default function AssignClassComponent() {
 	}
 	function onCloseCreateCreditClassForm() {
 		setOpenCreateCreditClassDialog(false);
+	}
+	function onCloseCreditClassDetailForm() {
+		setOpenCreditClassDetailDialog(false);
 	}
 	const columnDef = [
 		{
@@ -77,24 +109,37 @@ export default function AssignClassComponent() {
 	function handleButtonClick() {
 		setOpenCreateCreditClassDialog(true);
 	}
-	//init data
-	useEffect(() => {
-		getCreditClasses();
-	}, []);
+	const handleEdit = (data) => {
+		if (data) setCreditClass(data);
+		setOpenCreateCreditClassDialog(true);
+	};
 	return (
 		<Box>
 			<div>
 				<TitleButtonComponent title={title} buttons={buttons} />
 			</div>
-			<CommonTableComponent columnDef={columnDef} dataSource={dataSource}></CommonTableComponent>
+			<CommonTableComponent
+				columnDef={columnDef}
+				dataSource={dataSource}
+				onEdit={handleEdit}
+				actions={actions}></CommonTableComponent>
 			<CommonDialogComponent
 				open={openCreateCreditClassDialog}
 				title={createTitle}
 				icon="fa-solid fa-circle-plus"
-				width="30vw"
+				width="60vw"
 				height="50vh"
 				onClose={onCloseCreateCreditClassForm}>
-				<CreateAssignComponent onSubmit={handleClose} />
+				<CreateAssignComponent onSubmit={handleClose} data={creditClass} />
+			</CommonDialogComponent>
+			<CommonDialogComponent
+				open={openCreditClassDetailDialog}
+				title="Danh sách lớp"
+				icon="fa-solid fa-circle-plus"
+				width="60vw"
+				height="50vh"
+				onClose={onCloseCreditClassDetailForm}>
+				<CreditClassDetailComponent onSubmit={handleClose} data={creditClass} />
 			</CommonDialogComponent>
 		</Box>
 	);

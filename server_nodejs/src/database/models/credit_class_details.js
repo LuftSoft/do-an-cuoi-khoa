@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class group_details extends Model {
+  class credit_class_details extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  group_details.init(
+  credit_class_details.init(
     {
       id: {
         allowNull: false,
@@ -24,22 +24,26 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         references: { model: "users", key: "id" },
       },
-      group_id: {
+      credit_class_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: { model: "groups", key: "id" },
+        references: { model: "credit_classes", key: "id" },
       },
       is_ban: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
       },
+      group: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
     },
     {
       sequelize,
       timestamps: false,
-      modelName: "group_details",
+      modelName: "credit_class_details",
     }
   );
-  return group_details;
+  return credit_class_details;
 };

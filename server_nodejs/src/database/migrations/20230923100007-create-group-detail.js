@@ -1,8 +1,11 @@
 "use strict";
+
+const { sequelize } = require("../models/config/dbContext");
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("group_details", {
+    await queryInterface.createTable("credit_class_details", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -14,19 +17,23 @@ module.exports = {
         allowNull: false,
         references: { model: "users", key: "id" },
       },
-      group_id: {
+      credit_class_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: { model: "groups", key: "id" },
+        references: { model: "credit_classes", key: "id" },
       },
       is_ban: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: false,
       },
+      group: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("group_details");
+    await queryInterface.dropTable("credit_class_details");
   },
 };
