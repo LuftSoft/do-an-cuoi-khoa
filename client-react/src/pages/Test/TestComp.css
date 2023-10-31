@@ -47,3 +47,10 @@
 .btn-opt {
 	font-size: 12px !important;
 }
+.text-header-container {
+	font-size: 19px;
+	font-weight: bold;
+}
+hr {
+	margin: 5px !important;
+}

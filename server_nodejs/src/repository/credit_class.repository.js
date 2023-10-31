@@ -10,7 +10,7 @@ module.exports = {
     try {
       const query = `COALESCE((SELECT cc.class_code FROM credit_classes AS cc ORDER BY class_code DESC LIMIT 1),'PTITHCM100000');
     SET @class_code =(CASE WHEN @class_code IS NOT NULL THEN CONCAT(SUBSTRING(@class_code, 1,4),CONVERT(((CONVERT(SUBSTRING(@class_code, 5), SIGNED)) + 1), CHAR))ELSE 'PTIT1001'END);
-    INSERT INTO credit_classes(class_code, semester_id, subject_id) values(@class_code,${credit_class.semester_id},'${credit_class.subject_id}');`;
+    INSERT INTO credit_classes(class_code, semester_id, subject_id, name, quantity) values(@class_code,${credit_class.semester_id},'${credit_class.subject_id}', '${credit_class.name}', ${credit_class.quantity});`;
       const newest_class_code = await credit_classes.sequelize.query(
         `SELECT (COALESCE((SELECT cc.class_code FROM credit_classes AS cc ORDER BY class_code DESC LIMIT 1),'LTC100000')) as class_code`,
         { type: QueryTypes.SELECT }
@@ -19,7 +19,7 @@ module.exports = {
       let new_class_code =
         tmp.substring(0, 4) + (Number.parseInt(tmp.slice(4)) + 1).toString();
       credit_classCreate = await credit_classes.sequelize.query(
-        `INSERT INTO credit_classes(class_code, semester_id, subject_id) values('${new_class_code}',${credit_class.semester_id},'${credit_class.subject_id}')`,
+        `INSERT INTO credit_classes(class_code, semester_id, subject_id, name, quantity) values('${new_class_code}',${credit_class.semester_id},'${credit_class.subject_id}', '${credit_class.name}', ${credit_class.quantity})`,
         { type: QueryTypes.INSERT }
       );
       await transaction.commit();

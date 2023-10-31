@@ -13,6 +13,7 @@ import { SemesterService } from "../Semesters/SemesterService";
 import { CreditClassService } from "./CreditClassService";
 
 const initialValues = {
+	name: "",
 	subject_id: "",
 	semester_id: "",
 	semester_year: "",
@@ -96,6 +97,7 @@ export default function CreateCreditClass({ onSubmit }) {
 			subject_id: formData.subject_id,
 			quantity: formData.quantity,
 			semester_id: formData.semester_id,
+			name: formData.name.trim(),
 		})
 			.then((response) => {
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
@@ -163,6 +165,16 @@ export default function CreateCreditClass({ onSubmit }) {
 						</MenuItem>
 					))}
 				</TextField>
+				<TextField
+					label="Tên lớp tín chỉ"
+					variant="outlined"
+					name="name"
+					error={Boolean(errors.name)}
+					value={formData.name}
+					onChange={handleChange}
+					fullWidth
+					margin="normal"
+				/>
 				<TextField
 					label="Số lượng"
 					variant="outlined"

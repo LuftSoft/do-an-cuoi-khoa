@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import TitleButtonComponent from "../../components/Common/CommonHeader/CommonHeaderComponent";
 import { CommonDialogComponent } from "../../components/Common";
 import CreateTest from "./CreateTestComponent";
+import AssignTestComponent from "./AssignTestComponent";
 
 export default function TestComponent() {
 	const title = "Đề thi";
@@ -29,6 +30,7 @@ export default function TestComponent() {
 	const [test, setTest] = useState({});
 	const [type, setType] = useState(CONST.DIALOG.TYPE.CREATE);
 	const [openCreateTestDialog, setOpenCreateTestDialog] = useState(false);
+	const [openAssignTestDialog, setOpenAssignTestDialog] = useState(false);
 	useEffect(() => {
 		const fetchData = async () => {
 			await getTests();
@@ -42,6 +44,7 @@ export default function TestComponent() {
 			.then((response) => {
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 					setTests(response.data?.data);
+					console.log(response.data?.data);
 				} else {
 				}
 			})
@@ -55,7 +58,11 @@ export default function TestComponent() {
 		setOpenCreateTestDialog(true);
 	}
 	async function handleCloseDialog() {
-		setOpenCreateTestDialog(false);
+		if (openCreateTestDialog) {
+			setOpenCreateTestDialog(false);
+		} else if (openAssignTestDialog) {
+			setOpenAssignTestDialog(false);
+		}
 		await getTests();
 	}
 	function getDialogTitle() {
@@ -72,10 +79,20 @@ export default function TestComponent() {
 		return title;
 	}
 	function onClose() {
-		setOpenCreateTestDialog(false);
+		if (openCreateTestDialog) {
+			setOpenCreateTestDialog(false);
+		} else if (openAssignTestDialog) {
+			setOpenAssignTestDialog(false);
+		}
 	}
-	function showResult(param) {}
-	function showDetail(param) {}
+	function handleAssignTest(data) {
+		if (data) setTest(data);
+		setOpenAssignTestDialog(true);
+	}
+	function showDetail(data) {
+		if (data) setTest(data);
+		setOpenAssignTestDialog(true);
+	}
 	return (
 		<Box>
 			<div>
@@ -97,18 +114,30 @@ export default function TestComponent() {
 								</Typography>
 							</Typography>
 							<Typography variant="body1" color="text.secondary">
-								Thời gian bắt đầu:
-								<div>{test.start_time}</div>
+								Năm học: <span style={{ fontWeight: "bold" }}>{test.semester_year}</span>
 							</Typography>
 							<Typography variant="body1" color="text.secondary">
-								Thời gian làm bài: {test.schedule_time} phut
+								Học kỳ: <span style={{ fontWeight: "bold" }}>{test.semester_semester}</span>
+							</Typography>
+							<Typography variant="body1" color="text.secondary">
+								Thời gian làm bài: <span style={{ fontWeight: "bold" }}>{test.time} phút</span>
 							</Typography>
 							<CardActions className="card-action p-0 mt-3">
-								<Button size="small" color="info" className="btn-opt" variant="outlined" onClick={showDetail}>
+								<Button
+									size="small"
+									color="info"
+									className="btn-opt"
+									variant="outlined"
+									onClick={(e) => showDetail(test)}>
 									Xem chi tiết
 								</Button>
-								<Button size="small" color="primary" className="btn-opt" variant="outlined" onClick={showResult}>
-									Thống kê kết quả
+								<Button
+									size="small"
+									color="primary"
+									className="btn-opt"
+									variant="contained"
+									onClick={(e) => handleAssignTest(test)}>
+									Phân cho lớp tín chỉ
 								</Button>
 							</CardActions>
 						</CardContent>
@@ -123,6 +152,15 @@ export default function TestComponent() {
 				height="auto"
 				onClose={onClose}>
 				<CreateTest onSubmit={handleCloseDialog} data={test} type={type}></CreateTest>
+			</CommonDialogComponent>
+			<CommonDialogComponent
+				open={openAssignTestDialog}
+				title={"Phân công đề thi"}
+				icon="fa-solid fa-circle-plus"
+				width="60vw"
+				height="auto"
+				onClose={onClose}>
+				<AssignTestComponent onSubmit={handleCloseDialog} data={test}></AssignTestComponent>
 			</CommonDialogComponent>
 		</Box>
 	);

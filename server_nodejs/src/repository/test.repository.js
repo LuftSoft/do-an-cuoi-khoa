@@ -3,12 +3,13 @@ const dbContext = require("../database/models/config/dbContext");
 const { Helpers } = require("../extension/helper");
 const tests = dbContext.tests;
 const test_details = dbContext.test_details;
-const test_groups = dbContext.test_groups;
+const test_credit_classes = dbContext.test_credit_classes;
 
 module.exports = {
   getAll: async () => {
-    const query = `SELECT t.*, sj.name as subject_name
+    const query = `SELECT t.*, sj.name as subject_name, sm.semester as semester_semester, sm.year as semester_year
         FROM tests as t 
+        INNER JOIN semesters as sm ON t.semester_id = sm.id
         INNER JOIN subjects as sj ON t.subject_id = sj.id`;
     const listtest = await tests.sequelize.query(query, {
       type: QueryTypes.SELECT,
@@ -33,26 +34,39 @@ module.exports = {
       where: {
         id: id,
       },
-      truncate: true,
     });
     return result;
   },
 
   /**/
   getTestGroupById: async (id) => {
-    const result = await test_groups.findByPk(id);
+    const result = await test_credit_classes.findByPk(id);
     return result;
   },
-  createTestGroup: async (testGroup) => {
-    const result = await test_groups.create(testGroup);
+  getTestClassByTestId: async (id) => {
+    const query = `SELECT tc.*, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, 
+    CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date
+      FROM test_credit_classes AS tc
+      INNER JOIN tests AS te ON tc.test_id = te.id
+      INNER JOIN credit_classes AS cc ON tc.credit_class_id = cc.id
+      INNER JOIN test_schedules AS ts ON tc.test_schedule_id = ts.id
+      INNER JOIN semesters AS sm ON ts.semester_id = sm.id
+      WHERE tc.test_id = '${id}'`;
+    const test_class = await test_credit_classes.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return test_class;
+  },
+  createTestClass: async (testGroup) => {
+    const result = await test_credit_classes.create(testGroup);
     return result;
   },
-  updateTestGroup: async (testGroup) => {
-    const result = await test_groups.update(testGroup);
+  updateTestClass: async (testGroup) => {
+    const result = await test_credit_classes.update(testGroup);
     return result;
   },
-  deleteTestGroup: async (id) => {
-    return await test_groups.destroy({ where: { id: id } });
+  deleteTestClass: async (id) => {
+    return await test_credit_classes.destroy({ where: { id: id } });
   },
 
   /**/

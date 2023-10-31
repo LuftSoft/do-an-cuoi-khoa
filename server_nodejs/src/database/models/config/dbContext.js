@@ -54,7 +54,10 @@ dbContext.test_schedules = require("../test_schedules")(sequelize, DataTypes);
 dbContext.results = require("../results")(sequelize, DataTypes);
 dbContext.result_details = require("../result_details")(sequelize, DataTypes);
 dbContext.test_details = require("../test_details")(sequelize, DataTypes);
-dbContext.test_groups = require("../test_groups")(sequelize, DataTypes);
+dbContext.test_credit_classes = require("../test_credit_classes")(
+  sequelize,
+  DataTypes
+);
 dbContext.credit_class_details = require("../credit_class_details")(
   sequelize,
   DataTypes

@@ -157,9 +157,9 @@ module.exports = {
     }
   },
   /**/
-  createTestGroup: async (testGroup) => {
+  getTestClassByTestId: async (id) => {
     try {
-      let data = await testRepository.createTestGroup(testGroup);
+      let data = await testRepository.getTestClassByTestId(id);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
         data,
@@ -175,9 +175,27 @@ module.exports = {
       );
     }
   },
-  updateTestGroup: async (testGroup) => {
+  createTestClass: async (testGroup) => {
     try {
-      let data = await testRepository.createTestGroup(testGroup);
+      let data = await testRepository.createTestClass(testGroup);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        data,
+        null
+      );
+    } catch (err) {
+      logger.error(`create test group failed`);
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+  updateTestClass: async (testClass) => {
+    try {
+      let data = await testRepository.createTestClass(testClass);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
         data,
@@ -193,9 +211,9 @@ module.exports = {
       );
     }
   },
-  deleteTestGroup: async (id) => {
+  deleteTestClass: async (id) => {
     try {
-      let data = await testRepository.delete(id);
+      let data = await testRepository.deleteTestClass(id);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
         data,

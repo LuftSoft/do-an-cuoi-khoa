@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class results extends Model {
     /**
@@ -13,40 +11,43 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  results.init({
-    id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: DataTypes.INTEGER
+  results.init(
+    {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      test_group_id: {
+        type: DataTypes.STRING(255),
+        references: { model: "test_credit_classes", key: "id" },
+        allowNull: false,
+      },
+      user_id: {
+        type: DataTypes.STRING(255),
+        references: { model: "users", key: "id" },
+        allowNull: false,
+      },
+      mark: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+      },
+      start_time: {
+        type: DataTypes.DATE,
+      },
+      end_time: {
+        type: DataTypes.DATE,
+      },
+      tab_switch: {
+        type: DataTypes.INTEGER,
+      },
     },
-    test_group_id: {
-      type: DataTypes.STRING(255),
-      references: { model: 'test_groups', key: 'id' },
-      allowNull: false
-    },
-    user_id: {
-      type: DataTypes.STRING(255),
-      references: { model: 'users', key: 'id' },
-      allowNull: false
-    },
-    mark: {
-      type: DataTypes.DOUBLE,
-      allowNull: false,
-    },
-    start_time: {
-      type: DataTypes.DATE
-    },
-    end_time: {
-      type: DataTypes.DATE
-    },
-    tab_switch: {
-      type: DataTypes.INTEGER
+    {
+      sequelize,
+      timestamps: false,
+      modelName: "results",
     }
-  }, {
-    sequelize,
-    timestamps: false,
-    modelName: 'results',
-  });
+  );
   return results;
 };

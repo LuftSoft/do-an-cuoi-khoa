@@ -14,6 +14,9 @@ module.exports = {
         unique: true,
         allowNull: false,
       },
+      name: {
+        type: Sequelize.STRING,
+      },
       semester_id: {
         type: Sequelize.INTEGER,
         allowNull: false,

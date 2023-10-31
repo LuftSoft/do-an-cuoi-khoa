@@ -15,16 +15,8 @@ module.exports = {
       password: {
         type: Sequelize.STRING(255),
       },
-      start_time: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
-      schedule_time: {
+      time: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      end_time: {
-        type: Sequelize.DATE,
         allowNull: false,
       },
       easy_question: {
@@ -67,11 +59,11 @@ module.exports = {
           key: "id",
         },
       },
-      test_schedule_id: {
+      semester_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: "test_schedules",
+          model: "semesters",
           key: "id",
         },
       },
@@ -93,6 +85,12 @@ module.exports = {
         type: Sequelize.DOUBLE,
         allowNull: false,
         defaultValue: 0,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
       },
     });
   },

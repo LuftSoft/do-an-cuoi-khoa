@@ -14,19 +14,20 @@ import { useSelector } from "react-redux";
 import { selectAccessToken, selectUser } from "../../redux/selectors";
 import { TestScheduleService } from "../TestSchedule/TetsScheduleService";
 import { TestService } from "./TestService";
+import { SemesterService } from "../Semesters/SemesterService";
 
 const initialValues = {
 	id: "",
 	name: "",
 	test_schedule_id: "",
 	password: "",
-	start_time: "",
-	schedule_time: "",
-	end_time: "",
+	time: "",
 	total_question: 0,
 	easy_question: 0,
 	medium_question: 0,
 	difficult_question: 0,
+	semester_year: "",
+	semester_id: "",
 	subject_id: "",
 	user_id: "",
 	chapters: "",
@@ -96,6 +97,9 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 	const [testSchedules, setTestSchedules] = useState([]);
 	const total_question = useRef(0);
 	const loadingService = useLoadingService();
+	const [years, setYears] = useState([]);
+	const [semesters, setSemesters] = useState([]);
+	const [semestersFilter, setSemestersFilter] = useState([]);
 
 	async function getAllSubject() {
 		loadingService.setLoading(true);
@@ -114,7 +118,10 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 					toast.error("Tải danh sách môn học thất bại");
 				}
 			});
-			setTestSchedules(await getTestSchedule());
+			const semester = await SemesterService.getAllSemester();
+			setSemesters(semester.data?.data || []);
+			var year = getAllYear(semester.data?.data);
+			setYears(year);
 			switch (type) {
 				case CONST.DIALOG.TYPE.CREATE:
 					break;
@@ -136,7 +143,13 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 		};
 		fetchData();
 	}, []);
-
+	function getAllYear(sems) {
+		let set = new Set();
+		sems.forEach((item) => {
+			set.add(item.year);
+		});
+		return [...set];
+	}
 	function convertToFromData(question) {
 		let tmp = {};
 		Object.keys(question).forEach((key) => {
@@ -256,6 +269,16 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 			return [];
 		}
 	}
+	function handleYearChange(e) {
+		try {
+			if (e.target?.value) {
+				const { name, value } = e.target;
+				setFormData({ ...formData, [name]: value });
+				let semFilter = semesters.filter((item) => item.year === e.target?.value);
+				setSemestersFilter(semFilter);
+			}
+		} catch (err) {}
+	}
 	return (
 		<Container style={{ padding: "0 24px 24px 24px" }}>
 			<form onSubmit={handleSubmit}>
@@ -316,39 +339,53 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 
 				<div className="row-flex">
 					<TextField
-						className={isView() ? "disable-field w-7" : "w-7"}
-						label="Chọn ca thi"
+						label="Năm học"
 						variant="outlined"
-						name="test_schedule_id"
-						error={Boolean(errors.test_schedule_id)}
+						name="semester_year"
 						select
-						value={formData.test_schedule_id}
+						type="number"
+						value={formData.semester_year}
+						onChange={handleYearChange}
+						fullWidth
+						margin="normal"
+						className={isView() ? "disable-field w-3" : "w-3"}>
+						{years.map((y, index) => (
+							<MenuItem key={index} value={y}>
+								Năm học {y}
+							</MenuItem>
+						))}
+					</TextField>
+					<TextField
+						label="Học kỳ"
+						variant="outlined"
+						name="semester_id"
+						error={Boolean(errors.semester_id)}
+						select
+						type="number"
+						value={formData.semester_id}
 						onChange={handleChange}
 						fullWidth
-						margin="normal">
-						{!testSchedules || testSchedules.length === 0 ? (
-							<MenuItem key="default-chapter">Không có dữ liệu</MenuItem>
-						) : (
-							""
-						)}
-						{testSchedules.map((c) => (
-							<MenuItem key={c.id} value={c.id}>
-								{c.name}({c.date})
+						disabled={semestersFilter.length === 0}
+						margin="normal"
+						className={isView() ? "disable-field w-3" : "w-3"}>
+						{semestersFilter.map((sm, index) => (
+							<MenuItem key={index} value={sm.id}>
+								Học kỳ {sm.semester}
 							</MenuItem>
 						))}
 					</TextField>
 					<TextField
 						fullWidth
 						label="Thời gian làm bài (phút)"
-						name="schedule_time"
+						name="time"
 						type="number"
 						margin="normal"
 						variant="outlined"
 						onChange={handleChange}
-						value={formData.schedule_time}
-						error={Boolean(errors.schedule_time)}
+						value={formData.time}
+						error={Boolean(errors.time)}
 						InputProps={{ inputProps: { min: 0 } }}
-						className={isView() ? "disable-field w-5" : " w-5"}>
+						className={isView() ? "disable-field w-5" : "w-5"}>
 						<Button
 							variant="solid"
 							color="primary"

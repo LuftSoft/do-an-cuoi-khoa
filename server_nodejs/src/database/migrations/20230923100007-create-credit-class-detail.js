@@ -32,6 +32,10 @@ module.exports = {
         allowNull: true,
       },
     });
+    await queryInterface.addConstraint("credit_class_details", {
+      fields: ["user_id", "credit_class_id"],
+      type: "unique",
+    });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("credit_class_details");

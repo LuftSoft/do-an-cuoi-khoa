@@ -29,16 +29,8 @@ module.exports = (sequelize, DataTypes) => {
       password: {
         type: DataTypes.STRING(255),
       },
-      start_time: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
-      schedule_time: {
+      time: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      end_time: {
-        type: DataTypes.DATE,
         allowNull: false,
       },
       easy_question: {
@@ -81,11 +73,11 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
-      test_schedule_id: {
+      semester_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "test_schedules",
+          model: "semesters",
           key: "id",
         },
       },
@@ -111,7 +103,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      timestamps: false,
+      timestamps: true,
       modelName: "tests",
     }
   );

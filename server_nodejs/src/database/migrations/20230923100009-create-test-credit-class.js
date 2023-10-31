@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("test_groups", {
+    await queryInterface.createTable("test_credit_classes", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -31,13 +31,13 @@ module.exports = {
         type: Sequelize.BOOLEAN,
       },
     });
-    await queryInterface.addConstraint("test_groups", {
+    await queryInterface.addConstraint("test_credit_classes", {
       fields: ["test_id", "credit_class_id", "test_schedule_id"],
       type: "unique",
-      name: "UK_TEST_GROUPS_TEST_ID_GROUP_ID_TEST_SCHEDULE_ID",
+      name: "UK_TEST_CREDIT_CLASSES_TEST_ID_GROUP_ID_TEST_SCHEDULE_ID",
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("test_groups");
+    await queryInterface.dropTable("test_credit_classes");
   },
 };

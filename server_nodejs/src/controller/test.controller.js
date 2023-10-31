@@ -35,16 +35,20 @@ router.delete("/:id", async (req, res) => {
 });
 
 /* API giao đề thi cho từng nhóm */
+router.get("/credit-class/:id", async (req, res) => {
+  const id = req.params.id;
+  res.send(await testService.getTestClassByTestId(id));
+});
 router.post("/credit-class", async (req, res) => {
-  const testGroup = req.body;
-  res.send(await testService.createTestGroup(testGroup));
+  const testClass = req.body;
+  res.send(await testService.createTestClass(testClass));
 });
 /*
 Nếu đã có bài nộp thì không được sửa
 */
 router.put("/credit-class", async (req, res) => {
-  const testGroup = req.body;
-  res.send(await testService.updateTestGroup(testGroup));
+  const testClass = req.body;
+  res.send(await testService.updateTestClass(testClass));
 });
 /*
 Nếu có bài làm rồi thì sẽ không được xóa.
@@ -52,7 +56,7 @@ Admin or người tạo có thể xóa
 */
 router.delete("/credit-class/:id", async (req, res) => {
   const id = req.params.id;
-  res.send(await testService.updateTestGroup(id));
+  res.send(await testService.deleteTestClass(id));
 });
 
 /* API CRUD câu hỏi cho đề thi */
