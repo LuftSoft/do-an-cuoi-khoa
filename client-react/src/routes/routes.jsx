@@ -11,6 +11,7 @@ import OverviewComponent from "../pages/Overview/OverviewComponent";
 import QuestionComponent from "../pages/Question/QuestionComponent";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
 import ResultComponent from "../pages/Result/ResultComponent";
+import ResultLayoutComponent from "../pages/Result/ResultLayoutComponent";
 import RoomPage from "../pages/RoomPage";
 import SignInPage from "../pages/SignInPage";
 import SignUpPage from "../pages/SignUpPage";
@@ -76,6 +77,6 @@ export const privateRoutes = [
 	{ path: routes.QUESTION, page: QuestionComponent, layout: null, permissions: [] },
 	{ path: routes.CREDIT_CLASS, page: CreditClassLayoutComponent, layout: null, permissions: [] },
 	{ path: routes.TEST_SCHEDULE, page: TestScheduleComponent, layout: null, permissions: [] },
-	{ path: routes.RESULT, page: ResultComponent, layout: null, permissions: [] },
+	{ path: routes.RESULT, page: ResultLayoutComponent, layout: null, permissions: [] },
 	{ path: routes.TEST, page: TestComponent, layout: null, permissions: [] },
 ];

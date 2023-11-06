@@ -49,52 +49,87 @@ module.exports = {
   },
   create: async (test) => {
     try {
-      let data = await testRepository.create(test);
-      if (data) {
-        var questions = await questionService.getBySubjectId(test.subject_id);
-        questions = questions.filter((item) =>
-          data.chapters.includes(item.chapter_id)
+      //option ko auto create question
+      if (!test.auto_generate_question) {
+        let data = await testRepository.create(test);
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          data,
+          null
         );
-        let order = 0;
-        for (let i = 0; i < Number.parseInt(data.easy_question); i++) {
-          const question = findQuestionByLevel(
-            questions,
-            CONSTANTS.QUESTION.LEVEL.EASY
-          );
-          if (!question) continue;
-          await testRepository.createTestQuestion({
-            test_id: data.id,
-            question__id: question.id,
-            order: order,
-          });
-          order++;
-        }
-        for (let i = 0; i < Number.parseInt(data.medium_question); i++) {
-          const question = findQuestionByLevel(
-            questions,
-            CONSTANTS.QUESTION.LEVEL.EASY
-          );
-          if (!question) continue;
-          await testRepository.createTestQuestion({
-            test_id: data.id,
-            question__id: question.id,
-            order: order,
-          });
-          order++;
-        }
-        for (let i = 0; i < Number.parseInt(data.difficult_question); i++) {
-          const question = findQuestionByLevel(
-            questions,
-            CONSTANTS.QUESTION.LEVEL.EASY
-          );
-          if (!question) continue;
-          await testRepository.createTestQuestion({
-            test_id: data.id,
-            question__id: question.id,
-            order: order,
-          });
-          order++;
-        }
+      }
+      //option con lai
+      var questions = await questionService.getByChapterId(test.chapters);
+      questions = questions.filter((item) =>
+        test.chapters.includes(item.chapter_id)
+      );
+      const EASY_QUESTION = questions.filter(
+        (q) => q.level === CONSTANTS.QUESTION.LEVEL.EASY
+      );
+      const MEDIUM_QUESTION = questions.filter(
+        (q) => q.level === CONSTANTS.QUESTION.LEVEL.MEDIUM
+      );
+      const DIFFICULT_QUESTION = questions.filter(
+        (q) => q.level === CONSTANTS.QUESTION.LEVEL.DIFFICULT
+      );
+      const EASY_QUESTION_COUNT = Number.parseInt(test.easy_question);
+      const MEDIUM_QUESTION_COUNT = Number.parseInt(test.medium_question);
+      const DIFFICULT_QUESTION_COUNT = Number.parseInt(test.difficult_question);
+      if (EASY_QUESTION_COUNT > EASY_QUESTION.length) {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.ERROR,
+          null,
+          "Không đủ câu hỏi dễ"
+        );
+      }
+      if (MEDIUM_QUESTION_COUNT > MEDIUM_QUESTION.length) {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.ERROR,
+          null,
+          "Không đủ câu hỏi vừa"
+        );
+      }
+      if (DIFFICULT_QUESTION_COUNT > DIFFICULT_QUESTION.length) {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.ERROR,
+          null,
+          "Không đủ câu hỏi khó"
+        );
+      }
+      console.log(test);
+      console.log(questions);
+      let data = await testRepository.create(test);
+      let query = "";
+      let orderCount = 1;
+      const RANDOM_EASY = Helpers.getRandomItemsFromArray(
+        EASY_QUESTION,
+        EASY_QUESTION_COUNT
+      );
+      const RANDOM_MEDIUM = Helpers.getRandomItemsFromArray(
+        MEDIUM_QUESTION,
+        MEDIUM_QUESTION_COUNT
+      );
+      const RANDOM_DIFFICULT = Helpers.getRandomItemsFromArray(
+        DIFFICULT_QUESTION,
+        DIFFICULT_QUESTION_COUNT
+      );
+      for (let q of RANDOM_EASY) {
+        query += `(0, '${data.id}', ${q.id}, ${orderCount}),`;
+        orderCount++;
+      }
+      for (let q of RANDOM_MEDIUM) {
+        query += `(0, '${data.id}', ${q.id}, ${orderCount}),`;
+        orderCount++;
+      }
+      for (let q of RANDOM_DIFFICULT) {
+        query += `(0, '${data.id}', ${q.id}, ${orderCount}),`;
+        orderCount++;
+      }
+      query = query.slice(0, -1);
+      console.log(query);
+      const testDetails = await testRepository.createMultiTestQuestion(query);
+      if (!testDetails) {
+        //delete test here
       }
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
@@ -157,9 +192,45 @@ module.exports = {
     }
   },
   /**/
+  getTestClasses: async () => {
+    try {
+      let data = await testRepository.getTestClasses();
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        data,
+        null
+      );
+    } catch (err) {
+      logger.error(`create test group failed`);
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
   getTestClassByTestId: async (id) => {
     try {
       let data = await testRepository.getTestClassByTestId(id);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        data,
+        null
+      );
+    } catch (err) {
+      logger.error(`create test group failed`);
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+  getAllTestByUserId: async (id) => {
+    try {
+      let data = await testRepository.getAllTestByUserId(id);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
         data,

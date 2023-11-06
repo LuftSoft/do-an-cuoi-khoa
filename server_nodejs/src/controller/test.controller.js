@@ -4,37 +4,14 @@ const { authorize } = require("../extension/middleware/application.middleware");
 const authService = require("../service/common/auth.service");
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  res.send(await testService.getAll());
-});
-
-router.get("/:id", async (req, res) => {
+router.get("/user/:id", async (req, res) => {
   const id = req.params.id;
-  res.send(await testService.getOne(id));
+  res.send(await testService.getAllTestByUserId(id));
 });
-
-router.post("/", authorize([]), async (req, res) => {
-  const accessToken = req.accessToken;
-  const userId = authService.getUserIdFromJWTToken(
-    accessToken,
-    process.env.SECRET_TOKEN_KEY
-  );
-  const test = req.body;
-  test.user_id = userId;
-  res.send(await testService.create(test));
-});
-
-router.put("/", async (req, res) => {
-  const test = req.body;
-  res.send(await testService.update(test));
-});
-
-router.delete("/:id", async (req, res) => {
-  const id = req.params.id;
-  res.send(await testService.delete(id));
-});
-
 /* API giao đề thi cho từng nhóm */
+router.get("/credit-class", async (req, res) => {
+  res.send(await testService.getTestClasses());
+});
 router.get("/credit-class/:id", async (req, res) => {
   const id = req.params.id;
   res.send(await testService.getTestClassByTestId(id));
@@ -73,6 +50,36 @@ router.put("/question", async (req, res) => {
 router.delete("/question/:id", async (req, res) => {
   const id = req.params.id;
   res.send(await testService.deleteTestQuestion(id));
+});
+//
+router.get("/", async (req, res) => {
+  res.send(await testService.getAll());
+});
+
+router.get("/:id", async (req, res) => {
+  const id = req.params.id;
+  res.send(await testService.getOne(id));
+});
+
+router.post("/", authorize([]), async (req, res) => {
+  const accessToken = req.accessToken;
+  const userId = authService.getUserIdFromJWTToken(
+    accessToken,
+    process.env.SECRET_TOKEN_KEY
+  );
+  const test = req.body;
+  test.user_id = userId;
+  res.send(await testService.create(test));
+});
+
+router.put("/", async (req, res) => {
+  const test = req.body;
+  res.send(await testService.update(test));
+});
+
+router.delete("/:id", async (req, res) => {
+  const id = req.params.id;
+  res.send(await testService.delete(id));
 });
 
 module.exports = router;

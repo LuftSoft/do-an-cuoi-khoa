@@ -14,6 +14,7 @@ import TitleButtonComponent from "../../components/Common/CommonHeader/CommonHea
 import { CommonDialogComponent } from "../../components/Common";
 import CreateTest from "./CreateTestComponent";
 import AssignTestComponent from "./AssignTestComponent";
+import TestDetailComponent from "./TestDetailComponent";
 
 export default function TestComponent() {
 	const title = "Đề thi";
@@ -31,6 +32,7 @@ export default function TestComponent() {
 	const [type, setType] = useState(CONST.DIALOG.TYPE.CREATE);
 	const [openCreateTestDialog, setOpenCreateTestDialog] = useState(false);
 	const [openAssignTestDialog, setOpenAssignTestDialog] = useState(false);
+	const [openTestDetailDialog, setOpenTestDetailDialog] = useState(false);
 	useEffect(() => {
 		const fetchData = async () => {
 			await getTests();
@@ -62,6 +64,8 @@ export default function TestComponent() {
 			setOpenCreateTestDialog(false);
 		} else if (openAssignTestDialog) {
 			setOpenAssignTestDialog(false);
+		} else if (openTestDetailDialog) {
+			setOpenTestDetailDialog(false);
 		}
 		await getTests();
 	}
@@ -83,6 +87,8 @@ export default function TestComponent() {
 			setOpenCreateTestDialog(false);
 		} else if (openAssignTestDialog) {
 			setOpenAssignTestDialog(false);
+		} else if (openTestDetailDialog) {
+			setOpenTestDetailDialog(false);
 		}
 	}
 	function handleAssignTest(data) {
@@ -91,7 +97,7 @@ export default function TestComponent() {
 	}
 	function showDetail(data) {
 		if (data) setTest(data);
-		setOpenAssignTestDialog(true);
+		setOpenTestDetailDialog(true);
 	}
 	return (
 		<Box>
@@ -100,7 +106,7 @@ export default function TestComponent() {
 			</div>
 			<div className="test-container my-3">
 				{tests.map((test, index) => (
-					<Card sx={{ maxWidth: 345, maxHeight: 400 }} className="custom-card" label="Delete">
+					<Card className="custom-card" label="Delete">
 						<i className="fa-solid fa-trash delete_test"></i>
 						<CardMedia component="img" height="100" className="bg-radient" />
 						<CardContent className="pb-3">
@@ -161,6 +167,15 @@ export default function TestComponent() {
 				height="auto"
 				onClose={onClose}>
 				<AssignTestComponent onSubmit={handleCloseDialog} data={test}></AssignTestComponent>
+			</CommonDialogComponent>
+			<CommonDialogComponent
+				open={openTestDetailDialog}
+				title={"Chi tiết đề thi"}
+				icon="fa-solid fa-circle-plus"
+				width="60vw"
+				height="auto"
+				onClose={onClose}>
+				<TestDetailComponent onSubmit={handleCloseDialog} data={test}></TestDetailComponent>
 			</CommonDialogComponent>
 		</Box>
 	);

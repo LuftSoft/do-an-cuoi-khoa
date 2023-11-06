@@ -2,7 +2,7 @@ import { Autocomplete, Container } from "@mui/material";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useLoadingService } from "../../contexts/loadingContext";
 import { CONST } from "../../utils/const";
@@ -34,7 +34,7 @@ export default function AssignTestComponent(props) {
 	const test = props?.data;
 	const [errors, setErrors] = useState({});
 	const { loading, setLoading } = useLoadingService();
-	const [users, setUsers] = useState([]);
+	const testSchedulesRef = useRef([]);
 	const [creditClasses, setCreditClasses] = useState([]);
 	const [testSchedules, setTestSchedules] = useState([]);
 	const [dataSource, setDataSource] = useState([]);
@@ -72,6 +72,16 @@ export default function AssignTestComponent(props) {
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
+		if (name === "credit_class_id") {
+			formData.test_schedule_id = "";
+			const creditClass = creditClasses.filter((item) => item.id === value)[0];
+			console.log(
+				"on choose credit class",
+				creditClass.semester_id,
+				testSchedulesRef.current.filter((item) => item.semester_id === creditClass.semester_id),
+			);
+			setTestSchedules(testSchedulesRef.current.filter((item) => item.semester_id === creditClass.semester_id));
+		}
 		setFormData({ ...formData, [name]: value });
 	};
 	const initFormData = () => {
@@ -84,7 +94,8 @@ export default function AssignTestComponent(props) {
 		const response = await CreditClassService.getAllCreditClass();
 		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 			let creditClasses = response.data?.data;
-			creditClasses = creditClasses.filter((creditClass) => creditClass.semester_id === test.semester_id);
+			creditClasses = creditClasses.filter((creditClass) => creditClass.subject_id === test.subject_id);
+			creditClasses = creditClasses.sort((a, b) => b.semester_id - a.semester_id);
 			setCreditClasses(creditClasses);
 		} else {
 			toast.error("Không tìm thấy lớp tín chỉ.");
@@ -94,7 +105,8 @@ export default function AssignTestComponent(props) {
 		const response = await TestScheduleService.getAllTestSchedule();
 		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 			let testSchedules = response.data?.data;
-			testSchedules = testSchedules.filter((testSchedule) => testSchedule.semester_id === test.semester_id);
+			testSchedulesRef.current = testSchedules;
+			//testSchedules = testSchedules.filter((testSchedule) => testSchedule.semester_id === test.semester_id);
 			return setTestSchedules(testSchedules);
 		} else {
 			toast.error("Get test schedule failed");

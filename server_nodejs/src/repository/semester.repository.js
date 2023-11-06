@@ -23,7 +23,7 @@ module.exports = {
     return result;
   },
   getById: async (id) => {
-    const semester = await semesters.findByPk(id);
+    const semester = await semesters.findByPk(id, {});
     return semester;
   },
   getAll: async (semester, year) => {

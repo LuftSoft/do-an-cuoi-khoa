@@ -31,6 +31,9 @@ module.exports = {
   getBySubjectId: async (id) => {
     return await questionRepository.getBySubjectId(id);
   },
+  getByChapterId: async (ids) => {
+    return await questionRepository.getByChapterId(ids);
+  },
   getOne: async (id) => {
     try {
       var data = await questionRepository.getById(id);

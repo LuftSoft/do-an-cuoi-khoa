@@ -11,9 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      // define association here
-    }
+    static associate(models) {}
   }
   tests.init(
     {
@@ -111,9 +109,9 @@ module.exports = (sequelize, DataTypes) => {
     tests.belongsTo(models.users, { as: "users" });
     tests.belongsTo(models.subjects, { as: "subjects" });
     tests.belongsToMany(models.questions, {
-      as: "questions",
-      through: test_detail,
+      through: models.test_details,
     });
+    //tests.hasMany(test_details);
   };
   return tests;
 };

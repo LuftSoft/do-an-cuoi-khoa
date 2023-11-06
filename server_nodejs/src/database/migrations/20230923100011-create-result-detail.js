@@ -1,40 +1,43 @@
-'use strict';
+"use strict";
 
-const { CONSTANTS } = require('../../shared/constant');
+const { CONSTANTS } = require("../../shared/constant");
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('result_details', {
+    await queryInterface.createTable("result_details", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
-      test_id: {
-        type: Sequelize.STRING(255),
+      result_id: {
+        type: Sequelize.INTEGER,
         references: {
-          model: 'tests',
-          key: 'id'
+          model: "results",
+          key: "id",
         },
-        allowNull: false
+        allowNull: false,
       },
       question_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'questions',
-          key: 'id'
+          model: "questions",
+          key: "id",
         },
-        allowNull: false
+        allowNull: false,
+      },
+      position: {
+        type: Sequelize.INTEGER,
       },
       choose: {
         type: Sequelize.ENUM(Object.values(CONSTANTS.QUESTION.ANSWER)),
-        allowNull: false
-      }
+        allowNull: false,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('result_details');
-  }
+    await queryInterface.dropTable("result_details");
+  },
 };

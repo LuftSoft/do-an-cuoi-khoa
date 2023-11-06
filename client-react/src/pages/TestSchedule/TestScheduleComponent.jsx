@@ -12,6 +12,7 @@ import { QuestionService } from "../Question/QuestionService";
 import "./TestSchedule.css";
 import { TestScheduleService } from "./TetsScheduleService";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
+import dayjs from "dayjs";
 export default function TestScheduleComponent() {
 	const title = "Lịch thi ";
 	const buttons = [
@@ -31,6 +32,7 @@ export default function TestScheduleComponent() {
 			.then((response) => {
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 					const data = response.data?.data;
+					data.forEach((item) => (item.date = dayjs(item.date).format("YYYY-MM-DD HH:mm:ss")));
 					setDataSource(data);
 				} else {
 					toast.error("Không tìm thấy ca thi.");

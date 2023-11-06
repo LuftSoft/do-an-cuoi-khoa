@@ -16,6 +16,16 @@ module.exports = {
     });
     return result;
   },
+  getListCreditClassOfUser: async (id) => {
+    const query = `SELECT cc.credit_class_id
+    FROM credit_class_details AS cc 
+    INNER JOIN users ON cc.user_id = users.id
+    WHERE cc.users_id = '${id}'`;
+    const result = await credit_class_details.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return result;
+  },
   createUserClass: async (userClass) => {
     const classCreate = await credit_class_details.create(userClass);
     return classCreate;

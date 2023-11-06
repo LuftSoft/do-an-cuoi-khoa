@@ -8,6 +8,15 @@ module.exports = {
     const data = await results.findAll();
     return data;
   },
+  getByTestClassId: async (id) => {
+    const query = `SELECT rs.* 
+        FROM results as rs INNER JOIN tests as t
+        ON rs.test_id = t.id`;
+    const result = await results.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return result;
+  },
   getById: async (id) => {
     const result = await results.findByPk(id);
     return result;
@@ -51,6 +60,13 @@ module.exports = {
   /**/
   getResultQuestionById: async (id) => {
     const result = await result_details.findByPk(id);
+    return result;
+  },
+  getResultQuestionByResultId: async (id) => {
+    const query = ``;
+    const result = await results.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
     return result;
   },
   createResultQuestion: async (resultQuestion) => {

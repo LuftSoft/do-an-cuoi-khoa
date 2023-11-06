@@ -81,9 +81,9 @@ module.exports = (sequelize, DataTypes) => {
   questions.associate = (models) => {
     questions.belongsTo(models.chapters, { as: "chapters" });
     questions.belongsToMany(models.tests, {
-      as: "tests",
-      through: test_details,
+      through: models.test_details,
     });
+    //questions.hasMany(test_details);
   };
   return questions;
 };

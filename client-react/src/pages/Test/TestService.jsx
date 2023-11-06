@@ -7,6 +7,9 @@ export const TestService = {
 	getAllTest: async () => {
 		return await axios.get(TEST_ROUTE);
 	},
+	getOneTest: async (id) => {
+		return await axios.get(`${TEST_ROUTE}/${id}`);
+	},
 	createTest: async (data, token) => {
 		return await axios.post(TEST_ROUTE, data, { headers: { Authorization: "Bearer " + token } });
 	},
@@ -17,6 +20,9 @@ export const TestService = {
 		return await axios.post(TEST_ROUTE, {});
 	},
 	// test class service
+	getAllTestClass: async () => {
+		return await axios.get(`${TEST_CLASS_ROUTE}`);
+	},
 	getAllTestClassByTestId: async (id) => {
 		return await axios.get(`${TEST_CLASS_ROUTE}/${id}`);
 	},

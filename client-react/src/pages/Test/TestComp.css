@@ -32,7 +32,7 @@
 	gap: 12px;
 	display: grid;
 	padding-bottom: 24px;
-	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(300px, 345px));
 }
 .delete_test {
 	position: absolute;
@@ -43,6 +43,8 @@
 }
 .custom-card {
 	position: relative;
+	max-width: 345px;
+	max-height: 400px;
 }
 .btn-opt {
 	font-size: 12px !important;
@@ -53,4 +55,12 @@
 }
 hr {
 	margin: 5px !important;
+}
+@media screen and (max-width: 768px) {
+	.test-container {
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	}
+	.custom-card {
+		max-width: 100%;
+	}
 }

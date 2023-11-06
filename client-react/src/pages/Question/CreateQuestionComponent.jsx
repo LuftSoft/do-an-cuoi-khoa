@@ -84,6 +84,7 @@ const CreateQuestion = ({ onSubmit, data, type, btnTitle }) => {
 				tmp[key] = question[key] || "";
 			}
 		});
+		console.log("tmp", tmp);
 		setFormData(tmp);
 	}
 	const handleChange = (e) => {
