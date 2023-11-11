@@ -3,4 +3,11 @@ export const CONFIG = {
     SUCCESS: 'SUCCESS',
     ERROR: 'ERROR',
   },
+  TEST: {
+    SUBMIT_TYPE: {
+      SUBMIT: 'SUBMIT',
+      QUIT: 'QUIT',
+      FULL_TIME: 'FULL_TIME'
+    }
+  }
 };

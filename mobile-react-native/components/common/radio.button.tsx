@@ -1,22 +1,33 @@
 import React from 'react';
-import {TouchableOpacity, Image, StyleSheet, Text} from 'react-native';
+import {
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Text,
+  GestureResponderEvent,
+  View,
+} from 'react-native';
 
-const CustomRadioButton = (selected: any, onPress: any) => (
-  <TouchableOpacity onPress={onPress} style={styles.radioButton}>
-    {
-      /* {selected ? (
-      <Image source={require('./checked.png')} style={styles.checkedIcon} />
-    ) : (
-      <Image source={require('./unchecked.png')} style={styles.uncheckedIcon} />
-      )} */
-      selected ? (
-        <Text style={[styles.checkedIcon]}>A</Text>
+const CustomRadioButton = (props: any) => {
+  var {options, onPress} = props;
+  return (
+    <View>
+      {options.selected ? (
+        <TouchableOpacity
+          onPress={onPress}
+          style={[styles.radioButton, styles.checkedIcon]}>
+          <Text style={styles.checkedIcon}>{options.text}</Text>
+        </TouchableOpacity>
       ) : (
-        <Text style={[styles.uncheckedIcon]}>A</Text>
-      )
-    }
-  </TouchableOpacity>
-);
+        <TouchableOpacity
+          onPress={onPress}
+          style={[styles.radioButton, styles.uncheckedIcon]}>
+          <Text style={styles.uncheckedIcon}>{options.text}</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   radioButton: {
@@ -30,11 +41,13 @@ const styles = StyleSheet.create({
   },
   checkedIcon: {
     backgroundColor: '#1976d2',
+    borderColor: '#1976d2',
     color: '#fff',
   },
   uncheckedIcon: {
-    backgroundColor: '#fff',
-    color: '#000',
+    backgroundColor: '#ccc',
+    color: '#fff',
+    borderColor: '#ccc',
   },
 });
 

@@ -13,12 +13,15 @@ import {Text} from 'react-native';
 import {UserProvider} from './utils/user.context';
 import Sidebar from './components/common/sidebar';
 import Toast from 'react-native-toast-message';
+import {PaperProvider} from 'react-native-paper';
 
 function App() {
   return (
     <UserProvider>
       <NavigationContainer>
-        <AppNavigator></AppNavigator>
+        <PaperProvider>
+          <AppNavigator></AppNavigator>
+        </PaperProvider>
         <Toast />
       </NavigationContainer>
     </UserProvider>

@@ -1,7 +1,9 @@
-const { QueryTypes } = require("sequelize");
+const { QueryTypes, Sequelize } = require("sequelize");
 const dbContext = require("../database/models/config/dbContext");
 const { Helpers } = require("../extension/helper");
 const results = dbContext.results;
+const result_details = dbContext.result_details;
+const test_credit_classes = dbContext.test_credit_classes;
 
 module.exports = {
   getAll: async () => {
@@ -16,6 +18,24 @@ module.exports = {
       type: QueryTypes.SELECT,
     });
     return result;
+  },
+  getAllResultByUserId: async (id) => {
+    const query = `SELECT tc.*, rs.id as result_id,rs.user_id as user_id, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, 
+    CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date,  te.name as test_name,
+    te.time as test_time
+      FROM test_credit_classes AS tc
+      INNER JOIN results AS rs ON rs.test_credit_classes_id = tc.id
+      INNER JOIN tests AS te ON tc.test_id = te.id
+      INNER JOIN credit_classes AS cc ON tc.credit_class_id = cc.id
+      INNER JOIN test_schedules AS ts ON tc.test_schedule_id = ts.id
+      INNER JOIN semesters AS sm ON ts.semester_id = sm.id
+      INNER JOIN credit_class_details as cd ON cc.id = cd.credit_class_id
+      INNER JOIN users as us ON cd.user_id = us.id
+      WHERE us.id = '${id}';`;
+    const test_class = await test_credit_classes.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return test_class;
   },
   getById: async (id) => {
     const result = await results.findByPk(id);
@@ -72,6 +92,12 @@ module.exports = {
   createResultQuestion: async (resultQuestion) => {
     const result = await result_details.create(resultQuestion);
     return result;
+  },
+  createMultiResultQuestion: async (query) => {
+    console.log(query);
+    const exeQuery = `INSERT INTO result_details(result_id,question_id,position,choose) VALUES ${query};`;
+    await result_details.sequelize.query(exeQuery, { type: QueryTypes.INSERT });
+    return true;
   },
   updateResultQuestion: async (resultQuestion) => {
     const result = await result_details.update(resultQuestion);

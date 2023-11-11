@@ -7,7 +7,8 @@ import {TestService} from './TestService';
 import {CONFIG} from '../../utils/config';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../overview/OverviewComponent';
-import {CommonUtil} from '../../utils/common.util';
+import {CommonUtil, Helpers} from '../../utils/common.util';
+import {ResultService} from '../result/ResultService';
 
 type OverViewNavigationProp = StackNavigationProp<RootStackParamList, 'Test'>;
 type Props = {
@@ -16,6 +17,7 @@ type Props = {
 const TestComponent: React.FC<Props> = ({navigation}) => {
   const {user, setUser} = useUserProvider();
   const [tests, setTests] = useState([]);
+  const [results, setResults] = useState([]);
   const testData = [
     {name: 'Test 1', semester: 'Spring 2023', subject: 'Math'},
     {name: 'Test 2', semester: 'Fall 2023', subject: 'Science'},
@@ -30,6 +32,20 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
   }, []);
   const getInitData = async () => {
     await getTestByUserid(user?.user?.id);
+    await getResultByUserId(user?.user?.id);
+    //filter the test already has result;
+    // const resultCopyId = Helpers.cloneDeep(
+    //   results.map((item: any) => item.credit_class_id),
+    // );
+    // const testCopy = Helpers.cloneDeep(tests);
+    // console.log(testCopy);
+    // testCopy.forEach((item: any) => {
+    //   if (resultCopyId.includes(item.credit_class_id)) {
+    //     item.has_result = true;
+    //   }
+    // });
+    // setTests(testCopy);
+    // console.log('testCopy', testCopy);
   };
   const getTestByUserid = async (id: string) => {
     const response = await TestService.getTestByUserid(id);
@@ -38,8 +54,22 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
       console.log('response ', response.data?.data);
     }
   };
-  const handleDoExam = (id: string) => {
-    navigation.navigate('TestDetail', {data: id});
+  const getResultByUserId = async (id: string) => {
+    const response = await ResultService.getResultByUserid(id);
+    if (response.data?.code === CONFIG.API_RESPONSE_STATUS.SUCCESS) {
+      setResults(response.data?.data);
+      console.log('response result ', response.data?.data);
+    }
+  };
+  const handleDoExam = (test: any) => {
+    console.log(test);
+    navigation.navigate('TestDetail', {
+      data: {
+        id: test.test_id,
+        test_credit_class_id: test.id,
+        test_schedule_date: test.test_schedule_date,
+      },
+    });
   };
   const handleShowResult = () => {
     console.log('handleShowResult');
@@ -52,6 +82,12 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
     return now >= begin && now <= end;
   };
   const boxShadow = CssUtil.GenerateDefaultBoxShadow();
+  const isResultExists = (test_credit_class_id: string) => {
+    //tests.id is test_credit_class_id
+    return (
+      results.filter((item: any) => item.id === test_credit_class_id).length > 0
+    );
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Đề thi của bạn</Text>
@@ -65,15 +101,20 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
           <Text>Thời gian bắt đầu: {test.test_schedule_date}</Text>
           <Text>Thời gian làm bài: {test.test_time} phút</Text>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={e => handleDoExam(test?.test_id)}
-              disabled={!canDoExam(test.test_schedule_date, test.test_time)}>
-              <Text style={styles.buttonText}>Làm bài</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleShowResult}>
-              <Text style={styles.buttonText}>Kết quả</Text>
-            </TouchableOpacity>
+            {isResultExists(test.id) ? (
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleShowResult}>
+                <Text style={styles.buttonText}>Kết quả</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.button}
+                onPress={e => handleDoExam(test)}
+                disabled={!canDoExam(test.test_schedule_date, test.test_time)}>
+                <Text style={styles.buttonText}>Làm bài</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       ))}
