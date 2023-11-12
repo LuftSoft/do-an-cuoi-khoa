@@ -18,11 +18,6 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
   const {user, setUser} = useUserProvider();
   const [tests, setTests] = useState([]);
   const [results, setResults] = useState([]);
-  const testData = [
-    {name: 'Test 1', semester: 'Spring 2023', subject: 'Math'},
-    {name: 'Test 2', semester: 'Fall 2023', subject: 'Science'},
-    // Add more test data as needed
-  ];
   console.log('test comp', user?.user?.id);
   useEffect(() => {
     const fetchData = async () => {
@@ -103,9 +98,9 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
           <View style={styles.buttonContainer}>
             {isResultExists(test.id) ? (
               <TouchableOpacity
-                style={styles.button}
+                style={styles.buttonOutline}
                 onPress={handleShowResult}>
-                <Text style={styles.buttonText}>Kết quả</Text>
+                <Text style={styles.buttonTextOutline}>Kết quả</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
@@ -163,7 +158,7 @@ const styles = StyleSheet.create({
     borderColor: '#1976d2',
     borderWidth: 1,
     backgroundColor: '#fff',
-    padding: 10,
+    padding: 5,
     marginHorizontal: 5,
     borderRadius: 5,
   },
@@ -171,7 +166,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   buttonTextOutline: {
-    color: '#fff',
+    color: '#1976d2',
   },
   textBold: {
     fontWeight: '700',

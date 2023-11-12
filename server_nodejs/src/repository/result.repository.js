@@ -4,11 +4,22 @@ const { Helpers } = require("../extension/helper");
 const results = dbContext.results;
 const result_details = dbContext.result_details;
 const test_credit_classes = dbContext.test_credit_classes;
+const resultDetailRepository = require("./result_detail.repository");
 
 module.exports = {
   getAll: async () => {
-    const data = await results.findAll();
-    return data;
+    const query = `SELECT tc.*, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, sj.name as subject_name,
+    CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date,  te.name as test_name,
+    te.time as test_time
+      FROM test_credit_classes AS tc
+      INNER JOIN tests AS te ON tc.test_id = te.id
+      INNER JOIN credit_classes AS cc ON tc.credit_class_id = cc.id
+      INNER JOIN test_schedules AS ts ON tc.test_schedule_id = ts.id
+      INNER JOIN semesters AS sm ON ts.semester_id = sm.id
+      INNER JOIN subjects AS sj ON cc.subject_id = sj.id`;
+    return await test_credit_classes.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
   },
   getByTestClassId: async (id) => {
     const query = `SELECT rs.* 
@@ -59,11 +70,14 @@ module.exports = {
     return result;
   },
   delete: async (id) => {
+    const details = await resultDetailRepository.getByResultId(id);
+    if (details.length > 0) {
+      await resultDetailRepository.deleteByResultId(id);
+    }
     const result = await results.destroy({
       where: {
         id: id,
       },
-      truncate: true,
     });
     return result;
   },

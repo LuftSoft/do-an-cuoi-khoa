@@ -13,8 +13,11 @@ import {ConfirmDialogComponent} from '../common/confirm.dialog';
 import {
   ConfirmDialogDataModel,
   InitValuesConfirmDialogData,
+  TestResultDialogDataModel,
 } from '../common/common.model';
 import {useUserProvider} from '../../utils/user.context';
+import {TestResultDialogComponent} from './TestResultDialogComponent';
+import {Helpers} from '../../utils/common.util';
 
 type OverViewNavigationProp = StackNavigationProp<RootStackParamList, 'Test'>;
 type Props = {
@@ -33,7 +36,12 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
   const [confirmDialogData, setConfirmDialogData] = useState(
     {} as ConfirmDialogDataModel,
   );
+  const [testResultDialogData, setTestResultDialogData] = useState({
+    title: 'Kết quả đã chọn',
+    options: [undefined],
+  } as TestResultDialogDataModel);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [openTestResultDialog, setOpenTestResultDialog] = useState(false);
   const data = navigation
     .getState()
     .routes.filter(item => item.name === 'TestDetail')[0];
@@ -73,9 +81,7 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
         setQuestions(testResponse.questions);
         if (Number.parseInt(testResponse.time) > 0) {
           count.current = Number.parseInt(testResponse.time) * 60;
-          console.log('count bang', count);
           setTimer(Number.parseInt(testResponse.time) * 60);
-          //countDown();
         }
       }
     } catch (err) {
@@ -85,7 +91,7 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
   const countDown = () => {
     timerIntervalRef.current = setInterval(() => {
       setTimer(prevTimer => {
-        if (timer == 0) {
+        if (prevTimer == 0) {
           clearInterval(timerIntervalRef.current);
           handleSubmit(CONFIG.TEST.SUBMIT_TYPE.FULL_TIME);
         }
@@ -94,15 +100,16 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
     }, 1000);
   };
   const getTime = (time: number) => {
+    if (time < 0) return '00: 00';
     const hour = Math.floor(time / 3600);
     const second = time % 60;
     const minute = Math.floor((time - hour * 3600) / 60);
     if (hour > 0) {
-      return `${hour}: ${minute > 10 ? minute : `0${minute}`}: ${
-        second > 10 ? second : `0${second}`
+      return `${hour}: ${minute >= 10 ? minute : `0${minute}`}: ${
+        second >= 10 ? second : `0${second}`
       }`;
     } else {
-      return `${minute}: ${second > 10 ? second : `0${second}`}`;
+      return `${minute}: ${second >= 10 ? second : `0${second}`}`;
     }
   };
   const handleValueChange = (item: any, value: string) => {
@@ -118,15 +125,18 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
     console.log(value);
   };
   const submitTest = async () => {
-    const data: any = test;
+    const data: any = Helpers.cloneDeep(test);
     data.test_credit_class_id = test_credit_class_id;
     data.test_schedule_date = test_schedule_date;
-    data.questions = questions.map((q, index) => ({
-      question_id: q.id,
-      choose: q.answer,
-      position: index + 1,
-      correct_answer: q.correct_answer,
-    }));
+    data.questions = Helpers.cloneDeep(
+      questions.map((q, index) => ({
+        question_id: q.id,
+        choose: q.answer,
+        position: index + 1,
+        correct_answer: q.correct_answer,
+      })),
+    );
+    console.log('questions trong submit test bang', questions);
     const response = await TestService.submit(data, user?.accessToken || '');
     if (response.data?.code === CONFIG.API_RESPONSE_STATUS.SUCCESS) {
       ToastUtil.success('Thông báo', 'Nộp bài thành công!');
@@ -136,8 +146,6 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
     }
   };
   const handleSubmit = async (type = CONFIG.TEST.SUBMIT_TYPE.QUIT) => {
-    console.log(test);
-    console.log(questions);
     switch (type) {
       case CONFIG.TEST.SUBMIT_TYPE.QUIT:
         setConfirmDialogData({
@@ -168,21 +176,28 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
           title: 'Thông báo',
           content:
             'Thời gian làm bài đã kết thúc, hệ thống sẽ tự động nộp bài sau 5s',
+          //set thoi gian tu dong nop bai
+          fullTimeSubmit: 5,
         });
-        ToastUtil.info(
-          'Thông báo',
-          'Thời gian làm bài đã kết thúc, hệ thống sẽ tự động nộp bài sau 3s',
-        );
-        setTimeout(async () => {
-          await submitTest();
-        }, 3000);
-        //nop bai tai day
+        setOpenConfirmDialog(true);
         break;
       default:
         break;
     }
   };
-  const handleShowProcess = () => {};
+  const handleShowProcessDialog = () => {
+    setTestResultDialogData({
+      ...testResultDialogData,
+      options: questions.map((item, index) => ({
+        position: index + 1,
+        answer: item.answer,
+      })),
+    });
+    setOpenTestResultDialog(true);
+  };
+  const handleCloseProcessDialog = () => {
+    setOpenTestResultDialog(false);
+  };
   const handleCloseConfirmDialog = async (e: boolean) => {
     if (e) {
       console.log('dialog true');
@@ -200,7 +215,7 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
         <Text>Time: {getTime(timer)}</Text>
         <Button
           title="Xem bài làm"
-          onPress={handleShowProcess}
+          onPress={handleShowProcessDialog}
           color="#1976d2"></Button>
         <Button
           title="Nộp bài"
@@ -222,7 +237,7 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
             <RadioButton.Group
               onValueChange={value => (item.answer = value)}
               value={item.answer}>
-              <View style={styles.flexView}>
+              <View style={styles.flexView} key={`answer_a_${index + 1}`}>
                 <CustomRadioButton
                   options={{selected: item.answer === 'answer_a', text: 'A'}}
                   onPress={() =>
@@ -236,7 +251,7 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
                   {item.answer_a}
                 </Text>
               </View>
-              <View style={styles.flexView}>
+              <View style={styles.flexView} key={`answer_b_${index + 1}`}>
                 <CustomRadioButton
                   options={{selected: item.answer === 'answer_b', text: 'B'}}
                   onPress={() => {
@@ -250,7 +265,7 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
                   {item.answer_b}
                 </Text>
               </View>
-              <View style={styles.flexView}>
+              <View style={styles.flexView} key={`answer_c_${index + 1}`}>
                 <CustomRadioButton
                   options={{selected: item.answer === 'answer_c', text: 'C'}}
                   onPress={() => {
@@ -264,7 +279,7 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
                   {item.answer_c}
                 </Text>
               </View>
-              <View style={styles.flexView}>
+              <View style={styles.flexView} key={`answer_d_${index + 1}`}>
                 <CustomRadioButton
                   options={{selected: item.answer === 'answer_d', text: 'D'}}
                   onPress={() => {
@@ -292,6 +307,10 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
         open={openConfirmDialog}
         data={confirmDialogData}
         hideDialog={handleCloseConfirmDialog}></ConfirmDialogComponent>
+      <TestResultDialogComponent
+        open={openTestResultDialog}
+        data={testResultDialogData}
+        hideDialog={handleCloseProcessDialog}></TestResultDialogComponent>
     </View>
   );
 };

@@ -5,7 +5,7 @@ const { authorize } = require("../extension/middleware/application.middleware");
 const authService = require("../service/common/auth.service");
 const BaseAPIResponse = require("../dto/baseApiResponse");
 const router = express.Router();
-
+//get all test-credit-class
 router.get("/", async (req, res) => {
   res.send(await resultService.getAll());
 });
@@ -17,6 +17,7 @@ router.get("/user/:id", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
+  console.log("get here");
   res.send(await resultService.getOne(id));
 });
 

@@ -12,6 +12,10 @@ module.exports = (api) => {
   );
   api.use(`${URL_CONFIG.API_V1}/test`, require("./test.controller"));
   api.use(
+    `${URL_CONFIG.API_V1}/test-credit-classes`,
+    require("./test_credit_classes.controller")
+  );
+  api.use(
     `${URL_CONFIG.API_V1}/test-schedule`,
     require("./test_schedule.controller")
   );

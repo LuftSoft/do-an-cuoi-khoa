@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       choose: {
         type: DataTypes.ENUM(Object.values(CONSTANTS.QUESTION.ANSWER)),
-        allowNull: false,
+        allowNull: true,
       },
     },
     {

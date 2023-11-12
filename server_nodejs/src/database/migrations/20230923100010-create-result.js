@@ -33,6 +33,11 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
     });
+    await queryInterface.addConstraint("results", {
+      fields: ["test_credit_classes_id", "user_id"],
+      type: "unique",
+      name: "UK_RESULT_TESTCREDIT_CLASSES_ID_USER_ID",
+    });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("results");

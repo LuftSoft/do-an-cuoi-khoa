@@ -1,5 +1,5 @@
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Image} from 'react-native';
 import {TextInput, Button, Text} from 'react-native-paper';
 import {LoginModel} from './LoginModel';
@@ -48,6 +48,10 @@ const LoginComponent: React.FC<Props> = ({navigation}) => {
         refreshToken: responseData?.refreshToken,
       });
       navigation.navigate('Home');
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Home'}],
+      });
     }
   };
   const handleChange = (type: string, text: string) => {

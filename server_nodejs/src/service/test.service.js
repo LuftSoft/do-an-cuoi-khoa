@@ -210,6 +210,24 @@ module.exports = {
       );
     }
   },
+  getTestClassesById: async (id) => {
+    try {
+      let data = await testRepository.getTestClasses();
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        data,
+        null
+      );
+    } catch (err) {
+      logger.error(`create test group failed`);
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
   getTestClassByTestId: async (id) => {
     try {
       let data = await testRepository.getTestClassByTestId(id);

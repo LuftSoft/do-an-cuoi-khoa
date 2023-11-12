@@ -10,6 +10,12 @@ import { TestScheduleService } from "../TestSchedule/TetsScheduleService";
 import { TestService } from "../Test/TestService";
 import { useLoadingService } from "../../contexts/loadingContext";
 import { CONST } from "../../utils/const";
+import { toast } from "react-toastify";
+import { ResultService } from "./ResultService";
+import { FeHelpers } from "../../utils/helpers";
+import { Pagination } from "@mui/material";
+import { CommonDialogComponent } from "../../components/Common";
+import ResultDetailComponent from "./ResultDetailComponent";
 
 const bull = (
 	<Box component="span" sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}>
@@ -22,6 +28,9 @@ export default function ResultComponent() {
 	const testClassesRef = useRef([]);
 	const [testClasses, setTestClasses] = useState([]);
 	const [testSchedules, setTestSchedules] = useState([]);
+	const [results, setResults] = useState([]);
+	const [openResultDetailDialog, setOpenResultDetailDialog] = useState(false);
+	const resultDetailDataRef = useRef(undefined);
 	//init
 	useEffect(() => {
 		const fetchData = async () => {
@@ -31,8 +40,17 @@ export default function ResultComponent() {
 	}, []);
 	async function getInitData() {
 		setLoading(true);
-		await getTestClass();
+		await getResults();
 		setLoading(false);
+	}
+	async function getResults() {
+		const response = await ResultService.getAll();
+		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+			setResults(response.data?.data);
+		} else {
+			toast.error("Get all result failed");
+			return [];
+		}
 	}
 	async function getTestSchedules() {
 		const response = await TestScheduleService.getAllTestSchedule();
@@ -55,40 +73,59 @@ export default function ResultComponent() {
 			console.log("err", err);
 		}
 	}
+	function onClose() {
+		setOpenResultDetailDialog(false);
+	}
+	function handleResultDetail(item) {
+		resultDetailDataRef.current = item;
+		setOpenResultDetailDialog(true);
+	}
 	return (
 		<Box>
-			{testClasses.map((testClass, index) => (
+			{results.map((item, index) => (
 				<Card className="result-card-container mb-2">
 					<div className="row" key={index}>
 						<div className="col-8">
 							<CardContent>
 								<Typography variant="h5" component="div">
-									Ten cua de thi o day{bull}
+									{item.test_name}
 								</Typography>
-								<Typography variant="body2">
-									<i className="fa-solid fa-book-open"></i>Ten mon hoc
+								<Typography variant="body1" sx={{ mb: 0.5 }}>
+									<i className="fa-solid fa-book-open me-2"></i>Môn học: {item.subject_name}
 								</Typography>
-								<Typography sx={{ mb: 1.5 }} color="text.secondary">
-									<i className="fa-solid fa-layer-group"></i>Duoc giao cho lop tin chi nao
+								<Typography variant="body1" sx={{ mb: 0.5 }}>
+									<i className="fa-solid fa-layer-group me-2"></i>LTC: {item.credit_class_name}
 								</Typography>
-								<Typography variant="body2">
-									<i className="fa-solid fa-clock"></i>Thoi gian lam bai
+								<Typography variant="body1">
+									<i className="fa-solid fa-clock me-2"></i>
+									{FeHelpers.convertDate(item.test_schedule_date)}
+									{bull} {item.test_time}(phút)
 								</Typography>
 							</CardContent>
 						</div>
 						<div className="col-4">
 							<CardActions>
 								<Button size="small" color="primary" variant="outlined">
-									<i className="fa-regular fa-flag"></i>Trang thai
+									<i className="fa-regular fa-flag me-2"></i>Trang thai
 								</Button>
-								<Button size="small" color="primary" variant="contained">
-									<i className="fa-solid fa-circle-info"></i>Chi tiet
+								<Button size="small" color="primary" variant="contained" onClick={() => handleResultDetail(item)}>
+									<i className="fa-solid fa-circle-info me-2"></i>Chi tiet
 								</Button>
 							</CardActions>
 						</div>
 					</div>
 				</Card>
 			))}
+			<CommonDialogComponent
+				open={openResultDetailDialog}
+				title="Chi tiết kết quả"
+				icon="fa-solid fa-circle-plus"
+				width="70vw"
+				height="50vh"
+				onClose={onClose}>
+				<ResultDetailComponent data={resultDetailDataRef.current} />
+			</CommonDialogComponent>
+			<Pagination className="mt-3 d-flex justify-content-end" count={10} variant="outlined" shape="rounded" />
 		</Box>
 	);
 }

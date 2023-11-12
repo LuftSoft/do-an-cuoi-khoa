@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../redux/selectors";
 import { publicRoutes } from "../routes";
 import { CONST } from "./const";
+import dayjs from "dayjs";
 export const renderRoutes = (routes) => {
 	let reactElements = null;
 	if (Array.isArray(routes)) {
@@ -183,6 +184,9 @@ export const FeHelpers = {
 	getDate() {
 		const now = new Date();
 		return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+	},
+	convertDate(date) {
+		return dayjs(date).format("YYYY-MM-DD");
 	},
 	translateGender(gender) {
 		let result = undefined;

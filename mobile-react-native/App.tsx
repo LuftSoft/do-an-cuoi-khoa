@@ -14,6 +14,7 @@ import {UserProvider} from './utils/user.context';
 import Sidebar from './components/common/sidebar';
 import Toast from 'react-native-toast-message';
 import {PaperProvider} from 'react-native-paper';
+import BottomNavigationComponent from './components/overview/BottomNavigation';
 
 function App() {
   return (

@@ -33,7 +33,7 @@ module.exports = {
       },
       choose: {
         type: Sequelize.ENUM(Object.values(CONSTANTS.QUESTION.ANSWER)),
-        allowNull: false,
+        allowNull: true,
       },
     });
   },

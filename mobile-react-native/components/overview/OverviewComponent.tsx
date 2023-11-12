@@ -7,7 +7,7 @@
 
 import {StackNavigationProp} from '@react-navigation/stack';
 import type {PropsWithChildren} from 'react';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   Image,
   StyleSheet,
@@ -28,8 +28,11 @@ export type RootStackParamList = {
   Login: undefined;
   Home: undefined;
   Test: undefined;
+  Result: undefined;
+  ResultDetail: {data: any};
   TestDetail: {data: any};
   Param: any;
+  BottomNavigation: undefined;
 };
 type OverViewNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 type Props = {
@@ -46,8 +49,25 @@ const OverviewComponent: React.FC<Props> = ({navigation}) => {
   const imagePath = require('../../assets/background.jpg');
   const backgroundLeftTop = require('../../assets/overview/left-top.png');
   const backgroundLeftRight = require('../../assets/overview/left-right.png');
+  const backgroundLeftBottom = require('../../assets/overview/bottom-left.png');
+  const backgroundRightBottom = require('../../assets/overview/bottom-right.png');
   const handleTestDetail = () => {
     navigation.navigate('Test');
+  };
+  const handleResultDetail = () => {
+    navigation.navigate('Result');
+  };
+  const handleLogout = () => {
+    setUser({
+      user: null,
+      accessToken: '',
+      refreshToken: '',
+    });
+    navigation.navigate('Login');
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Login'}],
+    });
   };
   return (
     <View style={styles.container}>
@@ -60,17 +80,19 @@ const OverviewComponent: React.FC<Props> = ({navigation}) => {
             <Image source={backgroundLeftTop} style={[styles.background]} />
             <Text style={styles.buttonText}>Đề thi</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={handleResultDetail}>
             <Image source={backgroundLeftRight} style={[styles.background]} />
             <Text style={styles.buttonText}>Kết quả</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Button 3</Text>
+            <Image source={backgroundLeftBottom} style={[styles.background]} />
+            <Text style={styles.buttonText}>Cài đặt</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Button 4</Text>
+          <TouchableOpacity style={styles.button} onPress={handleLogout}>
+            <Image source={backgroundRightBottom} style={[styles.background]} />
+            <Text style={styles.buttonText}>Đăng xuất</Text>
           </TouchableOpacity>
         </View>
       </View>

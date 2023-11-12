@@ -35,10 +35,11 @@ module.exports = {
         );
       }
       const detail = await resultDetailService.getByResultId(id);
-      data.detail = detail;
+      data.dataValues.detail = detail;
+      console.log("result data bang: ", data);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
-        data,
+        data.dataValues,
         null
       );
     } catch (err) {
@@ -79,10 +80,19 @@ module.exports = {
   create: async (result) => {
     var id = "";
     try {
+      let query = "";
+      let correct_answer = 0;
+      for (let q of result.questions) {
+        if (q.choose === q.correct_answer) correct_answer++;
+      }
       const resultValue = {
         test_credit_classes_id: result.test_credit_class_id,
         user_id: result.user_id,
-        mark: 0,
+        mark:
+          (
+            (result.total_mark * correct_answer) /
+            result.questions.length
+          ).toFixed(2) || 0,
         start_time: result.test_schedule_date,
       };
       let data = await resultRepository.create(resultValue);
@@ -90,11 +100,17 @@ module.exports = {
       id = data.dataValues?.id;
       console.log("id bang:", id);
       console.log("create result success");
-      let query = "";
-      result.questions.forEach((q) => {
+      for (let q of result.questions) {
         query += `(${id},${q.question_id},${q.position},'${q.choose || ""}'),`;
-      });
+      }
+      // result.questions.forEach((q) => {
+      //   query += `(${id},${q.question_id},${q.position},'${q.choose || ""}'),`;
+      // });
       query = query.slice(0, -1);
+      console.log("query bang: ", query);
+      if (query.length === 0) {
+        //need delete here
+      }
       const resultDetail = await resultRepository.createMultiResultQuestion(
         query
       );
@@ -108,6 +124,7 @@ module.exports = {
       logger.error("create result failed");
       console.log(err);
       console.log("result id need delete: ", id);
+      await resultRepository.delete(id);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.ERROR,
         null,

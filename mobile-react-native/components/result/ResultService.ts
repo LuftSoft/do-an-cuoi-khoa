@@ -8,4 +8,7 @@ export const ResultService = {
     getResultByUserid: async (id: string) => {
         return await axios.get(`${RESULT_ROUTE}${ROUTE.USER}/${id}`);
     },
+    getResultById: async (id: string) => {
+        return await axios.get(`${RESULT_ROUTE}/${id}`);
+    },
 }
