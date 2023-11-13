@@ -10,7 +10,7 @@ router.get("/user/:id", async (req, res) => {
 });
 /* API giao đề thi cho từng nhóm */
 router.get("/:id", async (req, res) => {
-  res.send(await testService.getTestClasses());
+  res.send(await testService.getTestClassesById(req.params.id));
 });
 router.get("/credit-class/:id", async (req, res) => {
   const id = req.params.id;

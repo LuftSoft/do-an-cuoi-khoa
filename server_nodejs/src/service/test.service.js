@@ -212,7 +212,7 @@ module.exports = {
   },
   getTestClassesById: async (id) => {
     try {
-      let data = await testRepository.getTestClasses();
+      let data = await testRepository.getTestClassesById(id);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
         data,

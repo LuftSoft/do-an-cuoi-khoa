@@ -32,7 +32,7 @@ export default function TestScheduleComponent() {
 			.then((response) => {
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 					const data = response.data?.data;
-					data.forEach((item) => (item.date = dayjs(item.date).format("YYYY-MM-DD HH:mm:ss")));
+					data.forEach((item) => (item.date = dayjs(item.date).format("HH:mm:ss DD-MM-YYYY")));
 					setDataSource(data);
 				} else {
 					toast.error("Không tìm thấy ca thi.");

@@ -186,7 +186,7 @@ export const FeHelpers = {
 		return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
 	},
 	convertDate(date) {
-		return dayjs(date).format("YYYY-MM-DD");
+		return dayjs(date).format("DD-MM-YYYY");
 	},
 	translateGender(gender) {
 		let result = undefined;

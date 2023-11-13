@@ -77,6 +77,31 @@ module.exports = {
       );
     }
   },
+  getByTestCreditClassesId: async (id) => {
+    try {
+      var data = await resultRepository.getByTestCreditClassesId(id);
+      if (!data) {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.ERROR,
+          null,
+          CONFIG.ERROR.NOT_EXISTS
+        );
+      }
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        data,
+        null
+      );
+    } catch (err) {
+      logger.error(`get result with id "${id}" failed`);
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
   create: async (result) => {
     var id = "";
     try {

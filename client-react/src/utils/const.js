@@ -130,6 +130,7 @@ const CONST = {
 		SUBJECT: "/subject",
 		QUESTION: "/question",
 		CREDIT_CLASS: "/credit-class",
+		TEST_CREDIT_CLASSES: "/test-credit-classes",
 		TEST_SCHEDULE: "/test-schedule",
 		TEST: "/test",
 		RESULT: "/result",

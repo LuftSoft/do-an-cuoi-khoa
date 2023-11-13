@@ -70,6 +70,11 @@ export default function CommonTableComponent(props) {
 					</TableRow>
 				</TableHead>
 				<TableBody>
+					{dataSource.length === 0 ? (
+						<StyledTableRow key="nodata">
+							<StyledTableCell key="nodata-cell">Khong co du lieu</StyledTableCell>
+						</StyledTableRow>
+					) : null}
 					{(rowsPerPage > 0 ? dataSource.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : dataSource).map(
 						(row, index) => (
 							<StyledTableRow key={index}>
