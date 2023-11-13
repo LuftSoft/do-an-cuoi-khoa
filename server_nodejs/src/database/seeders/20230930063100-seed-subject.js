@@ -39,6 +39,34 @@ module.exports = {
         theoretical_lesson: 45,
         pratical_lesson: 15,
       },
+      {
+        id: "92e9-cc94-0b41-04f6-53cf-61db-5c15-8425",
+        name: "Lập trình Python",
+        credit: 3,
+        theoretical_lesson: 30,
+        pratical_lesson: 15,
+      },
+      {
+        id: "af83-1733-51a0-946f-2be0-71a8-9cae-bbda",
+        name: "Nhập môn công nghệ phần ",
+        credit: 3,
+        theoretical_lesson: 30,
+        pratical_lesson: 15,
+      },
+      {
+        id: "b4a1-400a-3e8f-4a18-e972-38e8-e68a-2696",
+        name: "Lập trình mạng",
+        credit: 3,
+        theoretical_lesson: 30,
+        pratical_lesson: 15,
+      },
+      {
+        id: "c03c-d3bf-b8fd-2a67-f765-38a8-111e-22c0",
+        name: "Mạng máy tính",
+        credit: 3,
+        theoretical_lesson: 30,
+        pratical_lesson: 15,
+      },
     ]);
   },
 

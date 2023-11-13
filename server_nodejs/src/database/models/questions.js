@@ -31,19 +31,19 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       answer_a: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT("long"),
         allowNull: false,
       },
       answer_b: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT("long"),
         allowNull: false,
       },
       answer_c: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT("long"),
         allowNull: false,
       },
       answer_d: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT("long"),
         allowNull: false,
       },
       correct_answer: {

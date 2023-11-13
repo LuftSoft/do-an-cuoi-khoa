@@ -92,8 +92,10 @@ const ResultDetailComponent: React.FC<Props> = ({navigation}) => {
   const getResultAnswerStyle = (item: any, answer: string) => {
     if (item.choose === answer && answer === item.correct_answer) {
       return styles.answerSelected;
-    } else if (answer === item.correct_answer) {
+    } else if (answer === item.correct_answer && item.choose.length > 0) {
       return styles.answerSelected;
+    } else if (answer === item.correct_answer && item.choose.length == 0) {
+      return styles.answerWrong;
     } else if (item.choose === answer && answer !== item.correct_answer) {
       return styles.answerWrong;
     }
@@ -102,8 +104,10 @@ const ResultDetailComponent: React.FC<Props> = ({navigation}) => {
   const getRadioButtonType = (item: any, answer: string) => {
     if (item.choose === answer && answer === item.correct_answer) {
       return 'highlight';
-    } else if (answer === item.correct_answer) {
+    } else if (answer === item.correct_answer && item.choose.length > 0) {
       return 'highlight';
+    } else if (answer === item.correct_answer && item.choose.length == 0) {
+      return 'wrong';
     } else if (item.choose === answer && answer !== item.correct_answer) {
       return 'wrong';
     }

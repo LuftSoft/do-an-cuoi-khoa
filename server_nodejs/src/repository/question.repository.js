@@ -59,6 +59,13 @@ module.exports = {
     const questionCreate = await questions.create(question);
     return questionCreate;
   },
+  createMultiple: async (query) => {
+    const queryExe = `INSERT INTO questions(question,level,answer_a,answer_b,answer_c,answer_d,correct_answer,image,chapter_id,is_admin_create,user_create)
+    VALUES ${query}`;
+    return await questions.sequelize.query(queryExe, {
+      type: QueryTypes.INSERT,
+    });
+  },
   update: async (question) => {
     await question.save();
     return question;

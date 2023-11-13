@@ -21,19 +21,19 @@ module.exports = {
         allowNull: false,
       },
       answer_a: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT("long"),
         allowNull: false,
       },
       answer_b: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT("long"),
         allowNull: false,
       },
       answer_c: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT("long"),
         allowNull: false,
       },
       answer_d: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT("long"),
         allowNull: false,
       },
       correct_answer: {

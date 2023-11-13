@@ -101,7 +101,9 @@ module.exports = {
       console.log("id bang:", id);
       console.log("create result success");
       for (let q of result.questions) {
-        query += `(${id},${q.question_id},${q.position},'${q.choose || ""}'),`;
+        query += `(${id},${q.question_id},${q.position},${
+          q.choose ? `'${q.choose}'` : null
+        }),`;
       }
       // result.questions.forEach((q) => {
       //   query += `(${id},${q.question_id},${q.position},'${q.choose || ""}'),`;

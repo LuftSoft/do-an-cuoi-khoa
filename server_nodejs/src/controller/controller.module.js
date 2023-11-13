@@ -21,4 +21,5 @@ module.exports = (api) => {
   );
   api.use(`${URL_CONFIG.API_V1}/result`, require("./result.controller"));
   api.use(`${URL_CONFIG.API_V1}/assign`, require("./assign.controller"));
+  api.use(`${URL_CONFIG.API_V1}/import`, require("./import.controller"));
 };
