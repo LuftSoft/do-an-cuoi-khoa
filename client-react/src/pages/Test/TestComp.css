@@ -64,3 +64,46 @@ hr {
 		max-width: 100%;
 	}
 }
+.q-test-item {
+	box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.q-process-node {
+	border: 1px solid #000;
+	padding: 4px 10px;
+	border-radius: 3px;
+}
+.q-process-container {
+	margin-top: 12px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+.q-process-node-selected {
+	background-color: #1976d2;
+	border-color: #1976d2;
+	color: #fff;
+}
+.red {
+	color: red;
+}
+
+.correct-answer {
+	color: #1976d2;
+}
+.correct-answer :first-child {
+	color: #1976d2 !important;
+}
+.wrong-answer {
+	color: red;
+}
+
+.wrong-answer :first-child {
+	color: red !important;
+}
+
+.mark-field {
+	background-color: #1abc9c;
+	color: #fff;
+	padding: 10px 0;
+	border-radius: 10px;
+}

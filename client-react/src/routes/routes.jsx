@@ -19,6 +19,7 @@ import { SubjectLayoutComponent } from "../pages/Subject";
 import CreateSubjectComponent from "../pages/Subject/CreateSubjectComponent";
 import TableComTest from "../pages/TableComTest";
 import TestComponent from "../pages/Test/TestComponent";
+import TestTakeComponent from "../pages/Test/TestTakeComponent";
 import TestScheduleComponent from "../pages/TestSchedule/TestScheduleComponent";
 import UpdateHotelPage from "../pages/UpdateHotelPage";
 import UpdateRoomPage from "../pages/UpdateRoomPage";
@@ -79,4 +80,5 @@ export const privateRoutes = [
 	{ path: routes.TEST_SCHEDULE, page: TestScheduleComponent, layout: null, permissions: [] },
 	{ path: routes.RESULT, page: ResultLayoutComponent, layout: null, permissions: [] },
 	{ path: routes.TEST, page: TestComponent, layout: null, permissions: [] },
+	{ path: routes.TEST + "/test", page: TestTakeComponent, layout: null, permissions: [] },
 ];

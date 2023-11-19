@@ -19,4 +19,9 @@ export const QuestionService = {
 	deleteQuestion: async (id, token) => {
 		return await axios.delete(`${QUESTION_ROUTE}/${id}`, { headers: { Authorization: `Bearer ${token}` } });
 	},
+	importQuestion: async (data, token) => {
+		return await axios.post(`${QUESTION_ROUTE}/import`, data, {
+			headers: { Authorization: "Bearer " + token, "Content-Type": "multipart/form-data" },
+		});
+	},
 };

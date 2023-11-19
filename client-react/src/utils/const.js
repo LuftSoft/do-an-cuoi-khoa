@@ -4,6 +4,16 @@ const PERMISSION = {
 	SV: "sv",
 };
 const CONST = {
+	BUTTON: {
+		COLOR: {
+			INFO: "info",
+			SUCCESS: "success",
+			WARNING: "warning",
+			PRIMARY: "primary",
+			SECONDARY: "secondary",
+			ERROR: "error",
+		},
+	},
 	DIALOG: {
 		TYPE: {
 			CREATE: "create",
@@ -138,6 +148,7 @@ const CONST = {
 		SEMESTER: "/semester",
 		SIGNUP: "/signup",
 		ASSIGN: "/assign",
+		COMMON: "/common",
 	},
 	PERMISSION: {
 		ADMIN: "admin",

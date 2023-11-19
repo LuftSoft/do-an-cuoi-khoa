@@ -16,12 +16,33 @@ import { CONST } from "../../utils/const";
 import { toast } from "react-toastify";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import { selectAccessToken } from "../../redux/selectors";
+import ImportDialogComponent from "./ImportComponent";
 export default function QuestionComponent() {
 	const title = "Danh sách câu hỏi";
 	const buttons = [
 		{
 			name: "Tạo câu hỏi",
+			icon: "fa-solid fa-plus",
 			onClick: handleButtonClick,
+			color: CONST.BUTTON.COLOR.PRIMARY,
+		},
+		{
+			name: "Import",
+			icon: "fa-solid fa-file-import",
+			color: CONST.BUTTON.COLOR.SUCCESS,
+			onClick: handleImportQuestion,
+		},
+		{
+			name: "Export",
+			icon: "fa-solid fa-file-export",
+			color: CONST.BUTTON.COLOR.SUCCESS,
+			onClick: handleExportQuestion,
+		},
+		{
+			name: "Template",
+			icon: "fa-solid fa-download",
+			onClick: handleExportQuestion,
+			color: CONST.BUTTON.COLOR.WARNING,
 		},
 	];
 	const loadingService = useLoadingService();
@@ -31,6 +52,7 @@ export default function QuestionComponent() {
 	//set type of dialog open;
 	const [type, setType] = useState(CONST.DIALOG.TYPE.CREATE);
 	const [confirmDialog, setConfirmDialog] = useState(false);
+	const [openImportDialog, setOpenImportDialog] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
 	const [question, setQuestion] = useState({});
 	const accessToken = useSelector(selectAccessToken);
@@ -172,10 +194,19 @@ export default function QuestionComponent() {
 	useEffect(() => {
 		getQuestions();
 	}, []);
+	function handleExportQuestion() {}
+	function handleImportQuestion() {
+		setOpenImportDialog(true);
+	}
+	function handleCloseImportQuestion() {
+		setOpenImportDialog(false);
+	}
 	return (
 		<Box>
 			<div>
 				<TitleButtonComponent title={title} buttons={buttons} />
+				<input type="file" style={{ display: "none" }} name="import_question" />
+				<input type="file" style={{ display: "none" }} name="export_question" />
 			</div>
 			<CommonTableComponent
 				columnDef={columnDef}
@@ -200,6 +231,15 @@ export default function QuestionComponent() {
 				height="50vh"
 				onClose={onClose}>
 				<ConfirmDialog message="Bạn muốn xóa câu hỏi này?" handleClose={handleConfirmDialog}></ConfirmDialog>
+			</CommonDialogComponent>
+			<CommonDialogComponent
+				open={openImportDialog}
+				title="Import câu hỏi"
+				icon="fa-solid fa-circle-plus"
+				width="30vw"
+				height="50vh"
+				onClose={handleCloseImportQuestion}>
+				<ImportDialogComponent handleClose={handleCloseImportQuestion}></ImportDialogComponent>
 			</CommonDialogComponent>
 		</Box>
 	);

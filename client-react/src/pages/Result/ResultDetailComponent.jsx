@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { CommonTableComponent } from "../../components/Common";
+import { CommonDialogComponent, CommonTableComponent } from "../../components/Common";
 import { ResultService } from "./ResultService";
 import { useLoadingService } from "../../contexts/loadingContext";
 import { CONST } from "../../utils/const";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
 import { FeHelpers } from "../../utils/helpers";
+import TestTakeComponent from "../Test/TestTakeComponent";
+import { Box } from "@mui/material";
 const columnDef = [
 	{
 		colName: "Mã sinh viên",
@@ -25,10 +27,11 @@ const columnDef = [
 	},
 ];
 export default function ResultDetailComponent(props) {
-	console.log(props);
 	const { data } = props;
 	const { loading, setLoading } = useLoadingService();
 	const [dataSource, setDataSource] = useState([]);
+	const [openTestTakeDialog, setOpenTestTakeDialog] = useState(false);
+	const [resultDialogData, setResultDialogData] = useState(null);
 	useEffect(() => {
 		const fetchData = async () => {
 			await getInitData();
@@ -55,8 +58,25 @@ export default function ResultDetailComponent(props) {
 			return [];
 		}
 	}
-	function handleView() {}
+	function handleView(data) {
+		setResultDialogData(data);
+		setOpenTestTakeDialog(true);
+	}
+	function handleCloseDialog() {
+		setOpenTestTakeDialog(false);
+	}
 	return (
-		<CommonTableComponent columnDef={columnDef} dataSource={dataSource} onView={handleView}></CommonTableComponent>
+		<Box>
+			<CommonTableComponent columnDef={columnDef} dataSource={dataSource} onView={handleView}></CommonTableComponent>
+			<CommonDialogComponent
+				open={openTestTakeDialog}
+				onClose={handleCloseDialog}
+				title="Chi tiết kết quả"
+				width="80vw"
+				height="auto"
+				icon="fa-solid fa-circle-info">
+				<TestTakeComponent data={resultDialogData} type="result"></TestTakeComponent>
+			</CommonDialogComponent>
+		</Box>
 	);
 }

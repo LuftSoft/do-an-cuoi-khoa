@@ -36,7 +36,6 @@ const CreateUserComponent = ({ onSubmit, data, type, btnTitle }) => {
 	};
 	const handleFileChange = (e) => {
 		const { name, value } = e.target;
-		console.log(e.target.files);
 		if (e.target.files[0]) {
 			setFormData({ ...formData, avatar: e.target.files[0] });
 		}

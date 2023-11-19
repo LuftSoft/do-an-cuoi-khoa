@@ -3,6 +3,10 @@ import { Box, Button, Card, CardActions, CardContent, Typography } from "@mui/ma
 import "./Overview.css";
 import TitleButtonComponent from "../../components/Common/CommonHeader/CommonHeaderComponent";
 import { Bar, Chart, Pie } from "react-chartjs-2";
+import { useEffect, useState } from "react";
+import { OverviewService } from "./OverviewService";
+import { CONST } from "../../utils/const";
+import { useLoadingService } from "../../contexts/loadingContext";
 const bull = (
 	<Box component="span" sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}>
 		•
@@ -12,37 +16,42 @@ const title = "Tổng quan";
 const headInfo = [
 	{
 		name: "Câu hỏi",
-		value: "12",
+		key: "questions",
 	},
 	{
 		name: "Bài thi",
-		value: "12",
+		key: "tests",
 	},
 	{
 		name: "Đề thi",
-		value: "14",
+		key: "users",
 	},
 	{
 		name: "Người sử dụng",
-		value: "3",
+		key: "results",
 	},
 ];
 export default function OverviewComponent() {
+	const [fourTopData, setFourTop] = useState({
+		questions: 0,
+		tests: 0,
+		users: 0,
+		results: 0,
+	});
+	const [pieChartData, setPieChart] = useState({
+		under_one: 0,
+		one_four: 0,
+		four_six_point_five: 0,
+		six_point_five_eight: 0,
+		eight_nine: 0,
+		above_nine: 0,
+	});
+	const [barChartData, setBarChart] = useState([]);
+	const { loading, setLoading } = useLoadingService();
 	const buttons = [];
 	const colors = ["#D6A2E8", "#FEA47F", "#3B3B98", "#f78fb3"];
 	const chartData = {
-		labels: [
-			"HK2 2020",
-			"HK3 2020",
-			"HK1 2021",
-			"HK2 2021",
-			"HK3 2021",
-			"HK1 2022",
-			"HK2 2022",
-			"HK3 2022",
-			"HK1 2023",
-			"HK2 2023",
-		],
+		labels: barChartData.map((i) => `HK${i.semester} ${i.year}`).reverse(),
 		datasets: [
 			{
 				label: "Số bài thi",
@@ -51,7 +60,7 @@ export default function OverviewComponent() {
 				borderWidth: 1,
 				hoverBackgroundColor: "rgba(54, 162, 235, 0.6)",
 				hoverBorderColor: "rgba(75,192,192,1)",
-				data: [65, 59, 80, 81, 56, 34, 56, 85, 39, 102],
+				data: barChartData.map((i) => i.num).reverse(),
 			},
 		],
 	};
@@ -60,7 +69,7 @@ export default function OverviewComponent() {
 		datasets: [
 			{
 				label: "Số bài thi",
-				data: [12, 19, 3, 5, 2, 3],
+				data: Object.values(pieChartData),
 				backgroundColor: [
 					"rgba(255, 99, 132, 0.2)",
 					"rgba(54, 162, 235, 0.2)",
@@ -89,6 +98,37 @@ export default function OverviewComponent() {
 			},
 		],
 	};
+	const getFourTopInfo = async () => {
+		const response = await OverviewService.getFourTopInfo();
+		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+			setFourTop(response.data?.data);
+		}
+	};
+	const getPieChartInfo = async () => {
+		const response = await OverviewService.getPieChartInfo();
+		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+			setPieChart(response.data?.data);
+		}
+	};
+	const getBarChartInfo = async () => {
+		const response = await OverviewService.getBarChartInfo();
+		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+			setBarChart(response.data?.data);
+		}
+	};
+	const getInitData = async () => {
+		setLoading(true);
+		await getFourTopInfo();
+		await getPieChartInfo();
+		await getBarChartInfo();
+		setLoading(false);
+	};
+	useEffect(() => {
+		const fetchData = async () => {
+			await getInitData();
+		};
+		fetchData();
+	}, []);
 	function handleButtonClick() {}
 	return (
 		<Box>
@@ -101,7 +141,7 @@ export default function OverviewComponent() {
 						<Card className="overview-border-left" style={{ backgroundColor: colors[index] }}>
 							<CardContent>
 								<Typography variant="h4" component="div" color="white" style={{ fontWeight: 600 }}>
-									{data.value}
+									{fourTopData[data.key]}
 								</Typography>
 								<Typography variant="h5" color="white">
 									{data.name}

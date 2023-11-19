@@ -7,7 +7,14 @@ const TitleButtonComponent = ({ title, buttons }) => {
 		<div style={styles.container}>
 			<div style={styles.title}>{title}</div>
 			{buttons.map((button, index) => (
-				<Button style={styles.button} variant="contained" onClick={button.onClick} key={id + index}>
+				<Button
+					color={button.color ? button.color : "primary"}
+					style={styles.button}
+					className="ms-2"
+					variant="contained"
+					onClick={button.onClick}
+					key={id + index}>
+					{button.icon ? <i className={`${button.icon} me-2`}></i> : null}
 					{button.name}
 				</Button>
 			))}
