@@ -13,8 +13,8 @@ export const CreditClassService = {
 	updateCreditClass: async () => {
 		return await axios.post(CREDIT_CLASS_ROUTE, {});
 	},
-	deleteCreditClass: async () => {
-		return await axios.delete(CREDIT_CLASS_ROUTE);
+	deleteCreditClass: async (id) => {
+		return await axios.delete(`${CREDIT_CLASS_ROUTE}/${id}`);
 	},
 	createUserClassDetail: async (data, token) => {
 		return await axios.post(`${CREDIT_CLASS_ROUTE}/user`, data);

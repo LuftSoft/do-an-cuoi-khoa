@@ -35,4 +35,7 @@ export const TestService = {
 	deleteTestClass: async (id) => {
 		return await axios.delete(`${TEST_CLASS_ROUTE}/${id}`);
 	},
+	exportTest: async (id) => {
+		return await axios.post(`${TEST_ROUTE}/export/${id}`);
+	},
 };

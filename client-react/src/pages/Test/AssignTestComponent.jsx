@@ -172,6 +172,8 @@ export default function AssignTestComponent(props) {
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 					toast.success("Hủy phân công thành công");
 					await getTestClass(test?.id);
+				} else {
+					toast.error("Bài thi đã có ít nhất một kết quả, không thể hủy phân công.");
 				}
 			}
 		} catch (err) {

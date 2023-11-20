@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import { selectAccessToken } from "../../redux/selectors";
 import ImportDialogComponent from "./ImportComponent";
+import axios from "axios";
 export default function QuestionComponent() {
 	const title = "Danh sách câu hỏi";
 	const buttons = [
@@ -30,7 +31,7 @@ export default function QuestionComponent() {
 			name: "Import",
 			icon: "fa-solid fa-file-import",
 			color: CONST.BUTTON.COLOR.SUCCESS,
-			onClick: handleImportQuestion,
+			onClick: handleOpenImportQuestionDialog,
 		},
 		{
 			name: "Export",
@@ -41,7 +42,7 @@ export default function QuestionComponent() {
 		{
 			name: "Template",
 			icon: "fa-solid fa-download",
-			onClick: handleExportQuestion,
+			onClick: handleDownLoadTemplate,
 			color: CONST.BUTTON.COLOR.WARNING,
 		},
 	];
@@ -194,12 +195,83 @@ export default function QuestionComponent() {
 	useEffect(() => {
 		getQuestions();
 	}, []);
-	function handleExportQuestion() {}
-	function handleImportQuestion() {
+	async function handleExportQuestion() {
+		loadingService.setLoading(true);
+		try {
+			const response = await QuestionService.exportQuestion(accessToken);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				const pdfBuffer = atob(response.data?.data);
+				const byteNumbers = new Array(pdfBuffer.length);
+				for (let i = 0; i < pdfBuffer.length; i++) {
+					byteNumbers[i] = pdfBuffer.charCodeAt(i);
+				}
+				const byteArray = new Uint8Array(byteNumbers);
+				const blob = new Blob([byteArray], { type: "application/pdf" });
+
+				// Create a download link
+				const link = document.createElement("a");
+				link.href = window.URL.createObjectURL(blob);
+				link.download = `question_import_result_${new Date().getTime()}.xlsx`;
+				document.body.appendChild(link);
+
+				// Trigger the download
+				link.click();
+
+				// Clean up
+				document.body.removeChild(link);
+				toast.success("Export câu hỏi thành công");
+			}
+			loadingService.setLoading(false);
+		} catch (err) {
+			toast.error("Export câu hỏi thất bại");
+			loadingService.setLoading(false);
+		}
+	}
+	function handleOpenImportQuestionDialog() {
 		setOpenImportDialog(true);
+	}
+	async function handleImportQuestion(file) {
+		console.log(file.name);
+		console.log("handle import dialog");
+		const response = await QuestionService.importQuestion({ file: file }, accessToken);
+		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+			const pdfBuffer = atob(response.data?.data);
+			const byteNumbers = new Array(pdfBuffer.length);
+			for (let i = 0; i < pdfBuffer.length; i++) {
+				byteNumbers[i] = pdfBuffer.charCodeAt(i);
+			}
+			const byteArray = new Uint8Array(byteNumbers);
+			const blob = new Blob([byteArray], { type: "application/pdf" });
+
+			// Create a download link
+			const link = document.createElement("a");
+			link.href = window.URL.createObjectURL(blob);
+			link.download = `question_import_result_${new Date().getTime()}.xlsx`;
+			document.body.appendChild(link);
+
+			// Trigger the download
+			link.click();
+
+			// Clean up
+			document.body.removeChild(link);
+			toast.success(`Import câu hỏi thành công`);
+			setOpenImportDialog(false);
+		}
 	}
 	function handleCloseImportQuestion() {
 		setOpenImportDialog(false);
+	}
+	async function handleDownLoadTemplate() {
+		//create object to save
+		const link = document.createElement("a");
+		link.href = CONST.SELF_URL + "/public/file/question_import_template.xlsx";
+		link.setAttribute("download", `question_template_import_${new Date().getTime()}.xlsx`);
+
+		document.body.appendChild(link);
+		link.click();
+
+		//clean up
+		document.body.removeChild(link);
 	}
 	return (
 		<Box>
@@ -239,7 +311,9 @@ export default function QuestionComponent() {
 				width="30vw"
 				height="50vh"
 				onClose={handleCloseImportQuestion}>
-				<ImportDialogComponent handleClose={handleCloseImportQuestion}></ImportDialogComponent>
+				<ImportDialogComponent
+					handleClose={handleCloseImportQuestion}
+					handleSubmit={handleImportQuestion}></ImportDialogComponent>
 			</CommonDialogComponent>
 		</Box>
 	);

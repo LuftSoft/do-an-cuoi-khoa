@@ -10,6 +10,7 @@ module.exports = {
         credit: 3,
         theoretical_lesson: 30,
         pratical_lesson: 15,
+        department_id: 1,
       },
       {
         id: "30c3-532c-fe95-6e28-f406-ce4e-bc0c-42b0",
@@ -17,6 +18,7 @@ module.exports = {
         credit: 3,
         theoretical_lesson: 30,
         pratical_lesson: 15,
+        department_id: 1,
       },
       {
         id: "4487-1ab5-3db9-efc3-b0ff-5e77-56db-9542",
@@ -24,6 +26,7 @@ module.exports = {
         credit: 3,
         theoretical_lesson: 30,
         pratical_lesson: 15,
+        department_id: 1,
       },
       {
         id: "4bdb-215e-883c-3761-8c8d-6fa8-bf72-41a7",
@@ -31,6 +34,7 @@ module.exports = {
         credit: 3,
         theoretical_lesson: 30,
         pratical_lesson: 15,
+        department_id: 1,
       },
       {
         id: "6f38-3b10-3e5a-6e65-dfee-b21a-1651-c802",
@@ -38,6 +42,7 @@ module.exports = {
         credit: 4,
         theoretical_lesson: 45,
         pratical_lesson: 15,
+        department_id: 1,
       },
       {
         id: "92e9-cc94-0b41-04f6-53cf-61db-5c15-8425",
@@ -45,6 +50,7 @@ module.exports = {
         credit: 3,
         theoretical_lesson: 30,
         pratical_lesson: 15,
+        department_id: 1,
       },
       {
         id: "af83-1733-51a0-946f-2be0-71a8-9cae-bbda",
@@ -52,6 +58,7 @@ module.exports = {
         credit: 3,
         theoretical_lesson: 30,
         pratical_lesson: 15,
+        department_id: 1,
       },
       {
         id: "b4a1-400a-3e8f-4a18-e972-38e8-e68a-2696",
@@ -59,6 +66,7 @@ module.exports = {
         credit: 3,
         theoretical_lesson: 30,
         pratical_lesson: 15,
+        department_id: 1,
       },
       {
         id: "c03c-d3bf-b8fd-2a67-f765-38a8-111e-22c0",
@@ -66,6 +74,7 @@ module.exports = {
         credit: 3,
         theoretical_lesson: 30,
         pratical_lesson: 15,
+        department_id: 1,
       },
     ]);
   },

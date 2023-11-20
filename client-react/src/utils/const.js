@@ -36,6 +36,7 @@ const CONST = {
 			{ "Đáp án C": "answer_c" },
 			{ "Đáp án D": "answer_d" },
 		],
+		IMPORT_FILE_TEMPLATE: "http://localhost:5173/public/file/question_import_template.xlsx",
 	},
 	USER: {
 		GENDER: {
@@ -119,7 +120,22 @@ const CONST = {
 				},
 			],
 		},
+		{
+			icon: "fa-solid fa-font",
+			name: "Bài thi của bạn",
+			route: "/test-schedule",
+			permissions: [PERMISSION.SV],
+			childs: [],
+		},
+		{
+			icon: "fa-solid fa-bullseye",
+			name: "Kết quả thi",
+			route: "/test-schedule",
+			permissions: [PERMISSION.SV],
+			childs: [],
+		},
 	],
+	SELF_URL: "http://localhost:5173",
 	BASE_URL: "http://localhost:3000/api/v1",
 	ROUTES: {
 		signIn: "/sign-in",

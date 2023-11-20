@@ -109,7 +109,7 @@ export default function TestComponent() {
 					<Card className="custom-card" label="Delete">
 						<i className="fa-solid fa-trash delete_test"></i>
 						<CardMedia component="img" height="100" className="bg-radient" />
-						<CardContent className="pb-3">
+						<CardContent className="pb-3 test-card-content">
 							<Typography gutterBottom variant="h5" component="div" className="card-two-row">
 								{test.name}
 							</Typography>

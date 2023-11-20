@@ -14,6 +14,15 @@ module.exports = {
     });
     return listquestion;
   },
+  getFirstNum: async (num) => {
+    const query = `SELECT questions.*, chapters.name as chapter_name, subjects.name as subject_name,subjects.id as subject_id 
+        FROM questions, chapters, subjects 
+        WHERE questions.chapter_id = chapters.id && chapters.subject_id = subjects.id LIMIT ${num}`;
+    const listquestion = await questions.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return listquestion;
+  },
   getById: async (id) => {
     const query = `SELECT questions.*, subjects.id as subject_id 
         FROM questions, chapters, subjects 

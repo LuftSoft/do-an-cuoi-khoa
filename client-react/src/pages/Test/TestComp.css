@@ -107,3 +107,9 @@ hr {
 	padding: 10px 0;
 	border-radius: 10px;
 }
+.test-card-content {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	height: calc(100% - 100px);
+}

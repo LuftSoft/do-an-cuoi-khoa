@@ -5,11 +5,14 @@ const { Helpers, logger } = require("../extension/helper");
 const testConverter = require("./converter/test.converter");
 const questionService = require("./question.service");
 const { CONSTANTS } = require("../shared/constant");
+const fs = require("fs");
 const findQuestionByLevel = (questions, level) => {
   const question = questions.find((item) => (item.level = level));
   questions = questions.filter((item) => item.id != question?.id);
   return question;
 };
+const PDFKit = require("pdfkit");
+const path = require("path");
 module.exports = {
   getAll: async () => {
     try {
@@ -375,6 +378,101 @@ module.exports = {
       );
     } catch (err) {
       logger.error(`delete test question with id ${id} failed`);
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+  export: async (id) => {
+    try {
+      let test = await testRepository.getById(id);
+      test = test.dataValues;
+      const doc = new PDFKit({
+        margins: { top: 20, left: 20, bottom: 20, right: 20 },
+      });
+      doc.pipe(fs.createWriteStream("test_export.pdf"));
+
+      // Write content to the PDF
+      //doc.setEncoding("ascii");
+      const lightFont = fs.readFileSync(
+        path.join(__dirname, "../../public/fonts/BeVietnamPro-Light.ttf")
+      );
+      const regularFont = fs.readFileSync(
+        path.join(__dirname, "../../public/fonts/BeVietnamPro-Regular.ttf")
+      );
+      const optionWidth = doc
+        .fontSize(12)
+        .widthOfString("HỌC VIỆN CÔNG NGHỆ BƯU CHÍNH VIỄN THÔNG");
+      doc.registerFont("lightFont", lightFont);
+      doc.registerFont("regularFont", regularFont);
+      doc.font("lightFont").fontSize(12);
+      doc.text("HỌC VIỆN CÔNG NGHỆ BƯU CHÍNH VIỄN THÔNG", {
+        continued: true,
+      });
+      doc.text(test.name.toUpperCase(), { continued: false, align: "right" });
+      doc.text("CƠ SỞ TẠI THÀNH PHỐ HỒ CHÍ MINH", {
+        continued: true,
+        indent: 60,
+      });
+      doc.text(`Thời gian thi: ${test.time} phút`, {
+        continued: false,
+        align: "right",
+      });
+      doc.text("KHOA: CÔNG NGHỆ THÔNG TIN 2");
+      doc.text("BỘ MÔN: Cấu trúc dữ liệu và giải thuật");
+      //header
+
+      doc.text("MSSV: ........................................", {
+        continued: true,
+      });
+      doc.text(
+        "Họ và tên: .........................................................................................."
+      );
+      doc.moveDown(1);
+      doc.font("regularFont").text("Đề thi", { align: "center" });
+      const questions = test.questions;
+      for (let i = 0; i < questions.length; i++) {
+        doc.fontSize(10);
+        doc
+          .font("regularFont")
+          .text(`Câu ${i + 1}: `, { align: "left", continued: true });
+        doc
+          .font("lightFont")
+          .text(`${questions[i].question}.`, { align: "left" });
+        doc
+          .font("regularFont")
+          .text(`A.`, { continued: true })
+          .font("lightFont")
+          .text(`${questions[i].answer_a}`);
+        doc
+          .font("regularFont")
+          .text(`B.`, { continued: true })
+          .font("lightFont")
+          .text(`${questions[i].answer_b}`);
+        doc
+          .font("regularFont")
+          .text(`C.`, { continued: true })
+          .font("lightFont")
+          .text(`${questions[i].answer_c}`);
+        doc
+          .font("regularFont")
+          .text(`D.`, { continued: true })
+          .font("lightFont")
+          .text(`${questions[i].answer_d}`);
+        doc.moveDown(1);
+      }
+      // Finalize the PDF
+      doc.end();
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        fs.readFileSync("test_export.pdf", { encoding: "base64" }),
+        "export file success"
+      );
+    } catch (err) {
+      logger.error(`failed to get test question with id ${id} failed`);
       console.log(err);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.ERROR,

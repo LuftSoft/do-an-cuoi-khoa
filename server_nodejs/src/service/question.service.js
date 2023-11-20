@@ -8,6 +8,9 @@ const { CONFIG } = require("../shared/common.constants");
 const { Helpers, logger } = require("../extension/helper");
 const questionConverter = require("./converter/question.converter");
 const userService = require("./user.service");
+const xlsx = require("xlsx");
+const fs = require("fs");
+const { json } = require("body-parser");
 
 module.exports = {
   getAll: async () => {
@@ -123,6 +126,103 @@ module.exports = {
         CONFIG.RESPONSE_STATUS_CODE.ERROR,
         null,
         err.message
+      );
+    }
+  },
+  import: async (file) => {
+    if (!file) {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        "Không có file nào được chọn"
+      );
+    } else {
+      try {
+        const workBook = xlsx.read(file.buffer, { type: "buffer" });
+        const sheet = workBook.SheetNames[0];
+        const workSheet = workBook.Sheets[sheet];
+
+        const jsonData = xlsx.utils.sheet_to_json(workSheet);
+        console.log(jsonData);
+        let total = jsonData.length;
+        let successQ = 0,
+          failedQ = 0;
+        for (let row of jsonData) {
+          try {
+            await questionRepository.create({
+              id: 0,
+              question: row.question,
+              level: row.level,
+              correct_answer: row.correct_answer,
+              answer_a: row.answer_a,
+              answer_b: row.answer_b,
+              answer_c: row.answer_c,
+              answer_d: row.answer_d,
+              image: null,
+              chapter_id: row.chapter_id,
+            });
+            successQ++;
+          } catch (err) {
+            failedQ++;
+          }
+        }
+
+        let resWorkBook = xlsx.utils.book_new();
+        let sheetName = "Kết quả import";
+        const resSheet = xlsx.utils.aoa_to_sheet([
+          ["Kết quả import câu hỏi", ""],
+          ["Thời gian", new Date().toString()],
+          ["Tổng câu hỏi", total],
+          ["Thành công", successQ],
+          ["Thất bại", failedQ],
+        ]);
+        xlsx.utils.book_append_sheet(resWorkBook, resSheet, sheetName);
+        const exportFilePath = "question_import_result.xlsx";
+        xlsx.writeFile(resWorkBook, exportFilePath);
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          fs.readFileSync("question_import_result.xlsx", {
+            encoding: "base64",
+          }),
+          "ok"
+        );
+      } catch (err) {
+        logger.error(`import question failed`);
+        console.log(err);
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.ERROR,
+          null,
+          err.message
+        );
+      }
+    }
+  },
+  export: async () => {
+    try {
+      const q = await questionRepository.getFirstNum(10);
+      let data = [];
+      if (q) {
+        data.push([...Object.keys(q[0])]);
+      }
+      for (let item of q) {
+        data.push([...Object.values(item)]);
+      }
+      const workBook = xlsx.utils.book_new();
+      const workSheet = xlsx.utils.aoa_to_sheet(data);
+      xlsx.utils.book_append_sheet(workBook, workSheet, "Danh sách câu hỏi");
+      //xlsx.write(workBook, { type: "buffer", bookType: "xlsx" })
+      xlsx.writeFile(workBook, "question_export.xlsx");
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        fs.readFileSync("question_export.xlsx", { encoding: "base64" }),
+        "export success"
+      );
+    } catch (err) {
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        "export failed"
       );
     }
   },

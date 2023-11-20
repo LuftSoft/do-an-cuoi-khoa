@@ -64,7 +64,8 @@ const UserSettingComponent = () => {
 	};
 	const getUser = async () => {
 		if (currentUser) {
-			const response = await UserService.getUser(currentUser.id);
+			loadingService.setLoading(true);
+			const response = await UserService.getUser(currentUser.id).catch((err) => loadingService.setLoading(false));
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 				setUser(response.data?.data);
 				if (response.data?.data?.avatar) {
@@ -74,6 +75,7 @@ const UserSettingComponent = () => {
 				}
 				convertToFromData(response.data?.data);
 			}
+			loadingService.setLoading(false);
 		}
 	};
 	function convertToFromData(user) {
@@ -248,6 +250,7 @@ const UserSettingComponent = () => {
 							label="Mật khẩu"
 							type="password"
 							variant="outlined"
+							InputLabelProps={{ shrink: true }}
 							name="password"
 							value={formData.password}
 							error={errors.password}

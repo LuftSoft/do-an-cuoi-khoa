@@ -17,7 +17,8 @@ export default function AssignClassComponent() {
 	const title = "Phân công giảng viên";
 	const buttons = [
 		{
-			name: "Phân công giảng dạy",
+			icon: "fa-solid fa-plus",
+			name: "Tạo lớp tín chỉ",
 			onClick: handleButtonClick,
 		},
 	];
@@ -35,8 +36,9 @@ export default function AssignClassComponent() {
 	];
 	const createTitle = "Phân công giảng viên";
 	const { loading, setLoading } = useLoadingService();
-	const [openCreateCreditClassDialog, setOpenCreateCreditClassDialog] = useState(false);
+	const [openAssignCreditClassDialog, setopenAssignCreditClassDialog] = useState(false);
 	const [openCreditClassDetailDialog, setOpenCreditClassDetailDialog] = useState(false);
+	const [openCreateCreditClassDialog, setOpenCreateCreditClassDialog] = useState(false);
 	const [dataSource, setDataSource] = useState([]);
 	const [creditClass, setCreditClass] = useState({});
 	function getCreditClasses() {
@@ -63,7 +65,7 @@ export default function AssignClassComponent() {
 	}, []);
 	function handleClassAssign(data) {
 		if (data) setCreditClass(data);
-		setOpenCreateCreditClassDialog(true);
+		setopenAssignCreditClassDialog(true);
 	}
 	function handleClassDetail(data) {
 		if (data) setCreditClass(data);
@@ -72,13 +74,13 @@ export default function AssignClassComponent() {
 	function handleClose(data) {
 		if (data?.code === CONST.API_RESPONSE.SUCCESS) {
 			getCreditClasses();
-			setOpenCreateCreditClassDialog(false);
+			setopenAssignCreditClassDialog(false);
 		} else {
-			setOpenCreateCreditClassDialog(true);
+			setopenAssignCreditClassDialog(true);
 		}
 	}
 	function onCloseCreateCreditClassForm() {
-		setOpenCreateCreditClassDialog(false);
+		setopenAssignCreditClassDialog(false);
 	}
 	function onCloseCreditClassDetailForm() {
 		setOpenCreditClassDetailDialog(false);
@@ -109,22 +111,17 @@ export default function AssignClassComponent() {
 	function handleButtonClick() {
 		setOpenCreateCreditClassDialog(true);
 	}
-	const handleEdit = (data) => {
-		if (data) setCreditClass(data);
-		setOpenCreateCreditClassDialog(true);
-	};
+	function handleCloseCreateCreditClasses() {
+		setOpenCreateCreditClassDialog(false);
+	}
 	return (
 		<Box>
 			<div>
 				<TitleButtonComponent title={title} buttons={buttons} />
 			</div>
-			<CommonTableComponent
-				columnDef={columnDef}
-				dataSource={dataSource}
-				onEdit={handleEdit}
-				actions={actions}></CommonTableComponent>
+			<CommonTableComponent columnDef={columnDef} dataSource={dataSource} actions={actions}></CommonTableComponent>
 			<CommonDialogComponent
-				open={openCreateCreditClassDialog}
+				open={openAssignCreditClassDialog}
 				title={createTitle}
 				icon="fa-solid fa-circle-plus"
 				width="60vw"
@@ -140,6 +137,15 @@ export default function AssignClassComponent() {
 				height="50vh"
 				onClose={onCloseCreditClassDetailForm}>
 				<CreditClassDetailComponent onSubmit={handleClose} data={creditClass} />
+			</CommonDialogComponent>
+			<CommonDialogComponent
+				open={openCreateCreditClassDialog}
+				title={createTitle}
+				icon="fa-solid fa-circle-plus"
+				width="45vw"
+				height="50vh"
+				onClose={handleCloseCreateCreditClasses}>
+				<CreateCreditClass onSubmit={handleCloseCreateCreditClasses} />
 			</CommonDialogComponent>
 		</Box>
 	);

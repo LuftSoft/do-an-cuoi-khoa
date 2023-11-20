@@ -11,10 +11,13 @@ import CreateCreditClass from "./CreateCreditClassComponent";
 import { CONST } from "../../utils/const";
 import { QuestionService } from "../Question/QuestionService";
 import { CreditClassService } from "./CreditClassService";
+import ImportDialogComponent from "../Question/ImportComponent";
+import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 export default function CreditClassComponent() {
 	const title = "Danh sách lớp tín chỉ";
 	const buttons = [
 		{
+			icon: "fa-solid fa-plus",
 			name: "Tạo lớp tín chỉ",
 			onClick: handleButtonClick,
 		},
@@ -23,6 +26,7 @@ export default function CreditClassComponent() {
 	const createTitle = "Tạo lớp tín chỉ";
 	const loadingService = useLoadingService();
 	const [openCreateCreditClassDialog, setOpenCreateCreditClassDialog] = useState(false);
+	const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 	const [dataSource, setDataSource] = useState([]);
 	function getCreditClasses() {
 		loadingService.setLoading(true);
@@ -73,16 +77,41 @@ export default function CreditClassComponent() {
 	function handleButtonClick() {
 		setOpenCreateCreditClassDialog(true);
 	}
+	async function handleDelete(row) {
+		setOpenConfirmDialog(true);
+	}
 	//init data
 	useEffect(() => {
 		getCreditClasses();
 	}, []);
+	function handleCloseConfirmQuestion() {
+		setOpenConfirmDialog(false);
+	}
+	async function handleConfirmDialog(data) {
+		if (data) {
+			try {
+				console.log(row);
+				const response = await CreditClassService.deleteCreditClass(row?.id);
+				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+					toast.success("Xóa lớp tín thành công");
+				} else {
+					toast.error("Lớp tín chỉ đã được sử dụng, không thể xóa");
+				}
+			} catch (err) {
+				toast.error("Lớp tín chỉ đã được sử dụng, không thể xóa");
+			}
+		}
+		setOpenConfirmDialog(false);
+	}
 	return (
 		<Box>
 			<div>
 				<TitleButtonComponent title={title} buttons={buttons} />
 			</div>
-			<CommonTableComponent columnDef={columnDef} dataSource={dataSource}></CommonTableComponent>
+			<CommonTableComponent
+				columnDef={columnDef}
+				dataSource={dataSource}
+				onDelete={handleDelete}></CommonTableComponent>
 			<CommonDialogComponent
 				open={openCreateCreditClassDialog}
 				title={createTitle}
@@ -91,6 +120,16 @@ export default function CreditClassComponent() {
 				height="50vh"
 				onClose={onCloseCreateCreditClassForm}>
 				<CreateCreditClass onSubmit={handleClose} />
+			</CommonDialogComponent>
+			<CommonDialogComponent
+				open={openConfirmDialog}
+				title="Xác nhận"
+				message="Xác nhận xóa lớp tín chỉ"
+				icon="fa-solid fa-triangle-exclamation"
+				width="30vw"
+				height="50vh"
+				onClose={handleConfirmDialog}>
+				<ConfirmDialog message="Xác nhận xóa lớp tín chỉ" handleClose={handleConfirmDialog}></ConfirmDialog>
 			</CommonDialogComponent>
 		</Box>
 	);

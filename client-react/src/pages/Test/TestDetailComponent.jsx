@@ -17,6 +17,7 @@ import { CommonDialogComponent, CommonTableComponent } from "../../components/Co
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import { TestScheduleService } from "../TestSchedule/TetsScheduleService";
 import { TestService } from "./TestService";
+import fs from "fs";
 
 const initialValues = {
 	id: 0,
@@ -212,6 +213,31 @@ export default function TestDetailComponent(props) {
 			setLoading(false);
 		}
 	}
+	async function handleExportTest(id) {
+		const response = await TestService.exportTest(id);
+		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+			const pdfBuffer = atob(response.data?.data);
+			const byteNumbers = new Array(pdfBuffer.length);
+			for (let i = 0; i < pdfBuffer.length; i++) {
+				byteNumbers[i] = pdfBuffer.charCodeAt(i);
+			}
+			const byteArray = new Uint8Array(byteNumbers);
+			const blob = new Blob([byteArray], { type: "application/pdf" });
+
+			// Create a download link
+			const link = document.createElement("a");
+			link.href = window.URL.createObjectURL(blob);
+			link.download = "test_export.pdf";
+			document.body.appendChild(link);
+
+			// Trigger the download
+			link.click();
+
+			// Clean up
+			document.body.removeChild(link);
+			toast.success("Export đề thi thành công");
+		}
+	}
 	return (
 		<Container style={{ padding: "0 24px 24px 24px" }}>
 			<form onSubmit={handleSubmit}>
@@ -232,10 +258,15 @@ export default function TestDetailComponent(props) {
 				<hr />
 			</form>
 			<div className="d-flex mt-3 mb-2 position-relative">
-				<h4 className="w-8">Danh sách câu hỏi</h4>
-				<Button type="submit" variant="contained" color="primary" className="position-absolute end-0">
-					Thêm câu hỏi
-				</Button>
+				<h4 className="w-6">Danh sách câu hỏi</h4>
+				<div className="w-4 d-flex" style={{ justifyContent: "flex-end" }}>
+					<Button type="submit" variant="contained" color="primary" className="me-2">
+						Thêm câu hỏi
+					</Button>
+					<Button type="submit" variant="contained" color="success" onClick={(e) => handleExportTest(test.id)}>
+						<i className="fa-solid fa-file-export me-2"></i> Export
+					</Button>
+				</div>
 			</div>
 			<CommonTableComponent
 				columnDef={columnDef}

@@ -26,6 +26,7 @@ export default function TestScheduleComponent() {
 	const [openCreateTestScheduleDialog, setOpenCreateTestScheduleDialog] = useState(false);
 	const [dataSource, setDataSource] = useState([]);
 	const [confirmDialog, setConfirmDialog] = useState(false);
+	const [deleteTestScheduleId, setDeleteTestScheduleId] = useState(null);
 	function getTestSchedules() {
 		loadingService.setLoading(true);
 		TestScheduleService.getAllTestSchedule()
@@ -82,16 +83,21 @@ export default function TestScheduleComponent() {
 	useEffect(() => {
 		getTestSchedules();
 	}, []);
-	function handleDelete() {
+	function handleDelete(row) {
+		setDeleteTestScheduleId(row?.id);
 		setConfirmDialog(true);
 	}
-	function handleConfirmDialog(value) {
+	async function handleConfirmDialog(value) {
 		if (value) {
+			const response = await TestScheduleService.deleteTestSchedule(deleteTestScheduleId);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				toast.success("Xóa ca thi thành công!");
+			} else {
+				toast.error("Xóa ca thi thất bại, ca thi đã được đăng ký");
+			}
 		}
 		setConfirmDialog(false);
 	}
-	function handleView(param) {}
-	function handleEdit(param) {}
 	return (
 		<Box>
 			<div>
@@ -100,9 +106,7 @@ export default function TestScheduleComponent() {
 			<CommonTableComponent
 				columnDef={columnDef}
 				dataSource={dataSource}
-				onDelete={handleDelete}
-				onView={handleView}
-				onEdit={handleEdit}></CommonTableComponent>
+				onDelete={handleDelete}></CommonTableComponent>
 			<CommonDialogComponent
 				open={openCreateTestScheduleDialog}
 				title={createTitle}

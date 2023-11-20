@@ -19,7 +19,7 @@ export default function ImportDialogComponent(props) {
 			setErrors({ file: true });
 			return;
 		}
-		QuestionService.importQuestion({ file: file }, accessToken);
+		props.handleSubmit(file);
 	}
 	return (
 		<Box>

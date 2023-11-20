@@ -3,6 +3,7 @@ const BaseAPIResponse = require("../dto/baseApiResponse");
 const { CONFIG } = require("../shared/common.constants");
 const { Helpers, logger } = require("../extension/helper");
 const commonRepository = require("../repository/common.repository");
+const authService = require("./common/auth.service");
 module.exports = {
   getFourTopInfo: async () => {
     try {
@@ -56,6 +57,35 @@ module.exports = {
         null,
         err.message
       );
+    }
+  },
+  CHECK_USER_TOKEN: (accessToken, res) => {
+    try {
+      const userId = authService.getUserIdFromJWTToken(
+        accessToken,
+        process.env.SECRET_TOKEN_KEY
+      );
+      if (!userId) {
+        res.send(
+          new BaseAPIResponse(
+            "NOT AUTHORIZE",
+            null,
+            "Không có quyền truy cập tài nguyên"
+          )
+        );
+        return false;
+      } else {
+        return userId;
+      }
+    } catch (e) {
+      res.send(
+        new BaseAPIResponse(
+          "NOT AUTHORIZE",
+          null,
+          "Không có quyền truy cập tài nguyên"
+        )
+      );
+      return false;
     }
   },
 };

@@ -24,4 +24,9 @@ export const QuestionService = {
 			headers: { Authorization: "Bearer " + token, "Content-Type": "multipart/form-data" },
 		});
 	},
+	exportQuestion: async (token) => {
+		return await axios.post(`${QUESTION_ROUTE}/export`, {
+			headers: { Authorization: "Bearer " + token, "Content-Type": "multipart/form-data" },
+		});
+	},
 };

@@ -19,16 +19,16 @@ const headInfo = [
 		key: "questions",
 	},
 	{
-		name: "Bài thi",
+		name: "Đề thi",
 		key: "tests",
 	},
 	{
-		name: "Đề thi",
-		key: "users",
+		name: "Lượt thi",
+		key: "results",
 	},
 	{
 		name: "Người sử dụng",
-		key: "results",
+		key: "users",
 	},
 ];
 export default function OverviewComponent() {
