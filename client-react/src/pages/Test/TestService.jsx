@@ -16,8 +16,8 @@ export const TestService = {
 	updateTest: async () => {
 		return await axios.post(TEST_ROUTE, {});
 	},
-	deleteTest: async () => {
-		return await axios.post(TEST_ROUTE, {});
+	deleteTest: async (id, token) => {
+		return await axios.delete(`${TEST_ROUTE}/${id}`, { headers: { Authorization: `Bearer ${token}` } });
 	},
 	// test class service
 	getAllTestClass: async () => {

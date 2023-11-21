@@ -11,7 +11,13 @@ const importService = require("../service/import.service");
 
 router.post("/", async (req, res) => {
   await importService.import();
-  res.send("ok");
+  res.send(
+    new BaseAPIResponse(
+      CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+      null,
+      "Import teamplate question success"
+    )
+  );
 });
 
 module.exports = router;

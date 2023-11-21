@@ -9,15 +9,15 @@ module.exports = {
         name: "Công nghệ thông tin 2",
       },
       {
-        id: 1,
+        id: 2,
         name: "Kế toán",
       },
       {
-        id: 1,
+        id: 3,
         name: "Điện tử, viễn thông",
       },
       {
-        id: 1,
+        id: 4,
         name: "Quản trị kinh doanh",
       },
     ]);

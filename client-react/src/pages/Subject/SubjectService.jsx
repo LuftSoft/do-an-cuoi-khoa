@@ -3,18 +3,22 @@ import { CONST } from "../../utils/const";
 
 const SUBJECT_ROUTE = CONST.BASE_URL + CONST.ROUTES.SUBJECT;
 const CHAPTER_ROUTE = CONST.BASE_URL + CONST.ROUTES.CHAPTER;
+const DEPARTMENT_ROUTE = CONST.BASE_URL + CONST.ROUTES.DEPARTMENT;
 export const SubjectService = {
 	getAllSubject: async () => {
 		return await axios.get(SUBJECT_ROUTE);
 	},
+	getOneSubject: async (id) => {
+		return await axios.get(`${SUBJECT_ROUTE}/${id}`);
+	},
 	createSubject: async (data) => {
 		return await axios.post(SUBJECT_ROUTE, data);
 	},
-	updateSubject: async () => {
-		return await axios.post(SUBJECT_ROUTE, {});
+	updateSubject: async (payload) => {
+		return await axios.put(SUBJECT_ROUTE, payload, {});
 	},
-	deleteSubject: async () => {
-		return await axios.post(SUBJECT_ROUTE, {});
+	deleteSubject: async (id, token) => {
+		return await axios.delete(`${SUBJECT_ROUTE}/${id}`, { headers: { Authorization: `Bearer ${token}` } });
 	},
 	//chapter
 	getAllChapter: async () => {
@@ -32,7 +36,10 @@ export const SubjectService = {
 	updateChapter: async () => {
 		return await axios.post(CHAPTER_ROUTE, {});
 	},
-	deleteSubject: async () => {
-		return await axios.post(CHAPTER_ROUTE, {});
+	deleteChapter: async (data, token) => {
+		return await axios.post(CHAPTER_ROUTE, data, { headers: { Authorization: `Bearer ${token}` } });
+	},
+	getAllDepartment: async () => {
+		return await axios.get(DEPARTMENT_ROUTE);
 	},
 };

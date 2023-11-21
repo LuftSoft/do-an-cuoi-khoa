@@ -17,6 +17,7 @@ const CONST = {
 	DIALOG: {
 		TYPE: {
 			CREATE: "create",
+			ADD: "add",
 			EDIT: "edit",
 			DELETE: "delete",
 			VIEW: "view",
@@ -165,6 +166,7 @@ const CONST = {
 		SIGNUP: "/signup",
 		ASSIGN: "/assign",
 		COMMON: "/common",
+		DEPARTMENT: "/department",
 	},
 	PERMISSION: {
 		ADMIN: "admin",
