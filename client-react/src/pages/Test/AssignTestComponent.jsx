@@ -119,6 +119,11 @@ export default function AssignTestComponent(props) {
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 				const testClasses = response.data?.data;
 				console.log("data", testClasses);
+				testClasses.forEach((item) => {
+					if (item.test_schedule_date) {
+						item.test_schedule_date = FeHelpers.convertDateTime(item.test_schedule_date);
+					}
+				});
 				setDataSource(testClasses);
 			}
 		} catch (err) {}
@@ -234,7 +239,7 @@ export default function AssignTestComponent(props) {
 					) : null}
 					{testSchedules.map((testSchedule, index) => (
 						<MenuItem key={index} value={testSchedule.id}>
-							{testSchedule.name} - {testSchedule.date}
+							{testSchedule.name} -- {FeHelpers.convertDateTime(testSchedule.date)}
 						</MenuItem>
 					))}
 				</TextField>

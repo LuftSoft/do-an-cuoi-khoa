@@ -6,10 +6,6 @@ import { toast } from "react-toastify";
 import { CONST } from "../../utils/const";
 
 export default function CreateSubject({ data, onSubmit }) {
-	const [name, setName] = useState("");
-	const [credit, setCredit] = useState("");
-	const [theoreticalLesson, setTheoreticalLesson] = useState("");
-	const [praticalLesson, setPraticalLesson] = useState("");
 	const [departments, setDepartments] = useState([]);
 	const [departmentId, setDepartmentId] = useState("");
 	const [subject, setSubject] = useState({

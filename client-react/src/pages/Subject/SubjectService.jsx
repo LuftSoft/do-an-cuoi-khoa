@@ -24,8 +24,8 @@ export const SubjectService = {
 	getAllChapter: async () => {
 		return await axios.get(CHAPTER_ROUTE, {});
 	},
-	getOneChapter: async () => {
-		return await axios.get(CHAPTER_ROUTE, {});
+	getOneChapter: async (id) => {
+		return await axios.get(`${CHAPTER_ROUTE}/${id}`, {});
 	},
 	getChapterBySubjectId: async (id) => {
 		return await axios.get(CHAPTER_ROUTE + CONST.ROUTES.SUBJECT + `/${id}`, {});
@@ -33,11 +33,11 @@ export const SubjectService = {
 	createChapter: async (data) => {
 		return await axios.post(CHAPTER_ROUTE, data);
 	},
-	updateChapter: async () => {
-		return await axios.post(CHAPTER_ROUTE, {});
+	updateChapter: async (data) => {
+		return await axios.put(CHAPTER_ROUTE, data);
 	},
-	deleteChapter: async (data, token) => {
-		return await axios.post(CHAPTER_ROUTE, data, { headers: { Authorization: `Bearer ${token}` } });
+	deleteChapter: async (id, token) => {
+		return await axios.delete(`${CHAPTER_ROUTE}/${id}`, { headers: { Authorization: `Bearer ${token}` } });
 	},
 	getAllDepartment: async () => {
 		return await axios.get(DEPARTMENT_ROUTE);

@@ -11,6 +11,7 @@ const userService = require("./user.service");
 const xlsx = require("xlsx");
 const fs = require("fs");
 const { json } = require("body-parser");
+const testRepository = require("../repository/test.repository");
 
 module.exports = {
   getAll: async () => {
@@ -111,7 +112,11 @@ module.exports = {
     try {
       let questionModel = await questionRepository.getById(id);
       if (!questionModel) {
-        throw new Error("Chương không tồn tại");
+        throw new Error("Câu hỏi không tồn tại");
+      }
+      const canDelete = await questionRepository.canDelete(id);
+      if (!canDelete) {
+        throw new Error("Câu hỏi đã được sử dụng, không thể xóa");
       }
       var data = await questionRepository.delete(id);
       return new BaseAPIResponse(

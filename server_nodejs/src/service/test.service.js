@@ -464,6 +464,7 @@ module.exports = {
           .text(`${questions[i].answer_d}`);
         doc.moveDown(1);
       }
+      doc.fontSize(12).text("--HẾT--", { align: "center" });
       // Finalize the PDF
       doc.end();
       return new BaseAPIResponse(

@@ -88,9 +88,9 @@ const LoginComponent: React.FC<Props> = ({navigation}) => {
         style={styles.input}
       />
       <Button mode="contained" onPress={handleLogin} style={styles.button}>
-        Login
+        Đăng nhập
       </Button>
-      <Text style={styles.forgotPassword}>Forgot Password?</Text>
+      <Text style={styles.forgotPassword}>Quên mật khẩu?</Text>
     </View>
   );
 };

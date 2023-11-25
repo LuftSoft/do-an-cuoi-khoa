@@ -26,7 +26,7 @@ export const UserService = {
 		console.log(data);
 		return await axios.put(USER_ROUTE, data, { headers: { "Content-Type": "multipart/form-data" } });
 	},
-	deleteUser: async () => {
-		return await axios.post(USER_ROUTE, {});
+	deleteUser: async (id, token) => {
+		return await axios.delete(`${USER_ROUTE}/${id}`, { headers: { Authorization: `Bearer ${token}` } });
 	},
 };

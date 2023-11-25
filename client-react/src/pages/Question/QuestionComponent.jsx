@@ -1,23 +1,21 @@
 import Box from "@mui/material/Box";
-import { useQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CommonDialogComponent, CommonTableComponent } from "../../components/Common";
 import { useLoadingService } from "../../contexts/loadingContext";
 
-import styled from "@emotion/styled";
 import TitleButtonComponent from "../../components/Common/CommonHeader/CommonHeaderComponent";
 
-import { SubjectService } from "../Subject/SubjectService";
-import { CreateSubjectComponent } from "../Subject";
-import { CreateQuestionComponent } from ".";
-import { QuestionService } from "./QuestionService";
-import { CONST } from "../../utils/const";
 import { toast } from "react-toastify";
+import { CreateQuestionComponent } from ".";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
+import CommonFilterComponent from "../../components/Common/CommonFilter/CommonFilterComponent";
 import { selectAccessToken } from "../../redux/selectors";
+import { CONST } from "../../utils/const";
+import { FeHelpers } from "../../utils/helpers";
 import ImportDialogComponent from "./ImportComponent";
-import axios from "axios";
+import { QuestionService } from "./QuestionService";
+import { SubjectService } from "../Subject/SubjectService";
 export default function QuestionComponent() {
 	const title = "Danh sách câu hỏi";
 	const buttons = [
@@ -50,27 +48,68 @@ export default function QuestionComponent() {
 	const dispatch = useDispatch();
 	const [openCreateQuestionDialog, setOpenCreateQuestionDialog] = useState(false);
 	const [dataSource, setDataSource] = useState([]);
+	const questionRef = useRef([]);
 	//set type of dialog open;
 	const [type, setType] = useState(CONST.DIALOG.TYPE.CREATE);
 	const [confirmDialog, setConfirmDialog] = useState(false);
 	const [openImportDialog, setOpenImportDialog] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
 	const [question, setQuestion] = useState({});
+	const [commonFilter, setCommonFilter] = useState({
+		search: {
+			title: "Tìm kiếm câu hỏi",
+			handleChange: handleSearchQuestion,
+		},
+		dropdowns: {
+			subjectFilter: {
+				placeholder: "Môn học",
+				value: "",
+				options: [{ key: "Tất cả", value: "ALL" }],
+				handleChange: handleSubjectFilterChange,
+			},
+			levelFilter: {
+				placeholder: "Độ khó",
+				value: "",
+				options: [
+					{ key: "Tất cả", value: "ALL" },
+					{ key: "Dễ", value: "EASY" },
+					{ key: "Vừa", value: "MEDIUM" },
+					{ key: "Khó", value: "DIFFICULT" },
+				],
+				handleChange: handleLevelFilterChange,
+			},
+		},
+	});
+	let commonFilterValue = useRef({
+		search: "",
+		subject: "",
+		level: "",
+	});
 	const accessToken = useSelector(selectAccessToken);
-	// const listQuestionState = useQuery({
-	// 	queryKey: ["subject"],
-	// 	queryFn: async () => {
-	// 		try {
-	// 			loadingService.setLoading(true);
-	// 			const res = await QuestionService.getAllQuestion();
-	// 			loadingService.setLoading(false);
-	// 			return res;
-	// 		} catch (error) {
-	// 			console.log(error);
-	// 			return Promise.reject(error);
-	// 		}
-	// 	},
-	// });
+	const levelEasyVN = "DỄ";
+	const levellevelMediumVN = "VỪA";
+	const leveleveDifficultVN = "KHÓ";
+	function getSubjects() {
+		console.log("get subject");
+		SubjectService.getAllSubject()
+			.then((response) => {
+				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+					let opts = commonFilter.dropdowns;
+					let sjOpts = opts?.subjectFilter?.options;
+					sjOpts = sjOpts.length >= 1 ? sjOpts.slice(0, 1) : sjOpts;
+					response.data?.data?.forEach((item) => {
+						sjOpts.push({ key: item.name, value: item.id });
+					});
+					opts.subjectFilter.options = sjOpts;
+					setCommonFilter({ ...commonFilter, dropdowns: opts });
+				} else {
+					toast.error(response.data?.message);
+				}
+			})
+			.catch((err) => {
+				toast.error(err.message);
+			});
+	}
 	function getQuestions() {
 		loadingService.setLoading(true);
 		QuestionService.getAllQuestion()
@@ -82,19 +121,20 @@ export default function QuestionComponent() {
 						item.className = {};
 						switch (item?.level) {
 							case CONST.QUESTION.LEVEL[0]:
-								item.level = "DỄ";
+								item.level = levelEasyVN;
 								item.className.level = "bg-easy";
 								break;
 							case CONST.QUESTION.LEVEL[1]:
-								item.level = "VỪA";
+								item.level = levellevelMediumVN;
 								item.className.level = "bg-medium";
 								break;
 							case CONST.QUESTION.LEVEL[2]:
-								item.level = "KHÓ";
+								item.level = leveleveDifficultVN;
 								item.className.level = "bg-difficult";
 								break;
 						}
 					});
+					questionRef.current = FeHelpers.cloneDeep(response.data?.data);
 					setDataSource(response.data?.data);
 				} else {
 					toast.error("Không tìm thấy câu hỏi.");
@@ -194,6 +234,7 @@ export default function QuestionComponent() {
 	//init data
 	useEffect(() => {
 		getQuestions();
+		getSubjects();
 	}, []);
 	async function handleExportQuestion() {
 		loadingService.setLoading(true);
@@ -273,12 +314,100 @@ export default function QuestionComponent() {
 		//clean up
 		document.body.removeChild(link);
 	}
+
+	//filter
+	useEffect(() => {
+		console.log("commonFasdasdilterValue", commonFilterValue);
+		loadingService.setLoading(true);
+		let questionsTmp = FeHelpers.cloneDeep(questionRef.current);
+		try {
+			let searchRef = commonFilterValue.current.search;
+			let subjectRef = commonFilterValue.current.subject;
+			let levelRef = commonFilterValue.current.level;
+			if (searchRef !== null && searchRef.length > 0) {
+				questionsTmp = questionsTmp.filter(
+					(item) =>
+						FeHelpers.chuanhoadaucau(item.question).toLowerCase().includes(searchRef) ||
+						FeHelpers.chuanhoadaucau(item.subject_name).toLowerCase().includes(searchRef),
+				);
+			}
+			if (subjectRef !== null && subjectRef.length > 0) {
+				questionsTmp = questionsTmp.filter((item) => item.subject_id === subjectRef);
+			}
+			if (levelRef !== null && levelRef.length > 0) {
+				questionsTmp = questionsTmp.filter((item) => item.level === levelRef);
+			}
+			setDataSource(questionsTmp);
+		} catch (err) {
+			console.log("err when filter", err);
+		}
+		setTimeout(() => {
+			loadingService.setLoading(false);
+		}, 500);
+	}, [commonFilterValue]);
+	const handleFilter = () => {
+		console.log("commonFasdasdilterValue", commonFilterValue);
+		loadingService.setLoading(true);
+		let questionsTmp = FeHelpers.cloneDeep(questionRef.current);
+		try {
+			let searchRef = commonFilterValue.current.search;
+			let subjectRef = commonFilterValue.current.subject;
+			let levelRef = commonFilterValue.current.level;
+			if (searchRef !== null && searchRef.length > 0) {
+				questionsTmp = questionsTmp.filter(
+					(item) =>
+						FeHelpers.chuanhoadaucau(item.question).toLowerCase().includes(searchRef) ||
+						FeHelpers.chuanhoadaucau(item.subject_name).toLowerCase().includes(searchRef),
+				);
+			}
+			if (subjectRef !== null && subjectRef.length > 0) {
+				questionsTmp = questionsTmp.filter((item) => item.subject_id === subjectRef);
+			}
+			if (levelRef !== null && levelRef.length > 0) {
+				questionsTmp = questionsTmp.filter((item) => item.level === levelRef);
+			}
+			setDataSource(questionsTmp);
+		} catch (err) {
+			console.log("err when filter", err);
+		}
+		setTimeout(() => {
+			loadingService.setLoading(false);
+		}, 500);
+	};
+	function handleSearchQuestion(key) {
+		commonFilterValue.current.search = FeHelpers.chuanhoadaucau(key)?.trim().toLowerCase();
+		handleFilter();
+	}
+	function handleSubjectFilterChange(id) {
+		commonFilterValue.current.subject = id;
+		handleFilter();
+	}
+	function handleLevelFilterChange(level) {
+		console.log(commonFilterValue.current);
+		let levelTmp = "";
+		switch (level) {
+			case "EASY":
+				levelTmp = levelEasyVN;
+				break;
+			case "MEDIUM":
+				levelTmp = levellevelMediumVN;
+				break;
+			case "DIFFICULT":
+				levelTmp = leveleveDifficultVN;
+				break;
+			default:
+				levelTmp = "";
+				break;
+		}
+		commonFilterValue.current.level = levelTmp;
+		handleFilter();
+	}
+
 	return (
 		<Box>
 			<div>
 				<TitleButtonComponent title={title} buttons={buttons} />
-				<input type="file" style={{ display: "none" }} name="import_question" />
-				<input type="file" style={{ display: "none" }} name="export_question" />
+				<CommonFilterComponent search={commonFilter.search} dropdowns={commonFilter.dropdowns}></CommonFilterComponent>
 			</div>
 			<CommonTableComponent
 				columnDef={columnDef}

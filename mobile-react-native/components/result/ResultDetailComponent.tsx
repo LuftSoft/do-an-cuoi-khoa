@@ -200,12 +200,6 @@ const ResultDetailComponent: React.FC<Props> = ({navigation}) => {
           </View>
         )}
       />
-      <View style={styles.questionClusterBar}>
-        <Text>1-5</Text>
-        <Text>5-10</Text>
-        <Text>10-15</Text>
-        <Text>15-20</Text>
-      </View>
     </View>
   );
 };

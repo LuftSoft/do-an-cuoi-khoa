@@ -33,6 +33,8 @@ export type RootStackParamList = {
   TestDetail: {data: any};
   Param: any;
   BottomNavigation: undefined;
+  SettingLayout: undefined;
+  Setting: undefined;
 };
 type OverViewNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 type Props = {
@@ -40,7 +42,6 @@ type Props = {
 };
 const OverviewComponent: React.FC<Props> = ({navigation}) => {
   const {user, setUser} = useUserProvider();
-  console.log('provider:', user);
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -69,6 +70,9 @@ const OverviewComponent: React.FC<Props> = ({navigation}) => {
       routes: [{name: 'Login'}],
     });
   };
+  const handleSetting = () => {
+    navigation.navigate('SettingLayout');
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -86,7 +90,7 @@ const OverviewComponent: React.FC<Props> = ({navigation}) => {
           </TouchableOpacity>
         </View>
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={handleSetting}>
             <Image source={backgroundLeftBottom} style={[styles.background]} />
             <Text style={styles.buttonText}>Cài đặt</Text>
           </TouchableOpacity>

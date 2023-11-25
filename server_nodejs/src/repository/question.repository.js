@@ -88,4 +88,11 @@ module.exports = {
     });
     return result;
   },
+  canDelete: async (id) => {
+    const query = `SELECT COUNT(*) as num FROM test_details as td WHERE td.question_id = ${id}`;
+    const result = await questions.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return result[0].num === 0;
+  },
 };

@@ -7,7 +7,7 @@ const BaseAPIResponse = require("../dto/baseApiResponse");
 const { CONFIG } = require("../shared/common.constants");
 const sendMailService = require("./common/sendmail.service");
 const { Helpers, logger } = require("../extension/helper");
-
+const commonService = require("./common.service");
 module.exports = {
   create: async (user) => {
     user.passwordHash = authService.hashPassword(user.password);
@@ -263,6 +263,12 @@ module.exports = {
       if (avatar) {
         user.avatar = avatar.buffer;
       }
+      user.firstName = userInfo.firstName;
+      user.lastName = userInfo.lastName;
+      user.dateOfBirth = userInfo.dateOfBirth;
+      user.gender = userInfo.gender;
+      user.email = userInfo.email;
+      user.type = userInfo.type;
       const userUpdate = await userRepository.update(user);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
@@ -288,5 +294,31 @@ module.exports = {
       return true;
     }
     return false;
+  },
+  delete: async (id) => {
+    try {
+      const result = await userRepository.delete(id);
+      if (result) {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          null,
+          null
+        );
+      } else {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.ERROR,
+          null,
+          "error"
+        );
+      }
+    } catch (err) {
+      logger.error(`delete user failed`);
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
   },
 };

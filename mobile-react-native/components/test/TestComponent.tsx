@@ -9,6 +9,8 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../overview/OverviewComponent';
 import {CommonUtil, Helpers} from '../../utils/common.util';
 import {ResultService} from '../result/ResultService';
+import dayjs from 'dayjs';
+import {ScrollView} from 'react-native-gesture-handler';
 
 type OverViewNavigationProp = StackNavigationProp<RootStackParamList, 'Test'>;
 type Props = {
@@ -20,11 +22,14 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
   const [results, setResults] = useState([]);
   console.log('test comp', user?.user?.id);
   useEffect(() => {
+    navigation.addListener('focus', async () => {
+      await getInitData();
+    });
     const fetchData = async () => {
       await getInitData();
     };
     fetchData();
-  }, []);
+  }, [navigation]);
   const getInitData = async () => {
     await getTestByUserid(user?.user?.id);
     await getResultByUserId(user?.user?.id);
@@ -66,14 +71,18 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
       },
     });
   };
-  const handleShowResult = () => {
-    console.log('handleShowResult');
+  const handleShowResult = (testId: any) => {
+    navigation.navigate('ResultDetail', {
+      data: {
+        id: testId,
+      },
+    });
   };
   const canDoExam = (beginTime: string, time: number) => {
     const begin = new Date(beginTime).getTime();
     const end = new Date(beginTime).getTime() + time * 60 * 1000;
     const now = new Date().getTime();
-    return true;
+    // return true;
     return now >= begin && now <= end;
   };
   const boxShadow = CssUtil.GenerateDefaultBoxShadow();
@@ -84,8 +93,7 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
     );
   };
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Đề thi của bạn</Text>
+    <ScrollView style={styles.container}>
       {tests.map((test: any, index) => (
         <View style={styles.card} key={index}>
           <Text>
@@ -93,27 +101,35 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
           </Text>
           <Text>Học kỳ: {test.semester_name}</Text>
           <Text>Lớp tín chỉ: {test.credit_class_name}</Text>
-          <Text>Thời gian bắt đầu: {test.test_schedule_date}</Text>
+          <Text>
+            Thời gian bắt đầu:{' '}
+            {Helpers.convertToDateTime(test.test_schedule_date)}
+          </Text>
           <Text>Thời gian làm bài: {test.test_time} phút</Text>
           <View style={styles.buttonContainer}>
             {isResultExists(test.id) ? (
               <TouchableOpacity
                 style={styles.buttonOutline}
-                onPress={handleShowResult}>
+                onPress={e => handleShowResult(test.id)}>
                 <Text style={styles.buttonTextOutline}>Kết quả</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
-                style={styles.button}
+                style={[
+                  styles.button,
+                  canDoExam(test.test_schedule_date, test.test_time)
+                    ? null
+                    : {backgroundColor: '#bbd9f7'},
+                ]}
                 onPress={e => handleDoExam(test)}
                 disabled={!canDoExam(test.test_schedule_date, test.test_time)}>
-                <Text style={styles.buttonText}>Làm bài</Text>
+                <Text style={[styles.buttonText]}>Làm bài</Text>
               </TouchableOpacity>
             )}
           </View>
         </View>
       ))}
-    </View>
+    </ScrollView>
   );
 };
 

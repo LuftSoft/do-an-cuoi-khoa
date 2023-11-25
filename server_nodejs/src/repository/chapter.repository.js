@@ -39,7 +39,6 @@ module.exports = {
       where: {
         id: id,
       },
-      truncate: true,
     });
     return result;
   },

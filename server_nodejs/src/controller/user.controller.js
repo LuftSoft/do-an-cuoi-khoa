@@ -6,6 +6,8 @@ const { logger, Helpers } = require("../extension/helper");
 const router = express.Router();
 const { CONFIG } = require("../shared/common.constants");
 const { uploadUtil } = require("../util/upload.util");
+const commonService = require("../service/common.service");
+const { CONSTANTS } = require("../shared/constant");
 
 router.post("/signup", uploadUtil.upload.single("avatar"), async (req, res) => {
   const user = req.body;
@@ -132,15 +134,24 @@ router.put("/password", async (req, res) => {
   );
   res.send(result);
 });
-router.put("", uploadUtil.upload.single("avatar"), async (req, res) => {
+router.put("/", uploadUtil.upload.single("avatar"), async (req, res) => {
   const user = req.body;
   const avatar = req.file;
   const token = req.accessToken;
   res.send(await userService.updateInformation(user, avatar, token));
 });
-router.delete("", async (req, res) => {
-  const user = req.body;
-});
+router.delete(
+  "/:id",
+  authorize([CONFIG.PERMISSION.ADMIN]),
+  async (req, res) => {
+    const id = req.params.id;
+    const accessToken = req.accessToken;
+    const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
+    if (userId) {
+      res.send(await userService.delete(id));
+    }
+  }
+);
 router.get("/type/:type", async (req, res) => {
   const type = req.params.type;
   res.send(await userService.getAllByType(type));

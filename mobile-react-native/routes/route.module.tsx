@@ -6,27 +6,21 @@ import TestDetailComponent from '../components/test/TestDetailComponent';
 import ResultComponent from '../components/result/ResultComponent';
 import ResultDetailComponent from '../components/result/ResultDetailComponent';
 import BottomNavigationComponent from '../components/overview/BottomNavigation';
+import MainNavigation from '../components/overview/MainNavigation';
 
 const Stack = createStackNavigator();
 
 export const AppNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName="Login">
+    <Stack.Navigator
+      initialRouteName="Login"
+      screenOptions={{headerShown: false}}>
       <Stack.Screen
         name="Home"
-        component={OverviewComponent}
+        component={MainNavigation}
         options={{headerLeft: undefined}}
       />
       <Stack.Screen name="Login" component={LoginComponent} />
-      <Stack.Screen name="Test" component={TestComponent} />
-      <Stack.Screen name="Result" component={ResultComponent} />
-      <Stack.Screen name="TestDetail" component={TestDetailComponent} />
-      <Stack.Screen name="ResultDetail" component={ResultDetailComponent} />
-      <Stack.Screen
-        name="BottomNavigation"
-        component={BottomNavigationComponent}
-      />
-      {/* Add more screens as needed */}
     </Stack.Navigator>
   );
 };

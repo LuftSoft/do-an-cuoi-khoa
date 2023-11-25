@@ -141,7 +141,7 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
     if (response.data?.code === CONFIG.API_RESPONSE_STATUS.SUCCESS) {
       ToastUtil.success('Thông báo', 'Nộp bài thành công!');
       setTimeout(() => {
-        navigation.navigate('Home');
+        navigation.navigate('Test');
       }, 1000);
     }
   };
@@ -297,12 +297,6 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
           </View>
         )}
       />
-      <View style={styles.questionClusterBar}>
-        <Text>1-5</Text>
-        <Text>5-10</Text>
-        <Text>10-15</Text>
-        <Text>15-20</Text>
-      </View>
       <ConfirmDialogComponent
         open={openConfirmDialog}
         data={confirmDialogData}

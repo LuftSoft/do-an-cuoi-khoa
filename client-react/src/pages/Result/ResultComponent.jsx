@@ -98,7 +98,7 @@ export default function ResultComponent() {
 								</Typography>
 								<Typography variant="body1">
 									<i className="fa-solid fa-clock me-2"></i>
-									{FeHelpers.convertDate(item.test_schedule_date)}
+									{FeHelpers.convertDateTime(item.test_schedule_date)}
 									{bull} {item.test_time}(phút)
 								</Typography>
 							</CardContent>

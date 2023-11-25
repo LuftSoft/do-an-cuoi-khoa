@@ -23,19 +23,21 @@ export default function UserComponent() {
 	];
 	const loadingService = useLoadingService();
 	const dispatch = useDispatch();
-	const [openCreateUserDialog, setopenCreateUserDialog] = useState(false);
+	const [openCreateUserDialog, setOpenCreateUserDialog] = useState(false);
 	const [dataSource, setDataSource] = useState([]);
 	//set type of dialog open;
 	const [type, setType] = useState(CONST.DIALOG.TYPE.CREATE);
 	const [confirmDialog, setConfirmDialog] = useState(false);
-	const [deleteId, setDeleteId] = useState("");
-	const [question, setQuestion] = useState({});
+	const [deleteId, setDeleteId] = useState(null);
+	const [userDialogData, setUserDialogData] = useState({
+		type: CONST.DIALOG.TYPE.ADD,
+		id: null,
+	});
 	const accessToken = useSelector(selectAccessToken);
 	function getUsers() {
 		loadingService.setLoading(true);
 		UserService.getAllUser()
 			.then((response) => {
-				console.log(response);
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 					response.data?.data.forEach((user) => {
 						user.full_name = `${user.firstName} ${user.lastName}`;
@@ -73,13 +75,13 @@ export default function UserComponent() {
 	function handleClose(data) {
 		if (data?.code === CONST.API_RESPONSE.SUCCESS) {
 			getUsers();
-			setopenCreateUserDialog(false);
+			setOpenCreateUserDialog(false);
 		} else {
-			setopenCreateUserDialog(true);
+			setOpenCreateUserDialog(true);
 		}
 	}
 	function onClose() {
-		setopenCreateUserDialog(false);
+		setOpenCreateUserDialog(false);
 		setConfirmDialog(false);
 	}
 	const columnDef = [
@@ -110,43 +112,44 @@ export default function UserComponent() {
 	];
 
 	function handleButtonClick() {
-		setType(CONST.DIALOG.TYPE.CREATE);
-		setopenCreateUserDialog(true);
+		setUserDialogData({
+			type: CONST.DIALOG.TYPE.ADD,
+			id: null,
+		});
+		setOpenCreateUserDialog(true);
 	}
-	function handleView(question) {
-		setQuestion(question);
-		setType(CONST.DIALOG.TYPE.VIEW);
-		setopenCreateUserDialog(true);
+	function handleEdit(row) {
+		setUserDialogData({
+			type: CONST.DIALOG.TYPE.EDIT,
+			id: row.id,
+		});
+		setOpenCreateUserDialog(true);
 	}
-	function handleEdit(question) {
-		setQuestion(question);
-		setType(CONST.DIALOG.TYPE.EDIT);
-		setopenCreateUserDialog(true);
-	}
-	function handleDelete(question) {
-		setDeleteId(question.id);
+	function handleDelete(row) {
+		setDeleteId(row.id);
 		setConfirmDialog(true);
 	}
-	function handleConfirmDialog(value) {
+	async function handleConfirmDialog(value) {
 		setConfirmDialog(false);
 		if (value) {
-			deleteUser(deleteId);
+			await deleteUser(deleteId).finally(getUsers());
 		}
 	}
-	function deleteUser(id) {
-		loadingService.setLoading(true);
-		QuestionService.deleteUser(id, accessToken)
-			.then((response) => {
-				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-					toast.success("Xóa tài khoản thành công");
-				} else {
-					toast.error(response.data?.message);
-				}
+	async function deleteUser(id) {
+		try {
+			loadingService.setLoading(true);
+			const response = await UserService.deleteUser(id, accessToken);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				toast.success("Xóa tài khoản thành công");
 				loadingService.setLoading(false);
-			})
-			.catch((err) => {
+			} else {
+				toast.error("Xóa tài khoản thất bại");
 				loadingService.setLoading(false);
-			});
+			}
+		} catch (err) {
+			toast.error(err.message);
+			loadingService.setLoading(false);
+		}
 	}
 	function getDialogTitle() {
 		let title = "";
@@ -173,7 +176,6 @@ export default function UserComponent() {
 				columnDef={columnDef}
 				dataSource={dataSource}
 				onDelete={handleDelete}
-				onView={handleView}
 				onEdit={handleEdit}></CommonTableComponent>
 			<CommonDialogComponent
 				open={openCreateUserDialog}
@@ -182,7 +184,7 @@ export default function UserComponent() {
 				width="45vw"
 				height="50vh"
 				onClose={onClose}>
-				<CreateUserComponent data={question} onSubmit={handleClose} type={type} />
+				<CreateUserComponent data={userDialogData} onSubmit={handleClose} />
 			</CommonDialogComponent>
 			<CommonDialogComponent
 				open={confirmDialog}

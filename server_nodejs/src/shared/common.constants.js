@@ -25,8 +25,15 @@ module.exports.CONFIG = {
   RESPONSE_STATUS_CODE: {
     SUCCESS: "SUCCESS",
     ERROR: "ERROR",
+    NOT_AUTHORIZE: "NOT AUTHORIZE",
+    NOT_HAVE_PERMISSION: "NOT HAVE PERMISSION",
   },
   ROLE: {
+    ADMIN: "admin",
+    GV: "gv",
+    SV: "sv",
+  },
+  PERMISSION: {
     ADMIN: "admin",
     GV: "gv",
     SV: "sv",

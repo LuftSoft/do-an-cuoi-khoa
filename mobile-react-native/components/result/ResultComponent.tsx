@@ -1,14 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {CssUtil} from '../../utils/css.util';
-import {white} from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
-import {useUserProvider} from '../../utils/user.context';
-import {TestService} from '../test/TestService';
-import {CONFIG} from '../../utils/config';
 import {StackNavigationProp} from '@react-navigation/stack';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {CONFIG} from '../../utils/config';
+import {CssUtil} from '../../utils/css.util';
+import {useUserProvider} from '../../utils/user.context';
 import {RootStackParamList} from '../overview/OverviewComponent';
-import {CommonUtil, Helpers} from '../../utils/common.util';
 import {ResultService} from './ResultService';
+import {Helpers} from '../../utils/common.util';
+import {ScrollView} from 'react-native-gesture-handler';
 
 type OverViewNavigationProp = StackNavigationProp<RootStackParamList, 'Test'>;
 type Props = {
@@ -18,11 +17,14 @@ const ResultComponent: React.FC<Props> = ({navigation}) => {
   const {user, setUser} = useUserProvider();
   const [results, setResults] = useState([]);
   useEffect(() => {
+    navigation.addListener('focus', async () => {
+      await getInitData();
+    });
     const fetchData = async () => {
       await getInitData();
     };
     fetchData();
-  }, []);
+  }, [navigation]);
   const getInitData = async () => {
     await getResultByUserId(user?.user?.id);
   };
@@ -44,8 +46,7 @@ const ResultComponent: React.FC<Props> = ({navigation}) => {
   };
   const boxShadow = CssUtil.GenerateDefaultBoxShadow();
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Kết quả thi</Text>
+    <ScrollView style={styles.container}>
       {results.map((result: any, index) => (
         <View style={styles.card} key={index}>
           <Text>
@@ -53,7 +54,10 @@ const ResultComponent: React.FC<Props> = ({navigation}) => {
           </Text>
           <Text>{result.semester_name}</Text>
           <Text>Lớp tín chỉ: {result.credit_class_name}</Text>
-          <Text>Thời gian bắt đầu: {result.test_schedule_date}</Text>
+          <Text>
+            Thời gian bắt đầu:{' '}
+            {Helpers.convertToDateTime(result.test_schedule_date)}
+          </Text>
           <Text>Thời gian làm bài: {result.test_time} phút</Text>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
@@ -64,7 +68,7 @@ const ResultComponent: React.FC<Props> = ({navigation}) => {
           </View>
         </View>
       ))}
-    </View>
+    </ScrollView>
   );
 };
 

@@ -24,6 +24,7 @@ import TestScheduleComponent from "../pages/TestSchedule/TestScheduleComponent";
 import UpdateHotelPage from "../pages/UpdateHotelPage";
 import UpdateRoomPage from "../pages/UpdateRoomPage";
 import { UserComponent, UserSettingComponent } from "../pages/User";
+import { CONST } from "../utils/const";
 
 export const routes = {
 	signIn: "/sign-in",
@@ -70,9 +71,9 @@ export const publicRoutes = [
 ];
 
 export const privateRoutes = [
-	{ path: routes.OVERVIEW, page: OverviewComponent, layout: null, permissions: [] },
+	{ path: routes.OVERVIEW, page: OverviewComponent, layout: null, permissions: [CONST.PERMISSION.ADMIN] },
 	{ path: routes.SUBJECT, page: SubjectLayoutComponent, layout: null, permissions: [] },
-	{ path: routes.USER, page: UserComponent, layout: null, permissions: [] },
+	{ path: routes.USER, page: UserComponent, layout: null, permissions: [CONST.PERMISSION.ADMIN] },
 	{ path: routes.SETTING, page: UserSettingComponent, layout: null, permissions: [] },
 	{ path: routes.PERMISSION, page: UserComponent, layout: null, permissions: [] },
 	{ path: routes.QUESTION, page: QuestionComponent, layout: null, permissions: [] },
