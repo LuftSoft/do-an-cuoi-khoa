@@ -53,7 +53,7 @@ function App() {
 			</Backdrop>
 			<ToastContainer />
 			<Routes>
-				<Route path="/" element={<Navigate to={routes.signIn} />} />
+				<Route path="/" element={<Navigate to={routes.SIGNIN} />} />
 				{renderRoutes(publicRoutes)}
 				{<Route element={<ProtectedRoute />}>{renderRoutes(privateRoutes)}</Route>}
 			</Routes>

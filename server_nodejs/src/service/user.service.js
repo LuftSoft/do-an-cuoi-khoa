@@ -8,8 +8,14 @@ const { CONFIG } = require("../shared/common.constants");
 const sendMailService = require("./common/sendmail.service");
 const { Helpers, logger } = require("../extension/helper");
 const commonService = require("./common.service");
+const { CONSTANTS } = require("../shared/constant");
+const { URL_CONFIG } = require("../shared/url.constant");
 module.exports = {
   create: async (user) => {
+    const userByEmail = await userRepository.getByEmail(user.email);
+    if (userByEmail) {
+      throw new Error("Email đã được sử dụng, vui lòng chọn email khác");
+    }
     user.passwordHash = authService.hashPassword(user.password);
     user.code = user.email?.split("@")[0].toUpperCase();
     return await userRepository.create(user);
@@ -114,7 +120,8 @@ module.exports = {
     if (!isPasswordCorrect) {
       throw new Error(CONFIG.ERROR_RESPONSE.USER.LOGIN);
     }
-    await userRepository.update(user);
+    const userId = await userRepository.getById(user.id);
+    await userRepository.update(userId);
     const accessToken = authService.generateAccessToken(user.id);
     const refreshToken = authService.generateRefreshToken(user.id);
     return {
@@ -159,10 +166,11 @@ module.exports = {
   },
   forgotPassword: async (user) => {
     const { email } = user;
-    const userExists = await userRepository.getByEmail(email);
-    if (!userExists) {
+    const userEmail = await userRepository.getByEmail(email);
+    if (!userEmail) {
       throw new Error(CONFIG.ERROR_RESPONSE.USER.FORGOT_PASSWORD);
     }
+    const userExists = await userRepository.getById(userEmail.id);
     const resetPasswordToken = userExists.resetPasswordToken;
     if (resetPasswordToken) {
       console.log(resetPasswordToken);
@@ -173,7 +181,7 @@ module.exports = {
         )
       ) {
         logger.error("resetPasswordToken still expiredin");
-        return false;
+        throw new Error("Token thay đổi mật khẩu vẫn đang còn hiệu lực");
       }
     }
     const newResetPasswordToken = authService.generateResetPasswordToken(
@@ -182,13 +190,14 @@ module.exports = {
     const result = await sendMailService.SendMailHTML(
       userExists.email,
       CONFIG.API_MESSAGE.USER.FORGOT_PASSWORD,
-      `${newResetPasswordToken}`
+      `${URL_CONFIG.CORE_CLIENT_URL}${URL_CONFIG.RESET_PASSWORD}?token=${newResetPasswordToken}`
     );
     if (result) userExists.resetPasswordToken = newResetPasswordToken;
     await userRepository.update(userExists);
     return result ? newResetPasswordToken : false;
   },
   confirmPassword: async (token, newPassword) => {
+    console.log(token);
     if (!authService.verifyToken(token, process.env.RESET_PASSWORD_TOKEN_KEY)) {
       logger.error("token is expired");
       throw new Error("token is expired");
@@ -205,9 +214,11 @@ module.exports = {
       throw new Error(CONFIG.ERROR_RESPONSE.USER.CONFIRM_PASSWORD);
     }
     const newPasswordHash = authService.hashPassword(newPassword);
+    console.log("newPasswordHash", newPasswordHash);
     user.passwordHash = newPasswordHash;
-    const userUpdate = await userRepository.update(user);
-    return userUpdate ? userUpdate : false;
+    user.resetPasswordToken = null;
+    await userRepository.update(user);
+    return user;
   },
   getUser: (req, res, next) => {
     const { _id } = req.data;

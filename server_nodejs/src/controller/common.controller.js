@@ -20,4 +20,36 @@ router.get("/overview/bar", async (req, res) => {
   res.send(await commonService.getBarChartSemester());
 });
 
+router.get("/role", async (req, res) => {
+  res.send(await commonService.getRoles());
+});
+
+router.get("/role/permission/:id", async (req, res) => {
+  res.send(await commonService.getPermissonByRole(req.params.id));
+});
+
+router.get("/role/user/:id", async (req, res) => {
+  res.send(await commonService.getUserByRole(req.params.id));
+});
+
+router.put("/permission", async (req, res) => {
+  res.send(await commonService.putPermission(req.body));
+});
+
+router.put("/role", async (req, res) => {
+  res.send(await commonService.putRole(req.body));
+});
+
+router.post("/role/user", async (req, res) => {
+  res.send(await commonService.addUserToRole(req.body));
+});
+
+router.delete("/role/permission/:id", async (req, res) => {
+  res.send(await commonService.deleteRolePermissions(req.params.id));
+});
+
+router.delete("/role/user/:id", async (req, res) => {
+  res.send(await commonService.deleteUserRoles(req.params.id));
+});
+
 module.exports = router;

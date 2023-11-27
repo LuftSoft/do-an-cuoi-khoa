@@ -17,6 +17,7 @@ import PreviewIcon from "@mui/icons-material/Preview";
 import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
 	[`&.${tableCellClasses.head}`]: {
@@ -42,7 +43,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function CommonTableComponent(props) {
 	const id = useId();
-	const { columnDef, dataSource, onDelete, onView, onEdit } = props;
+	const { columnDef, dataSource, onDelete, onView, onEdit, onAdd } = props;
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -91,6 +92,14 @@ export default function CommonTableComponent(props) {
 												onView(row);
 											}}>
 											<RemoveRedEyeIcon titleAccess="Chi tiết" className="icon" />
+										</span>
+									) : null}
+									{onAdd ? (
+										<span
+											onClick={() => {
+												onAdd(row);
+											}}>
+											<AddCircleOutline titleAccess="Thêm" className="icon" />
 										</span>
 									) : null}
 									{onEdit ? (

@@ -34,47 +34,48 @@ export default function UserComponent() {
 		id: null,
 	});
 	const accessToken = useSelector(selectAccessToken);
-	function getUsers() {
-		loadingService.setLoading(true);
-		UserService.getAllUser()
-			.then((response) => {
-				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-					response.data?.data.forEach((user) => {
-						user.full_name = `${user.firstName} ${user.lastName}`;
-						user.dateOfBirth = user.dateOfBirth.substring(0, 10);
-						user.gender_translate = FeHelpers.translateGender(user.gender);
-						user.type_translate = FeHelpers.translateUserType(user.type);
-						user.className = {};
-						switch (user?.type) {
-							case CONST.USER.TYPE.SV:
-								user.className.type_translate = "bg-easy";
-								break;
-							case CONST.USER.TYPE.GV:
-								user.className.type_translate = "bg-medium";
-								break;
-							default:
-								break;
-						}
-						user.avatar = `<img class="avatar-small" src="data:image/png;base64,${user.avatar}" alt="avatar" />`;
-					});
-					setDataSource(response.data?.data);
-				} else {
-					toast.error("Tải danh sách tài khoản thất bại");
-				}
-			})
-			.catch((err) => {
+	async function getUsers() {
+		try {
+			const response = await UserService.getAllUser();
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				response.data?.data.forEach((user) => {
+					user.full_name = `${user.firstName} ${user.lastName}`;
+					user.dateOfBirth = user.dateOfBirth.substring(0, 10);
+					user.gender_translate = FeHelpers.translateGender(user.gender);
+					user.type_translate = FeHelpers.translateUserType(user.type);
+					user.className = {};
+					switch (user?.type) {
+						case CONST.USER.TYPE.SV:
+							user.className.type_translate = "bg-easy";
+							break;
+						case CONST.USER.TYPE.GV:
+							user.className.type_translate = "bg-medium";
+							break;
+						default:
+							break;
+					}
+					user.avatar = `<img class="avatar-small" src="data:image/png;base64,${user.avatar}" alt="avatar" />`;
+				});
+				setDataSource(response.data?.data);
+			} else {
 				toast.error("Tải danh sách tài khoản thất bại");
-				console.log(err);
-			});
-		loadingService.setLoading(false);
+			}
+		} catch (err) {
+			toast.error("Tải danh sách tài khoản thất bại");
+		}
 	}
 	//init data
 	useEffect(() => {
-		getUsers();
-	}, []);
-	function handleClose(data) {
-		if (data?.code === CONST.API_RESPONSE.SUCCESS) {
+		const fetchData = async () => {
+			loadingService.setLoading(true);
 			getUsers();
+			loadingService.setLoading(false);
+		};
+		fetchData();
+	}, []);
+	async function handleClose(data) {
+		if (data?.code === CONST.API_RESPONSE.SUCCESS) {
+			await getUsers();
 			setOpenCreateUserDialog(false);
 		} else {
 			setOpenCreateUserDialog(true);
@@ -132,23 +133,22 @@ export default function UserComponent() {
 	async function handleConfirmDialog(value) {
 		setConfirmDialog(false);
 		if (value) {
-			await deleteUser(deleteId).finally(getUsers());
+			await deleteUser(deleteId);
+			setTimeout(async () => {
+				await getUsers();
+			}, 200);
 		}
 	}
 	async function deleteUser(id) {
 		try {
-			loadingService.setLoading(true);
 			const response = await UserService.deleteUser(id, accessToken);
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 				toast.success("Xóa tài khoản thành công");
-				loadingService.setLoading(false);
 			} else {
 				toast.error("Xóa tài khoản thất bại");
-				loadingService.setLoading(false);
 			}
 		} catch (err) {
 			toast.error(err.message);
-			loadingService.setLoading(false);
 		}
 	}
 	function getDialogTitle() {

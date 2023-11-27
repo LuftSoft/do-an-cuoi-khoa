@@ -4,6 +4,7 @@ import { CONST } from "../../utils/const";
 const USER_ROUTE = CONST.BASE_URL + CONST.ROUTES.USER;
 const GV_ROUTE = USER_ROUTE + "/type/gv";
 const SV_ROUTE = USER_ROUTE + "/type/sv";
+const COMMON_ROUTE = CONST.BASE_URL + CONST.ROUTES.COMMON;
 export const UserService = {
 	getAllUser: async () => {
 		return await axios.get(USER_ROUTE);
@@ -28,5 +29,20 @@ export const UserService = {
 	},
 	deleteUser: async (id, token) => {
 		return await axios.delete(`${USER_ROUTE}/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+	},
+	getRoles: async (token) => {
+		return await axios.get(`${COMMON_ROUTE}/role`, { headers: { Authorization: `Bearer ${token}` } });
+	},
+	getPermissionByRole: async (id, token) => {
+		return await axios.get(`${COMMON_ROUTE}/role/permission/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+	},
+	getUserByRole: async (id, token) => {
+		return await axios.get(`${COMMON_ROUTE}/role/user/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+	},
+	deleteUserRole: async (id, token) => {
+		return await axios.delete(`${COMMON_ROUTE}/role/user/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+	},
+	addUserToRole: async (data, token) => {
+		return await axios.post(`${COMMON_ROUTE}/role/user`, data, { headers: { Authorization: `Bearer ${token}` } });
 	},
 };

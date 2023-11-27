@@ -1,6 +1,11 @@
 const { QueryTypes } = require("sequelize");
 const dbContext = require("../database/models/config/dbContext");
 const questions = dbContext.questions;
+const roles = dbContext.roles;
+const role_permissions = dbContext.role_permissions;
+const users = dbContext.users;
+const user_roles = dbContext.user_roles;
+const permissions = dbContext.permissions;
 
 module.exports = {
   /**/
@@ -39,5 +44,56 @@ module.exports = {
       type: QueryTypes.SELECT,
     });
     return info || [];
+  },
+  getRoles: async () => {
+    return await roles.sequelize.query(`SELECT * FROM roles`, {
+      type: QueryTypes.SELECT,
+    });
+  },
+  getPermissonByRole: (id) => {
+    return role_permissions.sequelize.query(
+      `SELECT rp.*, p.name as permission_name FROM role_permissions as rp 
+    INNER JOIN permissions as p ON rp.permission_id = p.id  
+    WHERE rp.role_id = '${id}'`,
+      { type: QueryTypes.SELECT }
+    );
+  },
+  getUserByRole: (id) => {
+    return user_roles.sequelize.query(
+      `SELECT ur.*, CONCAT(u.firstName,' ',u.lastName) as user_name FROM user_roles as ur 
+    INNER JOIN users as u ON ur.user_id = u.id
+    WHERE ur.role_id = '${id}'`,
+      { type: QueryTypes.SELECT }
+    );
+  },
+  deleteRolePermissions: async (id) => {
+    role_permissions.sequelize.query(
+      `DELETE FROM role_permissions WHERE id=${id}`,
+      { type: QueryTypes.DELETE }
+    );
+  },
+  deleteUserRoles: async (id) => {
+    user_roles.sequelize.query(`DELETE FROM user_roles WHERE id=${id}`, {
+      type: QueryTypes.DELETE,
+    });
+  },
+  putRole: async (role) => {
+    return role.save();
+  },
+  putPermission: async (permission) => {
+    return permission.save();
+  },
+  getRole: async (id) => {
+    return await roles.findByPk(id);
+  },
+  getPermission: async (id) => {
+    return await permissions.findByPk(id);
+  },
+  addUserToRole: async (data) => {
+    return await user_roles.sequelize.query(
+      `INSERT INTO user_roles (id,user_id,role_id) 
+    VALUES (0, '${data?.user_id}', '${data?.role_id}')`,
+      { type: QueryTypes.INSERT }
+    );
   },
 };

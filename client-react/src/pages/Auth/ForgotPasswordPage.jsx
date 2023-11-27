@@ -1,25 +1,27 @@
 import { Button, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useLoadingService } from "../../contexts/loadingContext";
+import { loginSuccess } from "../../redux/authSlice";
 import { selectUser } from "../../redux/selectors";
+import { updateUser } from "../../redux/userSlice";
 import { routes } from "../../routes";
 import { CONST } from "../../utils/const";
-import { UserService } from "../Auth/UserService";
-import { validatePassword } from "../../utils/helpers";
+import { validateEmail, validatePassword } from "../../utils/helpers";
+import "./SignIn.css";
+import { UserService } from "./UserService";
 
 const initState = {
-	token: "",
-	newPassword: "",
-	reNewPassword: "",
+	email: "",
 };
 
 export default function SignInPage() {
 	const loadingService = useLoadingService();
 	const location = useLocation();
 	const searchParams = new URLSearchParams(location.search);
+	const next = searchParams.get("next");
 	const currentUser = useSelector(selectUser);
 	const [error, setError] = useState(initState);
 	const [formData, setFormData] = useState(initState);
@@ -30,42 +32,41 @@ export default function SignInPage() {
 		//call api get new refresh-token and access-token
 		return <Navigate to={routes.OVERVIEW} />;
 	}
-	useEffect(() => {
-		setFormData({ ...formData, token: searchParams.get("token") });
-	}, []);
+
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		const errors = {};
-		if (formData.newPassword !== formData.reNewPassword) {
-			toast.error("Mật khẩu không khớp, vui lòng nhập lại");
-			return;
-		}
-		validatePassword(errors, formData.newPassword, "newPassword");
-		console.log("errors", errors);
-		if (Object.keys(errors).length > 0) {
+		const email = formData.email;
+		validateEmail(errors, email);
+		if (Object.keys(errors).length) {
+			console.log(error);
 			setError(errors);
-			return;
-		}
-		const resetPassword = async () => {
-			loadingService.setLoading(true);
-			try {
-				var res = await UserService.resetPassword(formData);
-				if (res.data?.code === CONST.API_RESPONSE.SUCCESS) {
-					toast.success("Đặt lại mật khẩu thành công");
-					navigate(routes.SIGNIN);
-				} else {
-					toast.error(`Đặt lại mật khẩu thất bại: ${res.data?.message}`);
+		} else {
+			setError({
+				...initState,
+			});
+			const signInRequest = async () => {
+				loadingService.setLoading(true);
+				try {
+					var res = await UserService.forgotPassword(formData);
+					if (res.data?.code === CONST.API_RESPONSE.SUCCESS) {
+						toast.success("Gửi email đặt lại mật khẩu thành công. Vui lòng kiểm tra email của bạn để đặt lại mật khẩu");
+						navigate(routes.SIGNIN);
+					} else {
+						toast.error(res?.data?.message);
+					}
+				} catch (error) {
+					console.log(error);
+					toast.error(error.message);
 				}
-			} catch (error) {
-				console.log(error);
-				toast.error("Đặt lại mật khẩu thất bại" + error);
-			}
-			loadingService.setLoading(false);
-		};
-		resetPassword();
+				loadingService.setLoading(false);
+			};
+			signInRequest();
+		}
 	};
 	const handleChange = (e) => {
-		setFormData({ ...formData, [e.target.name]: e.target.value });
+		const { name, value } = e.target;
+		setFormData({ ...formData, [name]: value });
 	};
 	if (currentUser) {
 		return <Navigate to={routes.OVERVIEW} />;
@@ -78,44 +79,27 @@ export default function SignInPage() {
 						<h2 className="left-h2">
 							PTITHCM <span className="left-h2-highlight">Test</span>
 						</h2>
-						<h3 className="left-h3">Đặt lại mật khẩu</h3>
+						<h3 className="left-h3">Quên mật khẩu</h3>
 					</div>
 					<div className="form-content">
 						<form onSubmit={handleSubmit} className="mb-2 login-form">
 							<TextField
-								label="Mật khẩu mới"
+								label="Email"
 								variant="outlined"
-								type="password"
-								name="newPassword"
-								fullWidth
-								required={true}
-								margin="normal"
-								value={formData.newPassword}
-								onChange={handleChange}
-								error={Boolean(error.newPassword)}
-								helperText={error.newPassword}
-							/>
-							<TextField
-								label="Nhập lại mật khẩu mới"
-								variant="outlined"
-								type="password"
-								required={true}
-								name="reNewPassword"
+								type="email"
+								name="email"
 								fullWidth
 								margin="normal"
-								value={formData.reNewPassword}
+								value={formData.email}
 								onChange={handleChange}
-								error={Boolean(error.newPassword)}
-								helperText={error.newPassword}
+								error={Boolean(error.email)}
+								helperText={error.email}
 							/>
 							<Button className="mt-3 btn-submit" variant="contained" color="primary" type="submit">
 								<i className="fa-solid fa-right-to-bracket me-2"></i> Gửi mail khôi phục mật khẩu
 							</Button>
 						</form>
 						<div className="form-footer">
-							<Link to={routes.FORGOT_PASSWORD} className="me-2 underline">
-								<span>Quên mật khẩu</span>
-							</Link>
 							<Link to={routes.SIGNIN} className="underline">
 								<span>Đăng nhập</span>
 							</Link>

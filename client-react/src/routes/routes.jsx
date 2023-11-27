@@ -1,36 +1,25 @@
 import NonLayout from "../layouts/NonLayout";
 
-import BookingRoomPage from "../pages/BookingRoomPage";
-import CreateHotelPage from "../pages/CreateHotelPage";
-import CreateRoomPage from "../pages/CreateRoomPage";
-import CreditClassComponent from "../pages/CreditClass/CreditClassComponent";
+import ForgotPasswordPage from "../pages/Auth/ForgotPasswordPage";
+import SignInPage from "../pages/Auth/SignInPage";
 import CreditClassLayoutComponent from "../pages/CreditClass/CreditClassLayoutComponent";
-import ForgotPasswordPage from "../pages/ForgotPasswordPage";
-import HotelPage from "../pages/HotelPage";
 import OverviewComponent from "../pages/Overview/OverviewComponent";
 import QuestionComponent from "../pages/Question/QuestionComponent";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
-import ResultComponent from "../pages/Result/ResultComponent";
 import ResultLayoutComponent from "../pages/Result/ResultLayoutComponent";
-import RoomPage from "../pages/RoomPage";
-import SignInPage from "../pages/SignInPage";
-import SignUpPage from "../pages/SignUpPage";
 import { SubjectLayoutComponent } from "../pages/Subject";
-import CreateSubjectComponent from "../pages/Subject/CreateSubjectComponent";
-import TableComTest from "../pages/TableComTest";
 import TestComponent from "../pages/Test/TestComponent";
 import TestTakeComponent from "../pages/Test/TestTakeComponent";
 import TestScheduleComponent from "../pages/TestSchedule/TestScheduleComponent";
-import UpdateHotelPage from "../pages/UpdateHotelPage";
-import UpdateRoomPage from "../pages/UpdateRoomPage";
 import { UserComponent, UserSettingComponent } from "../pages/User";
+import AssignUserRoleComponent from "../pages/User/AssignUserRoleComponent";
 import { CONST } from "../utils/const";
 
 export const routes = {
-	signIn: "/sign-in",
+	SIGNIN: "/sign-in",
 	signUp: "/sign-up",
-	forgotPassword: "/forgot-password",
-	resetPassword: "/reset-password",
+	FORGOT_PASSWORD: "/forgot-password",
+	RESET_PASSWORD: "/reset-password",
 
 	hotel: "/hotel",
 	createHotel: "/hotel/create",
@@ -55,19 +44,9 @@ export const routes = {
 };
 
 export const publicRoutes = [
-	{ path: routes.hotel, page: HotelPage, layout: null, permissions: [] },
-	{ path: "/subject/create-subject", page: CreateSubjectComponent, layout: null, permissions: [] },
-	{ path: routes.signIn, page: SignInPage, layout: NonLayout, permissions: [] },
-	{ path: routes.signUp, page: SignUpPage, layout: NonLayout, permissions: [] },
-	{ path: routes.forgotPassword, page: ForgotPasswordPage, layout: NonLayout, permissions: [] },
-	{ path: routes.resetPassword, page: ResetPasswordPage, layout: NonLayout, permissions: [] },
-	{ path: routes.createHotel, page: CreateHotelPage, layout: null, permissions: [] },
-	{ path: routes.updateHotel, page: UpdateHotelPage, layout: null, permissions: [] },
-	{ path: routes.room, page: RoomPage, layout: null, permissions: [] },
-	{ path: routes.createRoom, page: CreateRoomPage, layout: null, permissions: [] },
-	{ path: routes.updateRoom, page: UpdateRoomPage, layout: null, permissions: [] },
-	{ path: routes.booking, page: BookingRoomPage, layout: null, permissions: [] },
-	{ path: routes.UNAUTHORIZE, page: BookingRoomPage, layout: null, permissions: [] },
+	{ path: routes.SIGNIN, page: SignInPage, layout: NonLayout, permissions: [] },
+	{ path: routes.FORGOT_PASSWORD, page: ForgotPasswordPage, layout: NonLayout, permissions: [] },
+	{ path: routes.RESET_PASSWORD, page: ResetPasswordPage, layout: NonLayout, permissions: [] },
 ];
 
 export const privateRoutes = [
@@ -75,7 +54,7 @@ export const privateRoutes = [
 	{ path: routes.SUBJECT, page: SubjectLayoutComponent, layout: null, permissions: [] },
 	{ path: routes.USER, page: UserComponent, layout: null, permissions: [CONST.PERMISSION.ADMIN] },
 	{ path: routes.SETTING, page: UserSettingComponent, layout: null, permissions: [] },
-	{ path: routes.PERMISSION, page: UserComponent, layout: null, permissions: [] },
+	{ path: routes.PERMISSION, page: AssignUserRoleComponent, layout: null, permissions: [] },
 	{ path: routes.QUESTION, page: QuestionComponent, layout: null, permissions: [] },
 	{ path: routes.CREDIT_CLASS, page: CreditClassLayoutComponent, layout: null, permissions: [] },
 	{ path: routes.TEST_SCHEDULE, page: TestScheduleComponent, layout: null, permissions: [] },

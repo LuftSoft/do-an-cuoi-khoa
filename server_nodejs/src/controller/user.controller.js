@@ -63,7 +63,9 @@ router.post("/forgot-password", async (req, res) => {
     let status = CONFIG.RESPONSE_STATUS_CODE.SUCCESS;
     const response = await userService.forgotPassword(user);
     if (!response) status = CONFIG.RESPONSE_STATUS_CODE.ERROR;
-    res.send(new BaseAPIResponse(status, response, ""));
+    res.send(
+      new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, response, "")
+    );
   } catch (err) {
     logger.error(
       `Login failed - Email: "${user.email}" - Error: ${err?.message}`

@@ -11,10 +11,8 @@ module.exports = {
     return userCreate;
   },
   update: async (user) => {
-    let isExists = await users.findByPk(user.id);
-    if (isExists) isExists = user;
-    await isExists.save();
-    return isExists;
+    console.log("update user", user);
+    return await user.save();
   },
   delete: async (id) => {
     const result = await users.destroy({
