@@ -10,6 +10,8 @@ const { Helpers, logger } = require("../extension/helper");
 const commonService = require("./common.service");
 const { CONSTANTS } = require("../shared/constant");
 const { URL_CONFIG } = require("../shared/url.constant");
+const clusterRepository = require("../repository/cluster.repository");
+const userClusterSubjectRepository = require("../repository/user_cluster_subject.repository");
 module.exports = {
   create: async (user) => {
     const userByEmail = await userRepository.getByEmail(user.email);
@@ -18,7 +20,14 @@ module.exports = {
     }
     user.passwordHash = authService.hashPassword(user.password);
     user.code = user.email?.split("@")[0].toUpperCase();
-    return await userRepository.create(user);
+    const userCreate = await userRepository.create(user);
+    if (user.type === CONSTANTS.USER.TYPE.GV) {
+      const userCluster = await clusterRepository.create({
+        id: 0,
+        user_id: userCreate.dataValues.id,
+      });
+    }
+    return userCreate;
   },
   login: async (userLogin) => {
     const { email, password } = userLogin;
@@ -306,9 +315,12 @@ module.exports = {
     }
     return false;
   },
-  delete: async (id) => {
+  delete: async (id, adminId) => {
     try {
-      const result = await userRepository.delete(id);
+      const delUserClusterSubject =
+        await userClusterSubjectRepository.deleteByUserId(id);
+      const delCluster = await clusterRepository.deleteByUserId(id);
+      const result = await userRepository.delete(id, adminId);
       if (result) {
         return new BaseAPIResponse(
           CONFIG.RESPONSE_STATUS_CODE.SUCCESS,

@@ -65,6 +65,18 @@ module.exports = {
           key: "id",
         },
       },
+      cluster_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "clusters",
+          key: "id",
+        },
+      },
+      isDelete: {
+        type: Sequelize.BOOLEAN,
+        values: false,
+      },
     });
   },
   async down(queryInterface, Sequelize) {

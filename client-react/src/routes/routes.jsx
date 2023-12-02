@@ -7,11 +7,13 @@ import OverviewComponent from "../pages/Overview/OverviewComponent";
 import QuestionComponent from "../pages/Question/QuestionComponent";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
 import ResultLayoutComponent from "../pages/Result/ResultLayoutComponent";
+import { StudentResultComponent, StudentTestComponent } from "../pages/Student";
 import { SubjectLayoutComponent } from "../pages/Subject";
 import TestComponent from "../pages/Test/TestComponent";
 import TestTakeComponent from "../pages/Test/TestTakeComponent";
 import TestScheduleComponent from "../pages/TestSchedule/TestScheduleComponent";
-import { UserComponent, UserSettingComponent } from "../pages/User";
+import UserSettingComponent from "../pages/User/UserSettingComponent";
+import UserLayoutComponent from "../pages/User/UserLayoutComponent";
 import AssignUserRoleComponent from "../pages/User/AssignUserRoleComponent";
 import { CONST } from "../utils/const";
 
@@ -41,6 +43,7 @@ export const routes = {
 	LOGIN: "/login",
 	UNAUTHORIZE: "/unauthorize",
 	SETTING: "/setting",
+	STUDENT: "/student",
 };
 
 export const publicRoutes = [
@@ -52,7 +55,7 @@ export const publicRoutes = [
 export const privateRoutes = [
 	{ path: routes.OVERVIEW, page: OverviewComponent, layout: null, permissions: [CONST.PERMISSION.ADMIN] },
 	{ path: routes.SUBJECT, page: SubjectLayoutComponent, layout: null, permissions: [] },
-	{ path: routes.USER, page: UserComponent, layout: null, permissions: [CONST.PERMISSION.ADMIN] },
+	{ path: routes.USER, page: UserLayoutComponent, layout: null, permissions: [CONST.PERMISSION.ADMIN] },
 	{ path: routes.SETTING, page: UserSettingComponent, layout: null, permissions: [] },
 	{ path: routes.PERMISSION, page: AssignUserRoleComponent, layout: null, permissions: [] },
 	{ path: routes.QUESTION, page: QuestionComponent, layout: null, permissions: [] },
@@ -61,4 +64,6 @@ export const privateRoutes = [
 	{ path: routes.RESULT, page: ResultLayoutComponent, layout: null, permissions: [] },
 	{ path: routes.TEST, page: TestComponent, layout: null, permissions: [] },
 	{ path: routes.TEST + "/test", page: TestTakeComponent, layout: null, permissions: [] },
+	{ path: routes.STUDENT + routes.TEST, page: StudentTestComponent, layout: null, permissions: [] },
+	{ path: routes.STUDENT + routes.RESULT, page: StudentResultComponent, layout: null, permissions: [] },
 ];

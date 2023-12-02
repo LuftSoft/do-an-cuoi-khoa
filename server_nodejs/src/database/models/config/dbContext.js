@@ -63,5 +63,10 @@ dbContext.credit_class_details = require("../credit_class_details")(
   sequelize,
   DataTypes
 );
+dbContext.clusters = require("../clusters")(sequelize, DataTypes);
+dbContext.user_cluster_subjects = require("../user_cluster_subjects")(
+  sequelize,
+  DataTypes
+);
 
 module.exports = dbContext;

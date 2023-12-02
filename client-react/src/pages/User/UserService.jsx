@@ -1,5 +1,6 @@
 import axios from "axios";
 import { CONST } from "../../utils/const";
+import { axiosJWT } from "../../utils/httpRequest";
 
 const USER_ROUTE = CONST.BASE_URL + CONST.ROUTES.USER;
 const GV_ROUTE = USER_ROUTE + "/type/gv";
@@ -44,5 +45,35 @@ export const UserService = {
 	},
 	addUserToRole: async (data, token) => {
 		return await axios.post(`${COMMON_ROUTE}/role/user`, data, { headers: { Authorization: `Bearer ${token}` } });
+	},
+	getAllCluster: async (token) => {
+		return await axios.get(`${COMMON_ROUTE}/cluster`, { headers: { Authorization: `Bearer ${token}` } });
+	},
+	getAllSubjectByUserCluster: async (token) => {
+		return await axios.get(`${COMMON_ROUTE}/cluster/subject/:id`, { headers: { Authorization: `Bearer ${token}` } });
+	},
+	getUserClusterSubjectByUserId: async (id, token) => {
+		return await axios.get(`${COMMON_ROUTE}/user-cluster-subject/user/${id}`, {
+			headers: { Authorization: `Bearer ${token}` },
+		});
+	},
+	deleteUserClusterSubject: async (id, token) => {
+		return await axios.delete(`${COMMON_ROUTE}/user-cluster-subject/${id}`, {
+			headers: { Authorization: `Bearer ${token}` },
+		});
+	},
+	getUCSUser: async (id) => {
+		return await axios.get(`${COMMON_ROUTE}/user-cluster-subject/user`);
+	},
+	getUCSSubjectByUserId: async (id) => {
+		return await axios.get(`${COMMON_ROUTE}/user-cluster-subject/subject/user/${id}`);
+	},
+	getUCSUserDetail: async (id) => {
+		return await axios.get(`${COMMON_ROUTE}/user-cluster-subject/user/${id}`);
+	},
+	createUserClusterSubject: async (data, token) => {
+		return await axios.post(`${COMMON_ROUTE}/user-cluster-subject`, data, {
+			headers: { Authorization: `Bearer ${token}` },
+		});
 	},
 };

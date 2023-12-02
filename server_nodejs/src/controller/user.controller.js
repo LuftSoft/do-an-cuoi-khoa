@@ -114,13 +114,23 @@ router.get("/", async (req, res) => {
 });
 //authorize([]),
 router.get("/:id", async (req, res) => {
-  const user = await userService.getById(req.params.id);
-  let msg = "";
-  if (!user) {
-    msg = "user not found";
-    logger.error(msg);
+  try {
+    const user = await userService.getById(req.params.id);
+    let msg = "";
+    if (!user) {
+      msg = "user not found";
+      logger.error(msg);
+    }
+    res.send(
+      new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, user, msg)
+    );
+  } catch (err) {
+    new BaseAPIResponse(
+      CONFIG.RESPONSE_STATUS_CODE.ERROR,
+      null,
+      "Lỗi khi tải chi tiết tài khoản"
+    );
   }
-  res.send(new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, user, msg));
 });
 router.put("/avatar", uploadUtil.upload.single("avatar"), async (req, res) => {
   const token = Helpers.getAuthToken(req);
@@ -150,7 +160,7 @@ router.delete(
     const accessToken = req.accessToken;
     const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
     if (userId) {
-      res.send(await userService.delete(id));
+      res.send(await userService.delete(id, userId));
     }
   }
 );

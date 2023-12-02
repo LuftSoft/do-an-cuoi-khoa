@@ -1,0 +1,364 @@
+/* style for unread notifications */
+:root {
+    --utilnav-app-icon: url(/static/assets/icons/utilnav/apps.svg);
+    --utilnav-notification-icon: url(/static/assets/icons/utilnav/bell.svg);
+    --utilnav-notification-icon-selected: url(/static/assets/icons/utilnav/bell_selected.svg);
+    --utilnav-icon-bg-color: #ebebeb;
+    --utilnav-icon-hover: #3f3f3f;
+    --utilnav-icon-active: #545454;
+    --utilnav-icon-selected: #707070;
+    --utilnav-icon-overlay-size: 32px;
+    --utilnav-icon-overlay-border-radius: 6px;
+    --utilnav-background-color: rgb(29, 29, 29);
+    --utilnav-focus-ring-color: #464bd3;
+    --utilnav-focus-ring-width: 2px;
+    --unc-more-icon: #464646;
+    --unc-more-icon-active: #000000;
+    --unc-more-button-hover: #e6e6e6;
+    --unc-more-button-active: #d5d5d5;
+    --utilnav-tooltip-bg: rgb(34, 34, 34);
+    --utilnav-tooltip-text-color: rgb(255, 255, 255);
+    --utilnav-display-profile-content-section: block;
+
+    /* UNC widget vars  - these variables are defined in https://git.corp.adobe.com/ccxi/ccxi-unc/tree/main/src/UX*/
+    --unc-status-light-color: #5c5ce0;
+    --unc-notification-bottom-padding: 18px;
+    --unc-notification-top-padding: 18px;
+    --unc-notification-left-padding: 14px;
+    --unc-notification-right-padding: 14px;
+    --unc-contrast-background-color: #edeeff;
+    --unc-contrast-background-hover-color: #e0e2ff;
+}
+
+/*Embed context overrides*/
+#utilnav.embed {
+    --utilnav-icon-bg-color: rgb(34, 34, 34);
+    --utilnav-icon-hover: rgb(230, 230, 230);
+    --utilnav-display-profile-content-section: none;
+}
+
+/*Embed context overrides*/
+#utilnav.embed .Profile-avatar {
+    pointer-events: none !important;
+}
+
+/*Embed context overrides*/
+/*hides manage enterprise option for embed view*/
+#utilnav.embed .Profile-content {
+    display: none !important;
+}
+
+#utilnav .Profile-dropdown .Profile-content {
+    display: var(--utilnav-display-profile-content-section);
+}
+
+/* need to add !important because the no notification state screen is opiniated and
+adds its own font-family property that we need to override */
+#utilnav .unc-container .notifications-widget .no-notifications-screen {
+    font-family: adobe-clean, "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu,
+        "Trebuchet MS", "Lucida Grande", sans-serif !important;
+}
+
+/* UtilityNav Icons override to match sp-action-button - start */
+#utilnav .app-launcher .app-launcher-icon {
+    width: 17px;
+    height: 17px;
+    background-color: var(--utilnav-icon-bg-color);
+    -webkit-mask-image: var(--utilnav-app-icon);
+    -webkit-mask-repeat: no-repeat;
+    mask-image: var(--utilnav-app-icon);
+    mask-repeat: no-repeat;
+    padding: 0;
+}
+
+#utilnav .app-launcher .app-launcher-icon:hover {
+    background-color: var(--utilnav-icon-bg-color);
+}
+
+#utilnav .app-launcher .app-launcher-icon svg {
+    display: none;
+}
+
+#utilnav .unc-container .notifications-widget-bell .notification-icon {
+    width: var(--utilnav-icon-overlay-size);
+    height: var(--utilnav-icon-overlay-size);
+    background-color: var(--utilnav-icon-bg-color) !important;
+    -webkit-mask-image: var(--utilnav-notification-icon);
+    -webkit-mask-repeat: no-repeat;
+    mask-image: var(--utilnav-notification-icon);
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+#utilnav .unc-container .notifications-widget-bell .notification-icon:hover {
+    background-color: var(--utilnav-icon-bg-color);
+}
+
+#utilnav .unc-container .notifications-widget-bell svg {
+    display: none;
+}
+
+#utilnav .utilnav-container .utility-nav .utility-nav-icon.help .help-icon {
+    fill: var(--utilnav-icon-bg-color);
+    vertical-align: sub;
+}
+#utilnav .utilnav-container .utility-nav .utility-nav-icon.nav-icon .cc-icon {
+    fill: var(--utilnav-icon-bg-color);
+}
+
+#utilnav .utilnav-container .spectrum-Popover-tip {
+    display: none;
+}
+
+#utilnav .utilnav-container .Profile.utilnav-profile-wrapper.Profile-expanded::before {
+    display: none;
+}
+
+/* profile icon action button styles for hover and active states */
+#utilnav .utilnav-container .utility-nav .utilnav-profile-wrapper::after {
+    content: "";
+    width: 36px;
+    height: 36px;
+    background-color: transparent;
+    border-radius: 100%;
+    position: absolute;
+    z-index: -10;
+    top: -4px;
+    left: -4px;
+}
+#utilnav .utilnav-container .utility-nav .utilnav-profile-wrapper:hover::after {
+    background-color: var(--utilnav-icon-hover);
+}
+#utilnav .utilnav-container .utility-nav .utilnav-profile-wrapper:active::after {
+    background-color: var(--utilnav-icon-active);
+}
+#utilnav .utilnav-container .utility-nav .utilnav-profile-wrapper.Profile-expanded::after {
+    background-color: var(--utilnav-icon-selected);
+}
+
+/* cc home action button styles for hover and active states */
+#utilnav .utilnav-container .utility-nav .utility-nav-icon.nav-icon .nav-logo [role]::after {
+    content: "";
+    width: var(--utilnav-icon-overlay-size);
+    height: var(--utilnav-icon-overlay-size);
+    background-color: transparent;
+    border-radius: var(--utilnav-icon-overlay-border-radius);
+    position: absolute;
+    z-index: -10;
+    top: 0px;
+    left: -2px;
+}
+#utilnav .utilnav-container .utility-nav .utility-nav-icon.nav-icon .nav-logo [role]:hover::after {
+    background-color: var(--utilnav-icon-hover);
+}
+#utilnav .utilnav-container .utility-nav .utility-nav-icon.nav-icon .nav-logo [role]:active::after {
+    background-color: var(--utilnav-icon-active);
+}
+
+/* help action button styles for hover and active states */
+#utilnav .utilnav-container .utility-nav .utility-nav-icon.help {
+    border-radius: var(--utilnav-icon-overlay-border-radius);
+    height: 24px;
+    width: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#utilnav .utilnav-container .utility-nav .utility-nav-icon.help svg.help-icon path {
+    fill: var(--utilnav-icon-bg-color);
+}
+#utilnav .utilnav-container .utility-nav .utility-nav-icon.help-expanded svg.help-icon path {
+    fill: var(--utilnav-icon-bg-color) !important;
+}
+#utilnav .utilnav-container .utility-nav .utility-nav-icon.help-expanded {
+    background-color: var(--utilnav-icon-selected);
+}
+#utilnav .utilnav-container .utility-nav .utility-nav-icon.help:not(.help-expanded):hover {
+    background-color: var(--utilnav-icon-hover);
+}
+#utilnav .utilnav-container .utility-nav .utility-nav-icon.help:not(.help-expanded):active {
+    background-color: var(--utilnav-icon-active);
+}
+
+#utilnav
+    .utilnav-container
+    .utility-nav
+    .utility-nav-icon
+    .nav-profile-container
+    .Profile.utilnav-profile-wrapper.Profile-hidden
+    .Profile-dropdown {
+    display: none;
+    visibility: hidden;
+}
+
+/* app launcher action button styles for hover and active states */
+#utilnav .utilnav-container .app-launcher::after {
+    content: "";
+    width: var(--utilnav-icon-overlay-size);
+    height: var(--utilnav-icon-overlay-size);
+    background-color: transparent;
+    border-radius: var(--utilnav-icon-overlay-border-radius);
+    position: absolute;
+    z-index: -10;
+    top: -4px;
+    left: -4px;
+}
+#utilnav .utilnav-container .app-launcher:hover::after {
+    background-color: var(--utilnav-icon-hover);
+}
+#utilnav .utilnav-container .app-launcher:active::after {
+    background-color: var(--utilnav-icon-active);
+}
+#utilnav .utilnav-container .app-launcher[aria-expanded="true"]::after {
+    background-color: var(--utilnav-icon-selected);
+}
+
+/* notifications action button styles for hover and active states */
+#utilnav .unc-container .notifications-widget-bell div:first-child:not(.notification-badge)::after {
+    content: "";
+    width: var(--utilnav-icon-overlay-size);
+    height: var(--utilnav-icon-overlay-size);
+    background-color: transparent;
+    border-radius: var(--utilnav-icon-overlay-border-radius);
+    position: absolute;
+    z-index: -10;
+    top: 0px;
+    left: 0px;
+}
+#utilnav .unc-container .notifications-widget-bell div:first-child:not(.notification-badge):hover::after {
+    background-color: var(--utilnav-icon-hover);
+}
+#utilnav .unc-container .notifications-widget-bell div:first-child:not(.notification-badge):active::after {
+    background-color: var(--utilnav-icon-active);
+}
+
+#utilnav .unc-container .notifications-widget-bell div.is-selected {
+    background-color: var(--utilnav-icon-selected);
+}
+
+#utilnav .utilnav-container .notifications-widget-bell {
+    width: 29px;
+    padding-left: 0;
+    border: none;
+}
+/* UtilityNav Icons override to match sp-action-button - end */
+
+#utilnav .utilnav-container .utility-nav .utilnav-profile-wrapper a {
+    -webkit-user-drag: none;
+}
+
+.utilnav-container .utility-nav .app-launcher.focus-ring,
+.utilnav-container .utility-nav .unav-icon-span.custom-focus.focus-ring,
+#utilnav .unc-container .notifications-widget-bell button.focus-ring,
+.utilnav-container .utilnav-profile-wrapper a[role].Profile-thumbnail.focus-ring {
+    border: var(--utilnav-focus-ring-width) var(--utilnav-background-color) solid !important;
+}
+
+.utilnav-container .utility-nav .app-launcher.focus-ring::after,
+.utilnav-container .utility-nav .unav-icon-span.custom-focus.focus-ring::after,
+#utilnav .unc-container .notifications-widget-bell button.focus-ring,
+#utilnav .unc-container .notifications-widget-bell:has(> div > button.focus-ring),
+.utilnav-container .utilnav-profile-wrapper a[role].Profile-thumbnail.focus-ring {
+    box-shadow: 0 0 0 var(--utilnav-focus-ring-width) var(--utilnav-focus-ring-color);
+}
+
+#utilnav .unc-container .notifications-widget-bell:has(> div > button.focus-ring) {
+    border-radius: var(--utilnav-icon-overlay-border-radius);
+}
+
+.unc-container
+    .notifications-widget.notifications-widget-colors
+    .notification-container
+    .notification-body
+    a.focus-ring,
+.unc-container .notifications-widget.notifications-widget-colors .notification-container.focus-ring,
+.unc-container
+    .notifications-widget.notifications-widget-colors
+    .comment-timeline
+    .notification-body
+    .comment-container.focus-ring,
+.utilnav-container .utilitynav-help-popover .spectrum-Dialog-content .help-dropdown-menu .help-dropdown-item.focus-ring,
+.unc-container .spectrum .spectrum-ActionButton--quiet.focus-ring,
+.unc-container .spectrum .spectrum-Menu-item.focus-ring {
+    border-color: var(--utilnav-focus-ring-color) !important;
+}
+
+.unc-container .spectrum .spectrum-ActionButton.focus-ring,
+.unc-container .spectrum .spectrum-ActionButton--quiet.focus-ring {
+    box-shadow: 0 0 0 1px var(--utilnav-focus-ring-color) !important;
+}
+
+#utilnav .utilnav-container .app-launcher-popover .apps-header .info-icon.focus-ring,
+#utilnav .utilnav-container .utilnav-profile-wrapper .Profile-dropdown .Profile-header.focus-ring::before,
+#utilnav .utilnav-container .utilnav-profile-wrapper .Profile-dropdown .Profile-header .Profile-avatar.focus-ring,
+#utilnav .utilnav-container .utilnav-profile-wrapper .Profile-dropdown .Profile-menu-link.focus-ring::before {
+    border-color: var(--utilnav-focus-ring-color) !important;
+}
+
+#utilnav .Profile-header .Profile-avatar {
+    border-radius: 50%;
+    background-clip: content-box;
+}
+
+/* need to add !important because the no notification state screen is opiniated and
+adds its own font-family property that we need to override */
+#utilnav .unc-container .notifications-widget .no-notifications-screen {
+    font-family: var(--font-family) !important;
+}
+
+/* UNC widget more icon overrides - start*/
+
+#utilnav .unc-container .notifications-widget .morediv {
+    right: 14px;
+}
+
+#utilnav .unc-container .notifications-widget .morediv.hidden {
+    visibility: visible;
+}
+
+#utilnav .unc-container .notifications-widget .morediv svg {
+    color: var(--unc-more-icon);
+}
+#utilnav .unc-container .notifications-widget .morediv:hover svg,
+#utilnav .unc-container .notifications-widget .morediv:active svg {
+    color: var(--unc-more-icon-active);
+}
+
+#utilnav .unc-container .spectrum--light .morediv .spectrum-ActionButton:hover {
+    background-color: var(--unc-more-button-hover);
+}
+
+#utilnav .unc-container .spectrum--light .morediv .spectrum-ActionButton:active {
+    background-color: var(--unc-more-button-active);
+}
+/* notifications widget more icon overrides - end*/
+
+#utilnav .nav-profile-container a {
+    -webkit-user-drag: none;
+}
+
+/* tooltip style overrides */
+#utilnav .spectrum-Tooltip {
+    background-color: var(--utilnav-tooltip-bg);
+    color: var(--utilnav-tooltip-text-color);
+    margin-top: 12px;
+}
+#utilnav .spectrum-Tooltip .spectrum-Tooltip-tip {
+    border-top-color: var(--utilnav-tooltip-bg);
+}
+
+/*
+    Block nav to Adobe account on mobile JIRA: https://jira.corp.adobe.com/browse/CCEX-43030
+*/
+#utilnav[is-mobile-webview="true"] .Profile .Profile-header {
+    pointer-events: none;
+}
+/*To hide the "Adobe Account" text */
+#utilnav[is-mobile-webview="true"] .Profile .Profile-header-cta {
+    display: none;
+}
+/*To fix the vertical alignment after hiding */
+#utilnav[is-mobile-webview="true"] .Profile .Profile-data {
+    padding-top: 12px;
+}

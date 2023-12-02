@@ -5,6 +5,9 @@ const { Helpers, logger } = require("../extension/helper");
 const commonRepository = require("../repository/common.repository");
 const authService = require("./common/auth.service");
 const userRepository = require("../repository/user.repository");
+const clusterRepository = require("../repository/cluster.repository");
+const userClusterSubjectRepository = require("../repository/user_cluster_subject.repository");
+const questionRepository = require("../repository/question.repository");
 module.exports = {
   getFourTopInfo: async () => {
     try {
@@ -213,6 +216,145 @@ module.exports = {
         "update role success"
       );
     } catch (err) {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+
+  /* CLUSTER */
+  getClusters: async () => {
+    try {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        await clusterRepository.getAll(),
+        ""
+      );
+    } catch (err) {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+
+  getUserClusterSubjectByUserId: async (id) => {
+    try {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        await userClusterSubjectRepository.getByUserId(id),
+        ""
+      );
+    } catch (err) {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+
+  createUserClusterSubject: async (data) => {
+    try {
+      if (!data.cluster_id) {
+        if (data?.user_cluster_id) {
+          const cluster = await clusterRepository.getByUserId(
+            data.user_cluster_id
+          );
+          data.cluster_id = cluster.dataValues.id;
+        } else {
+          const cluster = await clusterRepository.getByUserId(data.user_id);
+          data.cluster_id = cluster.dataValues.id;
+        }
+      }
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        await userClusterSubjectRepository.create(data),
+        ""
+      );
+    } catch (err) {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+  getUsers: async () => {
+    try {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        await userClusterSubjectRepository.getUsers(),
+        ""
+      );
+    } catch (err) {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+  getSubjectByUserId: async (id) => {
+    try {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        await userClusterSubjectRepository.getSubjectByUserId(id),
+        ""
+      );
+    } catch (err) {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+  getUCSByUserId: async (id) => {
+    try {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        await userClusterSubjectRepository.getSubjectByUserId(id),
+        ""
+      );
+    } catch (err) {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+  //khi detele, check xem cau hoi nao thuoc quyen nay => chuyển tất cả sang id của admin.
+  deleteUserClusterSubject: async (id) => {
+    try {
+      const data = (await userClusterSubjectRepository.getById(id)).dataValues;
+      const cluster = await clusterRepository.getById(data.cluster_id);
+      if (cluster.dataValues.user_id === data.user_id) {
+        const firstAdmin = await userRepository.getFirstAdmin();
+        const adminCluster = await clusterRepository.getByUserId(firstAdmin.id);
+        const updateQuestionResult =
+          questionRepository.updateWhenDeleteUserClusterSubject(
+            adminCluster.id,
+            data.cluster_id,
+            data.subject_id
+          );
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await userClusterSubjectRepository.delete(id),
+          ""
+        );
+      }
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        await userClusterSubjectRepository.delete(id),
+        ""
+      );
+    } catch (err) {
+      console.log(err);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.ERROR,
         null,

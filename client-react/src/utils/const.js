@@ -124,14 +124,14 @@ const CONST = {
 		{
 			icon: "fa-solid fa-font",
 			name: "Bài thi của bạn",
-			route: "/test-schedule",
+			route: "/student/test",
 			permissions: [PERMISSION.SV],
 			childs: [],
 		},
 		{
 			icon: "fa-solid fa-bullseye",
 			name: "Kết quả thi",
-			route: "/test-schedule",
+			route: "/student/result",
 			permissions: [PERMISSION.SV],
 			childs: [],
 		},

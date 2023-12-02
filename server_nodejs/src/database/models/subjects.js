@@ -40,6 +40,10 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
+      isDelete: {
+        type: DataTypes.BOOLEAN,
+        values: false,
+      },
     },
     {
       sequelize,

@@ -32,6 +32,10 @@ module.exports = {
           key: "id",
         },
       },
+      isDelete: {
+        type: Sequelize.BOOLEAN,
+        values: false,
+      },
     });
   },
   async down(queryInterface, Sequelize) {

@@ -1,7 +1,5 @@
 const { QueryTypes } = require("sequelize");
 const dbContext = require("../database/models/config/dbContext");
-const { Helpers } = require("../extension/helper");
-const questionConverter = require("../service/converter/question.converter");
 const questions = dbContext.questions;
 
 module.exports = {
@@ -69,7 +67,7 @@ module.exports = {
     return questionCreate;
   },
   createMultiple: async (query) => {
-    const queryExe = `INSERT INTO questions(question,level,answer_a,answer_b,answer_c,answer_d,correct_answer,image,chapter_id,is_admin_create,user_create)
+    const queryExe = `INSERT INTO questions(question,level,answer_a,answer_b,answer_c,answer_d,correct_answer,image,chapter_id,is_admin_create,user_create, cluster_id)
     VALUES ${query}`;
     return await questions.sequelize.query(queryExe, {
       type: QueryTypes.INSERT,
@@ -94,5 +92,16 @@ module.exports = {
       type: QueryTypes.SELECT,
     });
     return result[0].num === 0;
+  },
+  updateWhenDeleteUserClusterSubject: async (
+    adminClusterId,
+    userClusterId,
+    subjectId
+  ) => {
+    const query = `UPDATE questions as q 
+          SET cluster_id=${adminClusterId} 
+          WHERE q.cluster_id=${userClusterId}
+          AND EXISTS (SELECT id FROM chapters as ch WHERE ch.id=q.chapter_id AND ch.subject_id='${subjectId}')`;
+    return await questions.sequelize.query(query, { type: QueryTypes.UPDATE });
   },
 };

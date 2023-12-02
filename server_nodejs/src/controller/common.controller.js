@@ -52,4 +52,25 @@ router.delete("/role/user/:id", async (req, res) => {
   res.send(await commonService.deleteUserRoles(req.params.id));
 });
 
+router.get("/cluster", async (req, res) => {
+  res.send(await commonService.getClusters());
+});
+router.get("/user-cluster-subject/user", async (req, res) => {
+  res.send(await commonService.getUsers());
+});
+router.get("/user-cluster-subject/subject/user/:id", async (req, res) => {
+  res.send(await commonService.getSubjectByUserId(req.params.id));
+});
+
+router.delete("/user-cluster-subject/:id", async (req, res) => {
+  res.send(await commonService.deleteUserClusterSubject(req.params.id));
+});
+router.get("/user-cluster-subject/user/:id", async (req, res) => {
+  res.send(await commonService.getUserClusterSubjectByUserId(req?.params?.id));
+});
+
+router.post("/user-cluster-subject", async (req, res) => {
+  res.send(await commonService.createUserClusterSubject(req.body));
+});
+
 module.exports = router;

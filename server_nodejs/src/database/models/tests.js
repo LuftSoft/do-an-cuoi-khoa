@@ -98,6 +98,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: 0,
       },
+      isDelete: {
+        type: DataTypes.BOOLEAN,
+        values: false,
+      },
     },
     {
       sequelize,

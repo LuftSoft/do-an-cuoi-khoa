@@ -60,6 +60,10 @@ module.exports = {
       resetPasswordToken: {
         type: Sequelize.STRING,
       },
+      isDelete: {
+        type: Sequelize.BOOLEAN,
+        values: false,
+      },
     });
     await queryInterface.createTable("roles", {
       id: {

@@ -53,9 +53,21 @@ module.exports = {
         resetPasswordToken: null,
       },
     ]);
+
+    await queryInterface.bulkInsert("clusters", [
+      {
+        id: 1,
+        user_id: "11e6-fe27-df22-c78c-3137-46a3-7bf3-5c23",
+      },
+      {
+        id: 2,
+        user_id: "e0d2-446f-6170-e42e-e085-64a9-0467-2b33",
+      },
+    ]);
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.bulkDelete("users");
+    await queryInterface.bulkDelete("clusters");
   },
 };

@@ -144,7 +144,7 @@ module.exports = {
           d = d.replace(/'/g, "");
           query += `('${q}', '${randomLevel()}','${a}','${b}','${c}','${d}','${randomCorrectAnswer()}', null, ${randomChapterId(
             item.chapterId
-          )},1,'11e6-fe27-df22-c78c-3137-46a3-7bf3-5c23'),`;
+          )},1,'11e6-fe27-df22-c78c-3137-46a3-7bf3-5c23', 1),`;
           q = "";
           a = "";
           b = "";

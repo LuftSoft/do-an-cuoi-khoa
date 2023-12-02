@@ -45,7 +45,6 @@ const CreateUserComponent = ({ onSubmit, data }) => {
 		}
 	};
 	useEffect(() => {
-		console.log(data);
 		const fetchData = async () => {
 			if (data?.type === CONST.DIALOG.TYPE.EDIT) {
 				await getUserDetail(data?.id);

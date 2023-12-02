@@ -72,6 +72,10 @@ module.exports = (sequelize, DataTypes) => {
       resetPasswordToken: {
         type: DataTypes.STRING,
       },
+      isDelete: {
+        type: DataTypes.BOOLEAN,
+        values: false,
+      },
     },
     {
       sequelize,

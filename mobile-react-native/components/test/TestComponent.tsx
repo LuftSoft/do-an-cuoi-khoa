@@ -50,6 +50,14 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
   const getTestByUserid = async (id: string) => {
     const response = await TestService.getTestByUserid(id);
     if (response.data?.code === CONFIG.API_RESPONSE_STATUS.SUCCESS) {
+      const now = new Date().getTime();
+      const data =
+        response.data?.data?.filter(
+          (item: any) => new Date(item.test_schedule_date).getTime() >= now,
+        ) || [];
+      // .sort(
+      //   (a: any, b: any) => b.test_schedule_date - a.test_schedule_date,
+      // ), sort theo ngay giam dan
       setTests(response.data?.data);
       console.log('response ', response.data?.data);
     }
@@ -82,7 +90,6 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
     const begin = new Date(beginTime).getTime();
     const end = new Date(beginTime).getTime() + time * 60 * 1000;
     const now = new Date().getTime();
-    // return true;
     return now >= begin && now <= end;
   };
   const boxShadow = CssUtil.GenerateDefaultBoxShadow();

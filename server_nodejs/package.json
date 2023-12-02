@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon app",
-    "reload:testdb": "cd .\\src\\database\\ && npx sequelize-cli db:drop --env test && npx sequelize-cli db:create --env test && npx sequelize-cli db:migrate --env test"
+    "reload:quizz": "cd .\\src\\database\\ && npx sequelize-cli db:drop --env test && npx sequelize-cli db:create --env test && npx sequelize-cli db:migrate --env test"
   },
   "keywords": [
     "node",

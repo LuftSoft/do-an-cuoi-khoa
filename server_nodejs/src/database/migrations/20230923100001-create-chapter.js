@@ -26,6 +26,10 @@ module.exports = {
         },
         onDelete: "CASCADE",
       },
+      isDelete: {
+        type: Sequelize.BOOLEAN,
+        values: false,
+      },
     });
     await queryInterface.addConstraint("chapters", {
       fields: ["subject_id", "index"],
