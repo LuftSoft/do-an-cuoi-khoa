@@ -40,7 +40,12 @@ const CreateQuestion = ({ onSubmit, data, type, btnTitle }) => {
 
 	async function getAllSubject() {
 		loadingService.setLoading(true);
-		const subject = await SubjectService.getAllSubject();
+		let subject = [];
+		if (type !== CONST.DIALOG.TYPE.VIEW) {
+			subject = await SubjectService.getSubjectByUserId(accessToken);
+		} else {
+			subject = await SubjectService.getAllSubject();
+		}
 		loadingService.setLoading(false);
 		return subject;
 	}
@@ -48,13 +53,12 @@ const CreateQuestion = ({ onSubmit, data, type, btnTitle }) => {
 	useEffect(() => {
 		const fetchData = async () => {
 			let res = {};
-			getAllSubject().then((response) => {
-				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-					setSubjects(response.data?.data);
-				} else {
-					toast.error("Tải danh sách môn học thất bại");
-				}
-			});
+			const response = await getAllSubject();
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				setSubjects(response.data?.data);
+			} else {
+				toast.error("Tải danh sách môn học thất bại");
+			}
 			switch (type) {
 				case CONST.DIALOG.TYPE.CREATE:
 					break;

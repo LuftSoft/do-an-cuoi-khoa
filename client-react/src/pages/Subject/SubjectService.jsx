@@ -1,5 +1,6 @@
 import axios from "axios";
 import { CONST } from "../../utils/const";
+import { FeHelpers } from "../../utils/helpers";
 
 const SUBJECT_ROUTE = CONST.BASE_URL + CONST.ROUTES.SUBJECT;
 const CHAPTER_ROUTE = CONST.BASE_URL + CONST.ROUTES.CHAPTER;
@@ -7,6 +8,9 @@ const DEPARTMENT_ROUTE = CONST.BASE_URL + CONST.ROUTES.DEPARTMENT;
 export const SubjectService = {
 	getAllSubject: async () => {
 		return await axios.get(SUBJECT_ROUTE);
+	},
+	getSubjectByUserId: async (token) => {
+		return await FeHelpers.axiosWithJwt.GET(SUBJECT_ROUTE + "/user", token);
 	},
 	getOneSubject: async (id) => {
 		return await axios.get(`${SUBJECT_ROUTE}/${id}`);

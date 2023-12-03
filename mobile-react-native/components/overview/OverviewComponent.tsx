@@ -7,7 +7,7 @@
 
 import {StackNavigationProp} from '@react-navigation/stack';
 import type {PropsWithChildren} from 'react';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   StyleSheet,
@@ -19,6 +19,8 @@ import {
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {useUserProvider} from '../../utils/user.context';
+import {CommonService} from './CommonService';
+import {CONFIG} from '../../utils/config';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -43,7 +45,7 @@ type Props = {
 const OverviewComponent: React.FC<Props> = ({navigation}) => {
   const {user, setUser} = useUserProvider();
   const isDarkMode = useColorScheme() === 'dark';
-
+  const [userInfo, setUserInfo] = useState<any>({});
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
@@ -52,6 +54,24 @@ const OverviewComponent: React.FC<Props> = ({navigation}) => {
   const backgroundLeftRight = require('../../assets/overview/left-right.png');
   const backgroundLeftBottom = require('../../assets/overview/bottom-left.png');
   const backgroundRightBottom = require('../../assets/overview/bottom-right.png');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await getInitData();
+    };
+    fetchData();
+  }, []);
+  const getInitData = async () => {
+    try {
+      const response = await CommonService.getUserInfo(user?.user?.id);
+      if (response.data?.code === CONFIG.API_RESPONSE_STATUS.SUCCESS) {
+        console.log('response.data?.data', response.data?.data);
+        setUserInfo(response.data?.data || {});
+      }
+    } catch (err) {
+      console.log('err when get test detail', err);
+    }
+  };
   const handleTestDetail = () => {
     navigation.navigate('Test');
   };
@@ -100,7 +120,28 @@ const OverviewComponent: React.FC<Props> = ({navigation}) => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.footerContainer}></View>
+      <View style={styles.footerContainer}>
+        <View style={styles.footerItem}>
+          <Text style={styles.footerItemText}>
+            Tổng bài thi: {userInfo.tests}
+          </Text>
+        </View>
+        <View style={styles.footerItem}>
+          <Text style={styles.footerItemText}>
+            Bài thi chưa làm: {userInfo.current_test}
+          </Text>
+        </View>
+        <View style={styles.footerItem}>
+          <Text style={styles.footerItemText}>
+            Điểm trung bình các bài thi: {userInfo.mark}
+          </Text>
+        </View>
+        <View style={styles.footerItem}>
+          <Text style={styles.footerItemText}>
+            Số bài thi đã làm: {userInfo.results}
+          </Text>
+        </View>
+      </View>
     </View>
   );
 };
@@ -125,6 +166,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
+    backgroundColor: '#f5f5f0',
   },
   header: {
     flex: 2, // 30% of the screen height
@@ -135,13 +177,33 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   buttonContainer: {
-    flex: 4, // 70% of the screen height
+    flex: 3, // 70% of the screen height
     paddingHorizontal: 10, // Optional: Add padding
     paddingTop: 10,
+    marginBottom: 20,
   },
   footerContainer: {
     flex: 4, // 70% of the screen height
     paddingHorizontal: 10, // Optional: Add padding
+  },
+  footerItem: {
+    flex: 1,
+    flexDirection: 'row',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginHorizontal: 10,
+    marginBottom: 10,
+    borderRadius: 15,
+    shadowColor: '#171717',
+    shadowOffset: {width: 5, height: 5},
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
+    alignItems: 'center',
+  },
+  footerItemText: {
+    color: '#000',
+    fontSize: 18,
   },
   buttonRow: {
     flex: 1,

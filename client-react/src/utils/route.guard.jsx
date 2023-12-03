@@ -7,7 +7,6 @@ import { selectUser } from "../redux/selectors";
 export function useRouteGuard(requiredPermission, userPermissions) {
 	const location = useLocation();
 	const navigate = useNavigate();
-	console.log(userPermissions);
 	useEffect(() => {
 		console.log("check permission");
 		// Check permissions here based on requiredPermission and user's permissions

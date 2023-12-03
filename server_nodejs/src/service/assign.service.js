@@ -2,7 +2,6 @@ const assignRepository = require("../repository/assign.repository");
 const { getUserIdFromJWTToken } = require("../extension/middleware/index");
 var jwt = require("jsonwebtoken");
 const path = require("path");
-const authService = require("./common/auth.service");
 const BaseAPIResponse = require("../dto/baseApiResponse");
 const { CONFIG } = require("../shared/common.constants");
 const sendMailService = require("./common/sendmail.service");

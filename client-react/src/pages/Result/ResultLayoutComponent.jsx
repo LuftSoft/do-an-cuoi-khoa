@@ -43,7 +43,7 @@ function genIndex(index) {
 
 export default function ResultLayoutComponent() {
 	const permissions = useSelector(selectUser).permissions[0] || [];
-	useRouteGuard(["admin", "gv"], permissions);
+	useRouteGuard(["gv"], permissions);
 	const [value, setValue] = React.useState(0);
 
 	const handleChange = (event, newValue) => {

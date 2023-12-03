@@ -112,7 +112,7 @@ export default function QuestionComponent() {
 	}
 	function getQuestions() {
 		loadingService.setLoading(true);
-		QuestionService.getAllQuestion()
+		QuestionService.getAllQuestion(accessToken)
 			.then((response) => {
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 					let data = response.data?.data;

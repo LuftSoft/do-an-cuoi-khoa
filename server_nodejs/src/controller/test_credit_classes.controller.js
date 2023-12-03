@@ -1,7 +1,6 @@
 const express = require("express");
 const testService = require("../service/test.service");
 const { authorize } = require("../extension/middleware/application.middleware");
-const authService = require("../service/common/auth.service");
 const router = express.Router();
 
 router.get("/user/:id", async (req, res) => {

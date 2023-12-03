@@ -2,7 +2,7 @@ const express = require("express");
 const resultService = require("../service/result.service");
 const resultDetailService = require("../service/result_detail.service");
 const { authorize } = require("../extension/middleware/application.middleware");
-const authService = require("../service/common/auth.service");
+const authService = require("../service/common/auth.common.service");
 const BaseAPIResponse = require("../dto/baseApiResponse");
 const router = express.Router();
 //get all test-credit-class

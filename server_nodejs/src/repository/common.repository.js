@@ -1,5 +1,6 @@
 const { QueryTypes } = require("sequelize");
 const dbContext = require("../database/models/config/dbContext");
+const { Helpers } = require("../extension/helper");
 const questions = dbContext.questions;
 const roles = dbContext.roles;
 const role_permissions = dbContext.role_permissions;
@@ -18,6 +19,26 @@ module.exports = {
     const info = await questions.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
+    return info[0] || {};
+  },
+  getFourTopUserInfo: async (id) => {
+    const query = `
+    SELECT 
+      (SELECT count(*) FROM credit_class_details AS ccd
+      INNER JOIN test_credit_classes AS tcc ON ccd.credit_class_id=tcc.credit_class_id
+      WHERE ccd.user_id = '${id}') AS tests,
+      (SELECT count(*) FROM credit_class_details AS ccd
+      INNER JOIN test_credit_classes AS tcc ON ccd.credit_class_id=tcc.credit_class_id
+      INNER JOIN test_schedules AS ts ON tcc.test_schedule_id = ts.id 
+      WHERE ccd.user_id = '${id}' AND ts.date > '${Helpers.convertToDate(
+      new Date()
+    )}') AS current_test,
+      (SELECT AVG(rs.mark) FROM results AS rs WHERE rs.user_id = '${id}') AS mark,
+      (SELECT count(*) FROM results as rs WHERE rs.user_id = '${id}') AS results;`;
+    const info = await questions.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    console.log(info[0]);
     return info[0] || {};
   },
   getPieChartMark: async () => {

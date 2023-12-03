@@ -153,6 +153,7 @@ export default function AssignTestComponent(props) {
 			const response = await TestService.createTestClass(formData);
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 				toast.success("Phân công thành công");
+				setFormData({ ...formData, credit_class_id: "", test_schedule_id: "" });
 				await getTestClass(test?.id);
 			}
 		} catch (err) {

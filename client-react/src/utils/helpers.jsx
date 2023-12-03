@@ -6,6 +6,7 @@ import { selectUser } from "../redux/selectors";
 import { publicRoutes } from "../routes";
 import { CONST } from "./const";
 import dayjs from "dayjs";
+import axios from "axios";
 export const renderRoutes = (routes) => {
 	let reactElements = null;
 	if (Array.isArray(routes)) {
@@ -269,5 +270,19 @@ export const FeHelpers = {
 		//str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " ");
 		str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " ");
 		return str;
+	},
+	axiosWithJwt: {
+		GET: (url, token) => {
+			return axios.get(url, { headers: { Authorization: "Bearer " + token } });
+		},
+		POST: (url, data, token) => {
+			return axios.post(url, data, { headers: { Authorization: "Bearer " + token } });
+		},
+		PUT: (url, data, token) => {
+			return axios.put(url, data, { headers: { Authorization: "Bearer " + token } });
+		},
+		DELETE: (url, token) => {
+			return axios.delete(url, { headers: { Authorization: "Bearer " + token } });
+		},
 	},
 };

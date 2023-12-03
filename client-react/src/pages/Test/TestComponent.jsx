@@ -33,6 +33,8 @@ export default function TestComponent() {
 	const [openCreateTestDialog, setOpenCreateTestDialog] = useState(false);
 	const [openAssignTestDialog, setOpenAssignTestDialog] = useState(false);
 	const [openTestDetailDialog, setOpenTestDetailDialog] = useState(false);
+	const permissions = currentUser.permissions[0] || [];
+	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
 	useEffect(() => {
 		const fetchData = async () => {
 			await getTests();
@@ -102,12 +104,12 @@ export default function TestComponent() {
 	return (
 		<Box>
 			<div>
-				<TitleButtonComponent title={title} buttons={buttons} />
+				<TitleButtonComponent title={title} buttons={HAS_ADMIN_PERMISSION ? buttons : []} />
 			</div>
 			<div className="test-container my-3">
 				{tests.map((test, index) => (
 					<Card className="custom-card" label="Delete">
-						<i className="fa-solid fa-trash delete_test"></i>
+						{HAS_ADMIN_PERMISSION ? <i className="fa-solid fa-trash delete_test"></i> : null}
 						<CardMedia component="img" height="100" className="bg-radient" />
 						<CardContent className="pb-3 test-card-content">
 							<Typography gutterBottom variant="h5" component="div" className="card-two-row">
@@ -137,14 +139,16 @@ export default function TestComponent() {
 									onClick={(e) => showDetail(test)}>
 									Xem chi tiết
 								</Button>
-								<Button
-									size="small"
-									color="primary"
-									className="btn-opt"
-									variant="contained"
-									onClick={(e) => handleAssignTest(test)}>
-									Phân cho lớp tín chỉ
-								</Button>
+								{HAS_ADMIN_PERMISSION ? (
+									<Button
+										size="small"
+										color="primary"
+										className="btn-opt"
+										variant="contained"
+										onClick={(e) => handleAssignTest(test)}>
+										Phân cho lớp tín chỉ
+									</Button>
+								) : null}
 							</CardActions>
 						</CardContent>
 					</Card>

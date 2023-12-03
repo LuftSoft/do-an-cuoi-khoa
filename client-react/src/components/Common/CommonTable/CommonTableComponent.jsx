@@ -58,6 +58,9 @@ export default function CommonTableComponent(props) {
 		setRowsPerPage(parseInt(event.target.value, 10));
 		setPage(0);
 	};
+	const hasActions = () => {
+		return onAdd || onView || onEdit || onDelete || props.actions;
+	};
 	return (
 		<TableContainer component={Paper}>
 			<Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -67,7 +70,7 @@ export default function CommonTableComponent(props) {
 						{columnDef.map((col, index) => (
 							<StyledTableCell key={id + index}>{col.colName}</StyledTableCell>
 						))}
-						<StyledTableCell>Hành động</StyledTableCell>
+						{hasActions() ? <StyledTableCell>Hành động</StyledTableCell> : null}
 					</TableRow>
 				</TableHead>
 				<TableBody>
@@ -85,52 +88,58 @@ export default function CommonTableComponent(props) {
 											}></span>
 									</StyledTableCell>
 								))}
-								<StyledTableCell>
-									{onView ? (
-										<span
-											onClick={() => {
-												onView(row);
-											}}>
-											<RemoveRedEyeIcon titleAccess="Chi tiết" className="icon" />
-										</span>
-									) : null}
-									{onAdd ? (
-										<span
-											onClick={() => {
-												onAdd(row);
-											}}>
-											<AddCircleOutline titleAccess="Thêm" className="icon" />
-										</span>
-									) : null}
-									{onEdit ? (
-										<span
-											onClick={() => {
-												onEdit(row);
-											}}>
-											<EditIcon titleAccess="Chỉnh sửa" className="icon" />
-										</span>
-									) : null}
-									{onDelete ? (
-										<span
-											onClick={() => {
-												onDelete(row);
-											}}>
-											<ClearIcon titleAccess="Xóa" className="icon" />
-										</span>
-									) : null}
-									{props.actions
-										? props.actions.map((action, index) => (
-												<span
-													onClick={() => {
-														action.onClick(row);
-													}}>
-													<Button size="small" className="mx-1" variant={action.variant || "contained"} color="primary">
-														{action.name}
-													</Button>
-												</span>
-										  ))
-										: null}
-								</StyledTableCell>
+								{hasActions() ? (
+									<StyledTableCell>
+										{onView ? (
+											<span
+												onClick={() => {
+													onView(row);
+												}}>
+												<RemoveRedEyeIcon titleAccess="Chi tiết" className="icon" />
+											</span>
+										) : null}
+										{onAdd ? (
+											<span
+												onClick={() => {
+													onAdd(row);
+												}}>
+												<AddCircleOutline titleAccess="Thêm" className="icon" />
+											</span>
+										) : null}
+										{onEdit ? (
+											<span
+												onClick={() => {
+													onEdit(row);
+												}}>
+												<EditIcon titleAccess="Chỉnh sửa" className="icon" />
+											</span>
+										) : null}
+										{onDelete ? (
+											<span
+												onClick={() => {
+													onDelete(row);
+												}}>
+												<ClearIcon titleAccess="Xóa" className="icon" />
+											</span>
+										) : null}
+										{props.actions
+											? props.actions.map((action, index) => (
+													<span
+														onClick={() => {
+															action.onClick(row);
+														}}>
+														<Button
+															size="small"
+															className="mx-1"
+															variant={action.variant || "contained"}
+															color="primary">
+															{action.name}
+														</Button>
+													</span>
+											  ))
+											: null}
+									</StyledTableCell>
+								) : null}
 							</StyledTableRow>
 						),
 					)}

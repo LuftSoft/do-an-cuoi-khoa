@@ -4,9 +4,36 @@ const questions = dbContext.questions;
 
 module.exports = {
   getAll: async () => {
-    const query = `SELECT questions.*, chapters.name as chapter_name, subjects.name as subject_name,subjects.id as subject_id 
-        FROM questions, chapters, subjects 
-        WHERE questions.chapter_id = chapters.id && chapters.subject_id = subjects.id`;
+    const query = `
+    SELECT q.*,sj.id AS subject_id,sj.name AS subject_name, concat(u.firstName,' ',u.lastName) as user_name, 
+      u.id AS user_id,u.email AS user_email, ch.id AS chapter_id,ch.name AS chapter_name 
+      FROM questions AS q
+      INNER JOIN chapters AS ch ON q.chapter_id = ch.id
+      INNER JOIN subjects AS sj ON ch.subject_id = sj.id
+      INNER JOIN clusters AS cl ON q.cluster_id = cl.id
+      INNER JOIN users AS u ON cl.user_id = u.id
+      ORDER BY id;`;
+    const listquestion = await questions.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return listquestion;
+  },
+  /**
+   * get all question when user is not admin
+   * @param {*} userId
+   * @returns
+   */
+  getAllByUserId: async (userId) => {
+    const query = `SELECT q.*,sj.id AS subject_id,sj.name AS subject_name, concat(u.firstName,' ',u.lastName) AS user_name, 
+      u.id AS user_id,u.email AS user_email, ch.id AS chapter_id,ch.name AS chapter_name 
+      FROM user_cluster_subjects AS ucs
+      INNER JOIN questions AS q ON q.cluster_id = ucs.cluster_id
+      INNER JOIN subjects AS sj ON ucs.subject_id = sj.id
+      INNER JOIN chapters AS ch ON ch.id = q.chapter_id AND ch.subject_id = sj.id
+      INNER JOIN clusters AS cl ON cl.id = ucs.cluster_id
+      INNER JOIN users AS u ON u.id = cl.user_id
+      WHERE ucs.user_id = '${userId}'
+      ORDER BY id;`;
     const listquestion = await questions.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });

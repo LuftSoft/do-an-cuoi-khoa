@@ -28,7 +28,7 @@ module.exports = {
   getByUserId: async (id) => {
     const query = `SELECT tmp_table.*, u.email,u.firstName,u.lastName, u.code, u.type
     FROM users AS u INNER JOIN
-     (SELECT sj.name as subject_name, cl.user_id, ucs.id as user_cluster_subject_id
+     (SELECT sj.id as subject_id, sj.name as subject_name, cl.user_id, ucs.id as user_cluster_subject_id
         FROM user_cluster_subjects as ucs
         INNER JOIN clusters as cl ON cl.id=ucs.cluster_id
         INNER JOIN users as u ON ucs.user_id = u.id
@@ -55,7 +55,8 @@ module.exports = {
     const query = `SELECT DISTINCT usc.subject_id, sj.name as subject_name
     FROM user_cluster_subjects AS usc
     INNER JOIN subjects AS sj ON usc.subject_id = sj.id
-    WHERE usc.user_id='${id}'`;
+    INNER JOIN clusters as cl ON usc.cluster_id = cl.id
+    WHERE usc.user_id='${id}' AND cl.user_id='${id}'`;
     return await user_cluster_subjects.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
@@ -109,6 +110,14 @@ module.exports = {
     return await user_cluster_subjects.destroy({
       where: {
         id: id,
+      },
+    });
+  },
+  deleteByClusterIdAndSubjectId: async (cluster_id, subject_id) => {
+    return await user_cluster_subjects.destroy({
+      where: {
+        cluster_id: cluster_id,
+        subject_id: subject_id,
       },
     });
   },

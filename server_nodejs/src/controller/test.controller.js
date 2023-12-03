@@ -1,7 +1,7 @@
 const express = require("express");
 const testService = require("../service/test.service");
 const { authorize } = require("../extension/middleware/application.middleware");
-const authService = require("../service/common/auth.service");
+const authService = require("../service/common/auth.common.service");
 const router = express.Router();
 router.post("/export/:id", async (req, res) => {
   const id = req.params.id;

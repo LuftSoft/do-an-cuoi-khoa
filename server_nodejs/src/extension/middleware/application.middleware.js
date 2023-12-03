@@ -1,5 +1,5 @@
 const BaseAPIResponse = require("../../dto/baseApiResponse");
-const authService = require("../../service/common/auth.service");
+const authService = require("../../service/common/auth.common.service");
 const { Helpers } = require("../helper");
 
 module.exports = {

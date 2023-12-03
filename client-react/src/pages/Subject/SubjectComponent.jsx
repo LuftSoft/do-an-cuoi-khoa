@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 import { CONST } from "../../utils/const";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import { TestService } from "../Test/TestService";
-import { selectAccessToken } from "../../redux/selectors";
+import { selectAccessToken, selectUser } from "../../redux/selectors";
 
 export default function SubjectComponent() {
 	const title = "Danh sách môn học";
@@ -31,6 +31,8 @@ export default function SubjectComponent() {
 		type: "add",
 		id: null,
 	});
+	const permissions = useSelector(selectUser).permissions[0] || [];
+	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
 	function getSubjects() {
 		SubjectService.getAllSubject()
 			.then((response) => {
@@ -137,13 +139,13 @@ export default function SubjectComponent() {
 	return (
 		<Box>
 			<div>
-				<TitleButtonComponent title={title} buttons={buttons} />
+				<TitleButtonComponent title={title} buttons={HAS_ADMIN_PERMISSION ? buttons : []} />
 			</div>
 			<CommonTableComponent
 				columnDef={columnDef}
 				dataSource={dataSource}
-				onDelete={handleDelete}
-				onEdit={handleEdit}></CommonTableComponent>
+				onDelete={HAS_ADMIN_PERMISSION ? handleDelete : null}
+				onEdit={HAS_ADMIN_PERMISSION ? handleEdit : null}></CommonTableComponent>
 			<CommonDialogComponent
 				open={openCreateSubjectDialog}
 				title={detailSubjectDialogData.type === "add" ? "Tạo môn học" : "Chỉnh sửa môn học"}

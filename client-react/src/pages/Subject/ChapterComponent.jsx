@@ -9,7 +9,7 @@ import TitleButtonComponent from "../../components/Common/CommonHeader/CommonHea
 import { useLoadingService } from "../../contexts/loadingContext";
 import { CONST } from "../../utils/const";
 import { SubjectService } from "./SubjectService";
-import { selectAccessToken } from "../../redux/selectors";
+import { selectAccessToken, selectUser } from "../../redux/selectors";
 
 export default function ChapterComponent() {
 	const title = "Danh sách môn học";
@@ -27,6 +27,8 @@ export default function ChapterComponent() {
 	const [deleteChapterId, setDeleteChapterId] = useState(null);
 	const [detailChapterDialogData, setDetailChapterDialogData] = useState({ type: "add", id: null });
 	const accessToken = useSelector(selectAccessToken);
+	const permissions = useSelector(selectUser).permissions[0] || [];
+	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
 	function getChapters() {
 		setLoading(true);
 		SubjectService.getAllChapter()
@@ -109,13 +111,13 @@ export default function ChapterComponent() {
 	return (
 		<Box>
 			<div>
-				<TitleButtonComponent title={title} buttons={buttons} />
+				<TitleButtonComponent title={title} buttons={HAS_ADMIN_PERMISSION ? buttons : []} />
 			</div>
 			<CommonTableComponent
 				columnDef={columnDef}
 				dataSource={dataSource}
-				onEdit={handleEdit}
-				onDelete={handleDelete}></CommonTableComponent>
+				onEdit={HAS_ADMIN_PERMISSION ? handleEdit : null}
+				onDelete={HAS_ADMIN_PERMISSION ? handleDelete : null}></CommonTableComponent>
 			<CommonDialogComponent
 				width="30vw"
 				height="50vh"

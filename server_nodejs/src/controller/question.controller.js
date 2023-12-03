@@ -1,16 +1,22 @@
 const express = require("express");
 const questionService = require("../service/question.service");
 const { authorize } = require("../extension/middleware/application.middleware");
-const authService = require("../service/common/auth.service");
+const authService = require("../service/common/auth.common.service");
 const commonService = require("../service/common.service");
 const { uploadUtil } = require("../util/upload.util");
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  res.send(await questionService.getAll());
+router.get("/", authorize([]), async (req, res) => {
+  const accessToken = req.accessToken;
+  const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
+  if (userId) {
+    res.send(await questionService.getAll(userId));
+  }
 });
 
 router.get("/:id", async (req, res) => {
+  // const accessToken = req.accessToken;
+  // const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
   const id = req.params.id;
   res.send(await questionService.getOne(id));
 });

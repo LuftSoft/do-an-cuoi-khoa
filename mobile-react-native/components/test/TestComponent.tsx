@@ -58,8 +58,19 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
       // .sort(
       //   (a: any, b: any) => b.test_schedule_date - a.test_schedule_date,
       // ), sort theo ngay giam dan
-      setTests(response.data?.data);
-      console.log('response ', response.data?.data);
+      setTests(
+        response.data?.data?.sort(
+          (a: any, b: any) =>
+            new Date(b.test_schedule_date).getTime() -
+            new Date(a.test_schedule_date).getTime(),
+        ),
+      );
+      console.log(
+        'response sort',
+        response.data?.data?.sort(
+          (a: any, b: any) => b.test_schedule_date - a.test_schedule_date,
+        ),
+      );
     }
   };
   const getResultByUserId = async (id: string) => {
@@ -90,7 +101,13 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
     const begin = new Date(beginTime).getTime();
     const end = new Date(beginTime).getTime() + time * 60 * 1000;
     const now = new Date().getTime();
+    return true;
     return now >= begin && now <= end;
+  };
+  const expiredTime = (beginTime: string, time: number) => {
+    const end = new Date(beginTime).getTime() + time * 60 * 1000;
+    const now = new Date().getTime();
+    return now >= end;
   };
   const boxShadow = CssUtil.GenerateDefaultBoxShadow();
   const isResultExists = (test_credit_class_id: string) => {
@@ -100,50 +117,60 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
     );
   };
   return (
-    <ScrollView style={styles.container}>
-      {tests.map((test: any, index) => (
-        <View style={styles.card} key={index}>
-          <Text>
-            Tên: <Text style={styles.textBold}>{test?.test_name}</Text>
-          </Text>
-          <Text>Học kỳ: {test.semester_name}</Text>
-          <Text>Lớp tín chỉ: {test.credit_class_name}</Text>
-          <Text>
-            Thời gian bắt đầu:{' '}
-            {Helpers.convertToDateTime(test.test_schedule_date)}
-          </Text>
-          <Text>Thời gian làm bài: {test.test_time} phút</Text>
-          <View style={styles.buttonContainer}>
-            {isResultExists(test.id) ? (
-              <TouchableOpacity
-                style={styles.buttonOutline}
-                onPress={e => handleShowResult(test.id)}>
-                <Text style={styles.buttonTextOutline}>Kết quả</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  canDoExam(test.test_schedule_date, test.test_time)
-                    ? null
-                    : {backgroundColor: '#bbd9f7'},
-                ]}
-                onPress={e => handleDoExam(test)}
-                disabled={!canDoExam(test.test_schedule_date, test.test_time)}>
-                <Text style={[styles.buttonText]}>Làm bài</Text>
-              </TouchableOpacity>
-            )}
+    <View style={{flex: 1}}>
+      <ScrollView style={styles.container}>
+        {tests.map((test: any, index) => (
+          <View style={styles.card} key={index}>
+            <Text>
+              Tên: <Text style={styles.textBold}>{test?.test_name}</Text>
+            </Text>
+            <Text>Học kỳ: {test.semester_name}</Text>
+            <Text>Lớp tín chỉ: {test.credit_class_name}</Text>
+            <Text>
+              Thời gian bắt đầu:{' '}
+              {Helpers.convertToDateTime(test.test_schedule_date)}
+            </Text>
+            <Text>Thời gian làm bài: {test.test_time} phút</Text>
+            <View style={styles.buttonContainer}>
+              {isResultExists(test.id) ? (
+                <TouchableOpacity
+                  style={[styles.button, {backgroundColor: '#05c46b'}]}
+                  disabled>
+                  <Text style={styles.buttonText}>Đã hoàn thành</Text>
+                </TouchableOpacity>
+              ) : expiredTime(test.test_schedule_date, test.test_time) ? (
+                <TouchableOpacity
+                  style={[styles.button, {backgroundColor: '#e84118'}]}
+                  disabled>
+                  <Text style={[styles.buttonText]}>Đã hết hạn</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={[
+                    styles.button,
+                    canDoExam(test.test_schedule_date, test.test_time)
+                      ? null
+                      : {backgroundColor: '#bbd9f7'},
+                  ]}
+                  onPress={e => handleDoExam(test)}
+                  disabled={
+                    !canDoExam(test.test_schedule_date, test.test_time)
+                  }>
+                  <Text style={[styles.buttonText]}>Làm bài</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
-        </View>
-      ))}
-    </ScrollView>
+        ))}
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 20,
+    overflow: 'hidden',
     paddingHorizontal: 10,
   },
   header: {
@@ -155,7 +182,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: 'white',
     padding: 10,
-    marginBottom: 10,
+    marginTop: 10,
     borderRadius: 10,
     borderLeftColor: '#1976d2',
     borderLeftWidth: 5,

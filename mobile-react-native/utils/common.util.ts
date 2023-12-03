@@ -1,4 +1,7 @@
 import dayjs from "dayjs";
+import React from "react";
+import { useWindowDimensions } from "react-native";
+import { Buffer } from 'buffer'
 
 export const CommonUtil = {
   getDate: (date: string) => {
@@ -14,5 +17,14 @@ export const Helpers = {
   },
   convertToDateTime: (date: any) => {
     return dayjs(date).format('YYYY-MM-DD HH:mm:ss');
-  }
+  },
+  arrayBufferToBase64(buffer: any) {
+    var binary = "";
+    var bytes = new Uint8Array(buffer);
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return Buffer.from(binary, 'binary').toString('base64');
+  },
 }

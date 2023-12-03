@@ -1,3 +1,4 @@
+const dayjs = require("dayjs");
 module.exports.Helpers = {
   isEmail: (value) => /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/.test(value),
   isPhone: (value) =>
@@ -22,6 +23,9 @@ module.exports.Helpers = {
     return `${now.getFullYear()}-${
       now.getMonth() + 1
     }-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+  },
+  convertToDate: (date) => {
+    return dayjs(date).format("YYYY-MM-DD");
   },
   getAuthToken: (req) => {
     return req.headers.authorization.split(" ")[1] || undefined;

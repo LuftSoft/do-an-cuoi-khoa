@@ -48,7 +48,8 @@ const styles = StyleSheet.create({
   content_container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    gap: 8,
   },
   content_item: {
     width: '19%',

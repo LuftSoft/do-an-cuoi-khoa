@@ -1,11 +1,12 @@
 import axios from "axios";
 import { CONST } from "../../utils/const";
+import { FeHelpers } from "../../utils/helpers";
 
 const QUESTION_ROUTE = CONST.BASE_URL + CONST.ROUTES.QUESTION;
 
 export const QuestionService = {
-	getAllQuestion: async () => {
-		return await axios.get(QUESTION_ROUTE);
+	getAllQuestion: async (token) => {
+		return await FeHelpers.axiosWithJwt.GET(QUESTION_ROUTE, token);
 	},
 	getOneQuestion: async (id) => {
 		return await axios.get(`${QUESTION_ROUTE}/${id}`);

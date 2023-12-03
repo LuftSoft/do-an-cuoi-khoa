@@ -111,6 +111,8 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 16,
+    backgroundColor: '#1976d2',
+    borderRadius: 5,
   },
   forgotPassword: {
     textAlign: 'center',

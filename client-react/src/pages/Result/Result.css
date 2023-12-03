@@ -1,3 +1,16 @@
 .result-card-container {
 	border-left: 5px solid #1976d2;
+	max-width: 33%;
+}
+
+.result-container {
+	justify-content: space-between;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+@media only screen and (max-width: 1200px) {
+	.result-card-container {
+		max-width: 49%;
+	}
 }

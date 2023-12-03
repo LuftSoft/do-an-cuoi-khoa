@@ -12,6 +12,10 @@ router.get("/overview/info", async (req, res) => {
   res.send(await commonService.getFourTopInfo());
 });
 
+router.get("/overview/user/info/:id", async (req, res) => {
+  res.send(await commonService.getFourTopUserInfo(req.params.id));
+});
+
 router.get("/overview/pie", async (req, res) => {
   res.send(await commonService.getPieChartMark());
 });

@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CommonDialogComponent, CommonTableComponent } from "../../components/Common";
 import { useLoadingService } from "../../contexts/loadingContext";
 
@@ -13,6 +13,7 @@ import { QuestionService } from "../Question/QuestionService";
 import { CreditClassService } from "./CreditClassService";
 import ImportDialogComponent from "../Question/ImportComponent";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
+import { selectUser } from "../../redux/selectors";
 export default function CreditClassComponent() {
 	const title = "Danh sách lớp tín chỉ";
 	const buttons = [
@@ -28,6 +29,8 @@ export default function CreditClassComponent() {
 	const [openCreateCreditClassDialog, setOpenCreateCreditClassDialog] = useState(false);
 	const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 	const [dataSource, setDataSource] = useState([]);
+	const permissions = useSelector(selectUser).permissions[0] || [];
+	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
 	function getCreditClasses() {
 		loadingService.setLoading(true);
 		CreditClassService.getAllCreditClass()
@@ -106,12 +109,12 @@ export default function CreditClassComponent() {
 	return (
 		<Box>
 			<div>
-				<TitleButtonComponent title={title} buttons={buttons} />
+				<TitleButtonComponent title={title} buttons={HAS_ADMIN_PERMISSION ? buttons : []} />
 			</div>
 			<CommonTableComponent
 				columnDef={columnDef}
 				dataSource={dataSource}
-				onDelete={handleDelete}></CommonTableComponent>
+				onDelete={HAS_ADMIN_PERMISSION ? handleDelete : null}></CommonTableComponent>
 			<CommonDialogComponent
 				open={openCreateCreditClassDialog}
 				title={createTitle}

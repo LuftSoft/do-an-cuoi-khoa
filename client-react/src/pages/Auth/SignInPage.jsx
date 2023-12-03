@@ -37,10 +37,10 @@ export default function SignInPage() {
 	const dispatch = useDispatch();
 	let canNext = false;
 
-	if (currentUser) {
-		//call api get new refresh-token and access-token
-		return <Navigate to={routes.OVERVIEW} />;
-	}
+	// if (currentUser) {
+	// 	//call api get new refresh-token and access-token
+	// 	return <Navigate to={routes.OVERVIEW} />;
+	// }
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -66,12 +66,18 @@ export default function SignInPage() {
 						toast.success("Đăng nhập thành công");
 						dispatch(updateUser(data.user));
 						dispatch(loginSuccess({ accessToken: data.accessToken, refreshToken: data.refreshToken }));
-						if (next) {
-							navigate(next, {
-								replace: true,
-							});
-						} else {
+						const permissions = data.user.permissions[0] || [];
+						const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
+						const HAS_GV_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.GV);
+						const HAS_SV_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.SV);
+						if (HAS_ADMIN_PERMISSION) {
 							navigate(routes.OVERVIEW);
+						} else if (HAS_GV_PERMISSION) {
+							navigate(routes.SUBJECT);
+						} else if (HAS_SV_PERMISSION) {
+							navigate(routes.STUDENT + routes.TEST);
+						} else {
+							navigate(routes.STUDENT + routes.TEST);
 						}
 					} else {
 						if (data.user.isBlock) {

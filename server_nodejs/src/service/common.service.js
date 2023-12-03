@@ -3,7 +3,7 @@ const BaseAPIResponse = require("../dto/baseApiResponse");
 const { CONFIG } = require("../shared/common.constants");
 const { Helpers, logger } = require("../extension/helper");
 const commonRepository = require("../repository/common.repository");
-const authService = require("./common/auth.service");
+const authService = require("./common/auth.common.service");
 const userRepository = require("../repository/user.repository");
 const clusterRepository = require("../repository/cluster.repository");
 const userClusterSubjectRepository = require("../repository/user_cluster_subject.repository");
@@ -19,6 +19,24 @@ module.exports = {
       );
     } catch (err) {
       logger.error("get all chapter failed!");
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+  getFourTopUserInfo: async (id) => {
+    try {
+      var data = await commonRepository.getFourTopUserInfo(id);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        data,
+        null
+      );
+    } catch (err) {
+      logger.error("get user info failed!");
       console.log(err);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.ERROR,
@@ -344,7 +362,10 @@ module.exports = {
           );
         return new BaseAPIResponse(
           CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
-          await userClusterSubjectRepository.delete(id),
+          await userClusterSubjectRepository.deleteByClusterIdAndSubjectId(
+            data.cluster_id,
+            data.subject_id
+          ),
           ""
         );
       }

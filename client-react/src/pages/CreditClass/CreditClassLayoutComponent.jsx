@@ -8,6 +8,7 @@ import { selectUser } from "../../redux/selectors";
 import { useRouteGuard } from "../../utils/route.guard";
 import CreditClassComponent from "./CreditClassComponent";
 import AssignClassComponent from "./AssignClassComponent";
+import { CONST } from "../../utils/const";
 
 function CustomTabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -43,9 +44,9 @@ function genIndex(index) {
 
 export default function CreditClassLayoutComponent() {
 	const permissions = useSelector(selectUser).permissions[0] || [];
-	useRouteGuard(["admin", "gv"], permissions);
+	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
+	useRouteGuard(["gv"], permissions);
 	const [value, setValue] = React.useState(0);
-
 	const handleChange = (event, newValue) => {
 		setValue(newValue);
 	};
@@ -54,7 +55,7 @@ export default function CreditClassLayoutComponent() {
 			<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
 				<Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
 					<Tab label="Lớp tín chỉ" {...genIndex(0)} />
-					<Tab label="Quản lý lớp tín chỉ" {...genIndex(1)} />
+					{HAS_ADMIN_PERMISSION ? <Tab label="Quản lý lớp tín chỉ" {...genIndex(1)} /> : null}
 				</Tabs>
 			</Box>
 			<CustomTabPanel value={value} index={0}>

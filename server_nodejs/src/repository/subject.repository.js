@@ -33,4 +33,14 @@ module.exports = {
     });
     return listsubject;
   },
+  getAllByUserId: async (id) => {
+    const query = `SELECT sj.*, dp.name AS department_name FROM user_cluster_subjects as ucs
+      INNER JOIN subjects AS sj ON ucs.subject_id = sj.id
+      INNER JOIN clusters AS cl ON cl.id = ucs.cluster_id AND cl.user_id = ucs.user_id
+      INNER JOIN departments as dp ON sj.department_id = dp.id
+      WHERE ucs.user_id = '${id}';`;
+    return await subjects.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+  },
 };

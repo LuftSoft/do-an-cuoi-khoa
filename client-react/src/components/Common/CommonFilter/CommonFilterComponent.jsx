@@ -38,18 +38,20 @@ export default function CommonFilterComponent({ search, dropdowns }) {
 	let val = "";
 	return (
 		<Box style={styles.container}>
-			<div className="common_filter-search-container">
-				<InputBase
-					sx={{ ml: 1, flex: 1 }}
-					placeholder={search?.title || "Search"}
-					inputProps={{ "aria-label": "search" }}
-					onChange={handleSearchChange}
-					onKeyUp={handleSearchKeySubmit}
-				/>
-				<IconButton type="button" sx={{ p: "10px" }} aria-label="search" onClick={handleSearchSubmit}>
-					<SearchIcon />
-				</IconButton>
-			</div>
+			{search ? (
+				<div className="common_filter-search-container">
+					<InputBase
+						sx={{ ml: 1, flex: 1 }}
+						placeholder={search?.title || "Search"}
+						inputProps={{ "aria-label": "search" }}
+						onChange={handleSearchChange}
+						onKeyUp={handleSearchKeySubmit}
+					/>
+					<IconButton type="button" sx={{ p: "10px" }} aria-label="search" onClick={handleSearchSubmit}>
+						<SearchIcon />
+					</IconButton>
+				</div>
+			) : null}
 			<div style={styles.filterContain}>
 				{Object.keys(dropdowns$).map((item, index) => (
 					<FormControl sx={{ m: 1, minWidth: 180, width: "fit-content" }} size="small">
@@ -87,6 +89,7 @@ const styles = {
 		fontWeight: "bold",
 	},
 	filterContain: {
+		flex: 1,
 		display: "flex",
 		justifyContent: "flex-end",
 	},

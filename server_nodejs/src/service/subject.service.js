@@ -2,13 +2,13 @@ const subjectRepository = require("../repository/subject.repository");
 const { getUserIdFromJWTToken } = require("../extension/middleware/index");
 var jwt = require("jsonwebtoken");
 const path = require("path");
-const authService = require("./common/auth.service");
 const BaseAPIResponse = require("../dto/baseApiResponse");
 const { CONFIG } = require("../shared/common.constants");
 const sendMailService = require("./common/sendmail.service");
 const { Helpers, logger } = require("../extension/helper");
 const subjectConverter = require("./converter/subject.converter");
 const chapterRepository = require("../repository/chapter.repository");
+const authService = require("./auth.service");
 
 module.exports = {
   getAll: async () => {
@@ -19,6 +19,32 @@ module.exports = {
         data,
         null
       );
+    } catch (err) {
+      logger.error("get all subject failed!");
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+  getAllByUserId: async (id) => {
+    try {
+      const isAdmin = await authService.isAdmin(id);
+      if (isAdmin) {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await subjectRepository.getAll(),
+          null
+        );
+      } else {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await subjectRepository.getAllByUserId(id),
+          null
+        );
+      }
     } catch (err) {
       logger.error("get all subject failed!");
       console.log(err);

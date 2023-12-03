@@ -2,7 +2,6 @@ const questionRepository = require("../repository/question.repository");
 const { getUserIdFromJWTToken } = require("../extension/middleware/index");
 var jwt = require("jsonwebtoken");
 const path = require("path");
-const authService = require("./common/auth.service");
 const BaseAPIResponse = require("../dto/baseApiResponse");
 const { CONFIG } = require("../shared/common.constants");
 const { Helpers, logger } = require("../extension/helper");
@@ -12,16 +11,25 @@ const xlsx = require("xlsx");
 const fs = require("fs");
 const { json } = require("body-parser");
 const testRepository = require("../repository/test.repository");
+const authService = require("./auth.service");
 
 module.exports = {
-  getAll: async () => {
+  getAll: async (userId) => {
     try {
-      var data = await questionRepository.getAll();
-      return new BaseAPIResponse(
-        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
-        data,
-        null
-      );
+      const isAdmin = await authService.isAdmin(userId);
+      if (isAdmin) {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await questionRepository.getAll(),
+          null
+        );
+      } else {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await questionRepository.getAllByUserId(userId),
+          null
+        );
+      }
     } catch (err) {
       logger.error("get all question failed!");
       console.log(err);

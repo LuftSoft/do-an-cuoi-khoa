@@ -212,15 +212,17 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
       {/* Information Bar */}
       <View style={styles.infoBar}>
         {/* Time Count */}
-        <Text>Time: {getTime(timer)}</Text>
+        <Text style={{color: '#fff', fontSize: 16}}>
+          Còn lại: {getTime(timer)}
+        </Text>
         <Button
           title="Xem bài làm"
           onPress={handleShowProcessDialog}
-          color="#1976d2"></Button>
+          color="#0066ff"></Button>
         <Button
           title="Nộp bài"
           onPress={() => handleSubmit(CONFIG.TEST.SUBMIT_TYPE.SUBMIT)}
-          color="#1976d2"></Button>
+          color="#0066ff"></Button>
         {/* Other info */}
       </View>
 
@@ -232,7 +234,8 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
           // Render each question here
           <View style={styles.questionContainer}>
             <Text style={styles.questionTitle}>
-              Câu {index + 1}: {item.question}
+              <Text style={{fontWeight: '700'}}>Câu {index + 1}</Text>:{' '}
+              {item.question}
             </Text>
             <RadioButton.Group
               onValueChange={value => (item.answer = value)}
@@ -314,21 +317,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     marginBottom: 10,
-    marginRight: 10,
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 20,
+    shadowColor: '#171717',
+    shadowOffset: {width: 10, height: 10},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
   },
   container: {
     flex: 1,
+    backgroundColor: 'rgba(179, 209, 255, 0.8)',
   },
   infoBar: {
-    padding: 10,
-    backgroundColor: 'lightgray',
+    padding: 12,
+    backgroundColor: '#1976d2',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    shadowColor: '#171717',
+    shadowOffset: {width: 10, height: 10},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
   },
   questionTitle: {
-    fontWeight: '700',
+    color: '#000',
+    fontWeight: '600',
     fontSize: 18,
+    backgroundColor: '#fff',
+    marginBottom: 10,
+    padding: 10,
+    borderRadius: 20,
+    shadowColor: '#171717',
+    shadowOffset: {width: 10, height: 10},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
   },
   questionContainer: {
     margin: 10,

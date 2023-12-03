@@ -144,7 +144,9 @@ export default function CreateUserSubjectComponent({ onSubmit, data }) {
 		try {
 			const response = await UserService.getUCSSubjectByUserId(id);
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-				setSubjects(response.data?.data);
+				console.log(user, response.data?.data);
+				const userSubjectIds = user.filter((item) => item.user_id === id).map((item) => item.subject_id);
+				setSubjects(response.data?.data.filter((item) => !userSubjectIds.includes(item.subject_id)));
 			} else {
 				toast.error("Thất bại");
 			}
@@ -199,11 +201,17 @@ export default function CreateUserSubjectComponent({ onSubmit, data }) {
 							}}
 							fullWidth
 							margin="normal">
-							{users.map((user, index) => (
-								<MenuItem value={user.user_id} key={index}>
-									{user.user_name + "-" + user.email}
+							{users.length === 0 ? (
+								<MenuItem value={""} key={"no_data"}>
+									Không có dữ liệu
 								</MenuItem>
-							))}
+							) : (
+								users.map((user, index) => (
+									<MenuItem value={user.user_id} key={index}>
+										{user.user_name + " (" + user.email + ")"}
+									</MenuItem>
+								))
+							)}
 						</TextField>
 						<TextField
 							select
@@ -216,11 +224,17 @@ export default function CreateUserSubjectComponent({ onSubmit, data }) {
 							onChange={(e) => setFormData({ ...formData, subject_id: e.target.value })}
 							fullWidth
 							margin="normal">
-							{subjects.map((subject, index) => (
-								<MenuItem value={subject.subject_id} key={index}>
-									{subject.subject_name}
+							{subjects.length === 0 ? (
+								<MenuItem value={""} key={"no_data"}>
+									Không có dữ liệu
 								</MenuItem>
-							))}
+							) : (
+								subjects.map((subject, index) => (
+									<MenuItem value={subject.subject_id} key={index}>
+										{subject.subject_name}
+									</MenuItem>
+								))
+							)}
 						</TextField>
 					</div>
 				) : (
@@ -236,11 +250,17 @@ export default function CreateUserSubjectComponent({ onSubmit, data }) {
 						onChange={(e) => setFormData({ ...formData, subject_id: e.target.value })}
 						fullWidth
 						margin="normal">
-						{getSubjectTypeSUbject().map((subject, index) => (
-							<MenuItem value={subject.id} key={index}>
-								{subject.name}
+						{getSubjectTypeSUbject().length === 0 ? (
+							<MenuItem value={""} key={"no_data"}>
+								Không có dữ liệu
 							</MenuItem>
-						))}
+						) : (
+							getSubjectTypeSUbject().map((subject, index) => (
+								<MenuItem value={subject.id} key={index}>
+									{subject.name}
+								</MenuItem>
+							))
+						)}
 					</TextField>
 				)}
 				<div className="d-flex justify-content-end">
