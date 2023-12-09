@@ -4,6 +4,9 @@ const { authorize } = require("../extension/middleware/application.middleware");
 const authService = require("../service/common/auth.common.service");
 const commonService = require("../service/common.service");
 const { uploadUtil } = require("../util/upload.util");
+const { logger } = require("../extension/helper");
+const BaseAPIResponse = require("../dto/baseApiResponse");
+const { CONFIG } = require("../shared/common.constants");
 const router = express.Router();
 
 router.get("/", authorize([]), async (req, res) => {
@@ -11,6 +14,22 @@ router.get("/", authorize([]), async (req, res) => {
   const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
   if (userId) {
     res.send(await questionService.getAll(userId));
+  }
+});
+
+router.get("/chapter", async (req, res) => {
+  const ids = req.query.ids || "";
+  try {
+    res.send(
+      new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        await questionService.getByChapterId(ids.split(",")),
+        ""
+      )
+    );
+  } catch (err) {
+    logger.error(err);
+    res.send(new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, [], ""));
   }
 });
 

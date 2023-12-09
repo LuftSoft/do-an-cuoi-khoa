@@ -11,6 +11,9 @@ export const QuestionService = {
 	getOneQuestion: async (id) => {
 		return await axios.get(`${QUESTION_ROUTE}/${id}`);
 	},
+	getQuestionByChapter: async (ids) => {
+		return await axios.get(`${QUESTION_ROUTE}/chapter?ids=${ids}`);
+	},
 	createQuestion: async (data, token) => {
 		return await axios.post(QUESTION_ROUTE, data, { headers: { Authorization: "Bearer " + token } });
 	},

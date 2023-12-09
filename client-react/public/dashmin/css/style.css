@@ -332,3 +332,9 @@
 .flex-box {
 	display: flex;
 }
+.MuiTablePagination-selectLabel {
+	margin: 0 !important;
+}
+.MuiTablePagination-displayedRows {
+	margin: 0 !important;
+}

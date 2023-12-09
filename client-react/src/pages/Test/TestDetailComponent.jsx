@@ -18,6 +18,7 @@ import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import { TestScheduleService } from "../TestSchedule/TetsScheduleService";
 import { TestService } from "./TestService";
 import fs from "fs";
+import TestEditComponent from "./TestEditComponent";
 
 const initialValues = {
 	id: 0,
@@ -43,6 +44,7 @@ export default function TestDetailComponent(props) {
 	const [dataSource, setDataSource] = useState([]);
 	const [testClassRemove, setTestClassRemove] = useState({});
 	const [confirmRemoveUserDialog, setConfirmRemoveUserDialog] = useState(false);
+	const [openTestEditDialog, setOpenTestEditDialog] = useState(false);
 	async function getInitData() {
 		setLoading(true);
 		await getCreditClasses();
@@ -238,6 +240,18 @@ export default function TestDetailComponent(props) {
 			toast.success("Export đề thi thành công");
 		}
 	}
+	const handleEditTest = (test) => {
+		setOpenTestEditDialog(true);
+	};
+	const handleCloseDialog = () => {
+		setOpenTestEditDialog(false);
+	};
+	async function handleSubmitEditTest(data) {
+		if (data) {
+			setOpenTestEditDialog(false);
+			await getTestDetail(test?.id);
+		}
+	}
 	return (
 		<Container style={{ padding: "0 24px 24px 24px" }}>
 			<form onSubmit={handleSubmit}>
@@ -260,8 +274,14 @@ export default function TestDetailComponent(props) {
 			<div className="d-flex mt-3 mb-2 position-relative">
 				<h4 className="w-6">Danh sách câu hỏi</h4>
 				<div className="w-4 d-flex" style={{ justifyContent: "flex-end" }}>
-					<Button type="submit" variant="contained" color="primary" className="me-2">
-						Thêm câu hỏi
+					<Button
+						type="submit"
+						variant="contained"
+						color="warning"
+						className="me-2"
+						onClick={() => handleEditTest(test)}>
+						<i class="fa-regular fa-pen-to-square me-2"></i>
+						Chỉnh sửa đề thi
 					</Button>
 					<Button type="submit" variant="contained" color="success" onClick={(e) => handleExportTest(test.id)}>
 						<i className="fa-solid fa-file-export me-2"></i> Export
@@ -282,6 +302,15 @@ export default function TestDetailComponent(props) {
 				<ConfirmDialog
 					message="Bạn muốn xóa câu hỏi này khỏi đề thi?"
 					handleClose={handleConfirmDialog}></ConfirmDialog>
+			</CommonDialogComponent>
+			<CommonDialogComponent
+				open={openTestEditDialog}
+				title="Chỉnh sửa đề thi"
+				icon="fa-regular fa-pen-to-square"
+				width="70vw"
+				height="70vh"
+				onClose={handleCloseDialog}>
+				<TestEditComponent id={test.id} handleSubmit={handleSubmitEditTest}></TestEditComponent>
 			</CommonDialogComponent>
 		</Container>
 	);

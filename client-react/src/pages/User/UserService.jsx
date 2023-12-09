@@ -76,4 +76,9 @@ export const UserService = {
 			headers: { Authorization: `Bearer ${token}` },
 		});
 	},
+	import: async (data, token) => {
+		return await axios.post(`${USER_ROUTE}/import`, data, {
+			headers: { Authorization: "Bearer " + token, "Content-Type": "multipart/form-data" },
+		});
+	},
 };

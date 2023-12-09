@@ -9,10 +9,27 @@ const questions = dbContext.questions;
 
 module.exports = {
   getAll: async () => {
-    const query = `SELECT t.*, sj.name as subject_name, sm.semester as semester_semester, sm.year as semester_year
+    const query = `SELECT t.*,(SELECT count(*) from test_details as td where td.test_id=t.id) as total_questions,
+       sj.name as subject_name, sm.semester as semester_semester, sm.year as semester_year, sm.id AS semester_id
         FROM tests as t 
         INNER JOIN semesters as sm ON t.semester_id = sm.id
-        INNER JOIN subjects as sj ON t.subject_id = sj.id`;
+        INNER JOIN subjects as sj ON t.subject_id = sj.id
+        ORDER BY sm.id DESC`;
+    const listtest = await tests.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return listtest;
+  },
+  getAllByUserId: async (id) => {
+    const query = `SELECT DISTINCT t.*,ass.user_id AS ass_user_id, (SELECT count(*) from test_details AS td where td.test_id=t.id) AS total_questions,
+        sj.name AS subject_name, sm.semester AS semester_semester, sm.year AS semester_year, sm.id AS semester_id
+        FROM tests AS t 
+        INNER JOIN test_credit_classes AS tcc ON t.id = tcc.test_id
+        INNER JOIN assigns AS ass ON ass.credit_class_id = tcc.credit_class_id
+        INNER JOIN semesters as sm ON t.semester_id = sm.id
+        INNER JOIN subjects as sj ON t.subject_id = sj.id
+        WHERE t.user_id = '${id}' OR ass.user_id='${id}'
+        ORDER BY sm.id DESC;`;
     const listtest = await tests.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
@@ -113,6 +130,13 @@ module.exports = {
     });
     return test_class;
   },
+  getTestQuestionByTestId: async (id) => {
+    const query = `SELECT * FROM test_details AS td WHERE td.test_id = '${id}';`;
+    const res = await test_details.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return res;
+  },
   createTestClass: async (testGroup) => {
     const result = await test_credit_classes.create(testGroup);
     return result;
@@ -151,5 +175,23 @@ module.exports = {
       },
     });
     return result;
+  },
+  createTestQuestion: async (questions, testId) => {
+    const insertValue = questions
+      .map((item) => `(${item.id}, '${testId}', ${item.order})`)
+      .join(",");
+    const query =
+      "INSERT INTO test_details(`question_id`, `test_id`, `order`) VALUES " +
+      `${insertValue};`;
+    console.log(query);
+    return await test_details.sequelize.query(query, {
+      type: QueryTypes.INSERT,
+    });
+  },
+  deleteListTestQuestion: async (str, testId) => {
+    const query = `DELETE FROM test_details as td WHERE td.test_id='${testId}' AND td.question_id IN ${str}`;
+    return await test_details.sequelize.query(query, {
+      type: QueryTypes.DELETE,
+    });
   },
 };

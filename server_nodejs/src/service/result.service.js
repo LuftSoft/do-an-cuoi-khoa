@@ -4,7 +4,9 @@ const { CONFIG } = require("../shared/common.constants");
 const { Helpers, logger } = require("../extension/helper");
 const resultConverter = require("./converter/result.converter");
 const resultDetailService = require("./result_detail.service");
-
+const fs = require("fs");
+const PDFKit = require("pdfkit");
+const path = require("path");
 module.exports = {
   getAll: async () => {
     try {
@@ -196,6 +198,105 @@ module.exports = {
       );
     } catch (err) {
       logger.error(`delete result with id ${id} failed`);
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+  exportTranscript: async (id) => {
+    try {
+      var resultDetails = await resultRepository.getByTestCreditClassesId(id);
+      console.log(resultDetails);
+      // Define table properties
+      const tableTop = 200; // Y-coordinate where the table starts
+      const tableLeft = 50; // X-coordinate where the table starts
+      const cellPadding = 10; // Padding for cells
+      const tableData = [["STT", "Họ và tên", "Email", "Mã sinh viên", "Điểm"]];
+      for (let index = 0; index < resultDetails.length; index++) {
+        tableData.push([
+          index + 1,
+          resultDetails[index]?.user_name,
+          resultDetails[index]?.user_email,
+          resultDetails[index]?.user_code,
+          resultDetails[index]?.mark,
+        ]);
+      }
+      const drawCell = (text, x, y, width, height, color) => {
+        doc
+          .rect(x, y, width, height)
+          .fill(color ? color : "#fff")
+          .stroke();
+        doc.text(text, x + cellPadding, y + cellPadding);
+      };
+      const drawTable = () => {
+        const tableWidth = 400; // Width of the table
+        const tableHeight = 100; // Height of the table
+        const cellWidth = tableWidth / tableData[0].length; // Width of each cell
+        const cellHeight = tableHeight / tableData.length; // Height of each cell
+
+        doc.lineWidth(1); // Set line width for the table
+        // Loop through each row and column to draw the cells
+        tableData.forEach((row, rowIndex) => {
+          row.forEach((cell, columnIndex) => {
+            const x = tableLeft + columnIndex * cellWidth;
+            const y = tableTop + rowIndex * cellHeight;
+            drawCell(
+              cell,
+              x,
+              y,
+              cellWidth,
+              cellHeight,
+              rowIndex === 0 ? "#99ddff" : false
+            );
+          });
+        });
+      };
+      const doc = new PDFKit({
+        margins: { top: 20, left: 20, bottom: 20, right: 20 },
+      });
+      doc.pipe(fs.createWriteStream("bang_diem_export.pdf"));
+      ``;
+
+      // Write content to the PDF
+      //doc.setEncoding("ascii");
+      const lightFont = fs.readFileSync(
+        path.join(__dirname, "../../public/fonts/BeVietnamPro-Light.ttf")
+      );
+      const regularFont = fs.readFileSync(
+        path.join(__dirname, "../../public/fonts/BeVietnamPro-Regular.ttf")
+      );
+      doc.registerFont("lightFont", lightFont);
+      doc.registerFont("regularFont", regularFont);
+      doc.font("lightFont").fontSize(12);
+      doc.text("HỌC VIỆN CÔNG NGHỆ BƯU CHÍNH VIỄN THÔNG", {
+        continued: false,
+      });
+      doc.moveDown(1);
+      doc.text("CƠ SỞ TẠI THÀNH PHỐ HỒ CHÍ MINH", {
+        continued: false,
+      });
+      // doc.text(`Thời gian thi: ${test.time} phút`, {
+      //   continued: false,
+      //   align: "right",
+      // });
+      // doc.text(`KHOA: ${subject?.department_name?.toUpperCase()}`);
+      // doc.text(`BỘ MÔN: ${subject?.name}`);
+      doc.moveDown(1);
+      doc.fontSize(10);
+      doc.font("regularFont");
+      drawTable();
+      // Finalize the PDF
+      doc.end();
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        fs.readFileSync("bang_diem_export.pdf", { encoding: "base64" }),
+        "export file success"
+      );
+    } catch (err) {
+      logger.error(`failed to get test question with id ${id} failed`);
       console.log(err);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.ERROR,

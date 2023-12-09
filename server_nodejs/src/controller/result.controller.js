@@ -26,6 +26,11 @@ router.get("/:id", async (req, res) => {
   res.send(await resultService.getOne(id));
 });
 
+router.post("/export/:id", async (req, res) => {
+  const id = req.params.id;
+  res.send(await resultService.exportTranscript(id));
+});
+
 router.post("/", authorize([]), async (req, res) => {
   const accessToken = req.accessToken;
   const userId = authService.getUserIdFromJWTToken(

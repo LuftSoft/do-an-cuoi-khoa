@@ -15,6 +15,9 @@ import { UserService } from "../User/UserService";
 import "./CreditClass.css";
 import { CommonDialogComponent, CommonTableComponent } from "../../components/Common";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
+import ImportDialogComponent from "../Question/ImportComponent";
+import { selectAccessToken } from "../../redux/selectors";
+import { useSelector } from "react-redux";
 
 const initialValues = {
 	id: "",
@@ -36,6 +39,8 @@ export default function CreditClassDetailComponent(props) {
 	const [dataSource, setDataSource] = useState([]);
 	const [userRemove, setUserRemove] = useState({});
 	const [confirmRemoveUserDialog, setConfirmRemoveUserDialog] = useState(false);
+	const [openImportDialog, setOpenImportDialog] = useState(false);
+	const accessToken = useSelector(selectAccessToken);
 	async function getInitData() {
 		setLoading(true);
 		await getUsers();
@@ -159,6 +164,87 @@ export default function CreditClassDetailComponent(props) {
 			setLoading(false);
 		}
 	}
+	const handleCloseDialog = () => {
+		setOpenImportDialog(false);
+	};
+	/**
+	 * IMPORT
+	 * @param {*} file
+	 */
+	function handleOpenImportQuestionDialog() {
+		setOpenImportDialog(true);
+	}
+	async function handleExportQuestion() {
+		setLoading(true);
+		try {
+			const response = await QuestionService.exportQuestion(accessToken);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				const pdfBuffer = atob(response.data?.data);
+				const byteNumbers = new Array(pdfBuffer.length);
+				for (let i = 0; i < pdfBuffer.length; i++) {
+					byteNumbers[i] = pdfBuffer.charCodeAt(i);
+				}
+				const byteArray = new Uint8Array(byteNumbers);
+				const blob = new Blob([byteArray], { type: "application/pdf" });
+
+				// Create a download link
+				const link = document.createElement("a");
+				link.href = window.URL.createObjectURL(blob);
+				link.download = `question_import_result_${new Date().getTime()}.xlsx`;
+				document.body.appendChild(link);
+
+				// Trigger the download
+				link.click();
+
+				// Clean up
+				document.body.removeChild(link);
+				toast.success("Export câu hỏi thành công");
+			}
+			setLoading(false);
+		} catch (err) {
+			toast.error("Export câu hỏi thất bại");
+			setLoading(false);
+		}
+	}
+	async function handleDownLoadTemplate() {
+		//create object to save
+		const link = document.createElement("a");
+		link.href = CONST.SELF_URL + "/public/file/user_import_template.xlsx";
+		link.setAttribute("download", `user_template_import_${new Date().getTime()}.xlsx`);
+
+		document.body.appendChild(link);
+		link.click();
+
+		//clean up
+		document.body.removeChild(link);
+	}
+	async function handleImportDialog(file) {
+		const response = await CreditClassService.importUserClass({ file: file }, props.data.id, accessToken);
+		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+			const pdfBuffer = atob(response.data?.data);
+			const byteNumbers = new Array(pdfBuffer.length);
+			for (let i = 0; i < pdfBuffer.length; i++) {
+				byteNumbers[i] = pdfBuffer.charCodeAt(i);
+			}
+			const byteArray = new Uint8Array(byteNumbers);
+			const blob = new Blob([byteArray], { type: "application/pdf" });
+
+			// Create a download link
+			const link = document.createElement("a");
+			link.href = window.URL.createObjectURL(blob);
+			link.download = `question_import_result_${new Date().getTime()}.xlsx`;
+			document.body.appendChild(link);
+
+			// Trigger the download
+			link.click();
+
+			// Clean up
+			document.body.removeChild(link);
+			toast.success(`Import sinh viên vào lớp tín chỉ thành công`);
+			setOpenImportDialog(false);
+			await getClassAssign(props.data.id);
+		}
+	}
 	return (
 		<Container style={{ padding: "0 24px 24px 24px" }}>
 			<form onSubmit={handleSubmit}>
@@ -191,11 +277,21 @@ export default function CreditClassDetailComponent(props) {
 						<TextField {...params} label="Sinh viên" placeholder="Có thể chọn nhiều sinh viên..." />
 					)}
 				/>
-				<Button type="submit" variant="contained" color="primary">
-					<i className="fa-solid fa-plus me-2"></i>Thêm sinh viên
-				</Button>
+				<div>
+					<Button type="submit" className="me-2" variant="contained" color="primary">
+						<i className="fa-solid fa-plus me-2"></i>Thêm sinh viên
+					</Button>
+				</div>
 			</form>
 			<h4 className="mt-3 mb-2">Danh sách lớp</h4>
+			<div>
+				<Button className="me-2" variant="contained" color="success" onClick={handleOpenImportQuestionDialog}>
+					<i className="fa-solid fa-file-import me-2"></i>import sinh viên
+				</Button>
+				<Button className="me-2" variant="contained" color="warning" onClick={handleDownLoadTemplate}>
+					<i className="fa-solid fa-download me-2"></i>template
+				</Button>
+			</div>
 			<CommonTableComponent
 				columnDef={columnDef}
 				dataSource={dataSource}
@@ -210,6 +306,17 @@ export default function CreditClassDetailComponent(props) {
 				<ConfirmDialog
 					message="Bạn muốn hủy phân công sinh viên này?"
 					handleClose={handleConfirmDialog}></ConfirmDialog>
+			</CommonDialogComponent>
+			<CommonDialogComponent
+				open={openImportDialog}
+				title="Import sinh viên"
+				icon="fa-solid fa-circle-plus"
+				width="30vw"
+				height="50vh"
+				onClose={handleCloseDialog}>
+				<ImportDialogComponent
+					handleClose={handleCloseDialog}
+					handleSubmit={handleImportDialog}></ImportDialogComponent>
 			</CommonDialogComponent>
 		</Container>
 	);

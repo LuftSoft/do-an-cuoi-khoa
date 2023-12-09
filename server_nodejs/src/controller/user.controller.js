@@ -168,4 +168,25 @@ router.get("/type/:type", async (req, res) => {
   const type = req.params.type;
   res.send(await userService.getAllByType(type));
 });
+router.post(
+  "/import",
+  authorize([]),
+  uploadUtil.upload.single("file"),
+  async (req, res) => {
+    const accessToken = req.accessToken;
+    const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
+    if (userId) {
+      const file = req.file;
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="import_question_result.xlsx"'
+      );
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.send(await userService.import(file));
+    }
+  }
+);
 module.exports = router;

@@ -1,21 +1,17 @@
-import { Autocomplete, Container } from "@mui/material";
+import { Container } from "@mui/material";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { CommonDialogComponent, CommonTableComponent } from "../../components/Common";
+import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import { useLoadingService } from "../../contexts/loadingContext";
 import { CONST } from "../../utils/const";
 import { FeHelpers } from "../../utils/helpers";
-import { SubjectService } from "../Subject/SubjectService";
-import { QuestionService } from "../Question/QuestionService";
-import { SemesterService } from "../Semesters/SemesterService";
 import { CreditClassService } from "../CreditClass/CreditClassService";
-import { UserService } from "../User/UserService";
-import "./TestComp.css";
-import { CommonDialogComponent, CommonTableComponent } from "../../components/Common";
-import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import { TestScheduleService } from "../TestSchedule/TetsScheduleService";
+import "./TestComp.css";
 import { TestService } from "./TestService";
 
 const initialValues = {

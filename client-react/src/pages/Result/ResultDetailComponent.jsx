@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import dayjs from "dayjs";
 import { FeHelpers } from "../../utils/helpers";
 import TestTakeComponent from "../Test/TestTakeComponent";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 const columnDef = [
 	{
 		colName: "Mã sinh viên",
@@ -65,8 +65,38 @@ export default function ResultDetailComponent(props) {
 	function handleCloseDialog() {
 		setOpenTestTakeDialog(false);
 	}
+	async function handleExportTranscript(id) {
+		const response = await ResultService.exportTranscript(id);
+		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+			const pdfBuffer = atob(response.data?.data);
+			const byteNumbers = new Array(pdfBuffer.length);
+			for (let i = 0; i < pdfBuffer.length; i++) {
+				byteNumbers[i] = pdfBuffer.charCodeAt(i);
+			}
+			const byteArray = new Uint8Array(byteNumbers);
+			const blob = new Blob([byteArray], { type: "application/pdf" });
+
+			// Create a download link
+			const link = document.createElement("a");
+			link.href = window.URL.createObjectURL(blob);
+			link.download = `bang_diem_export_${new Date().getTime().toString()}.pdf`;
+			document.body.appendChild(link);
+
+			// Trigger the download
+			link.click();
+
+			// Clean up
+			document.body.removeChild(link);
+			toast.success("Xuất bảng điểm thành công");
+		}
+	}
 	return (
 		<Box>
+			<div className="my-2 mx-4 d-flex justify-content-end">
+				<Button type="submit" variant="contained" color="success" onClick={() => handleExportTranscript(data?.id)}>
+					<i className="fa-solid fa-file-export me-2"></i> Xuất bảng điểm
+				</Button>
+			</div>
 			<CommonTableComponent columnDef={columnDef} dataSource={dataSource} onView={handleView}></CommonTableComponent>
 			<CommonDialogComponent
 				open={openTestTakeDialog}

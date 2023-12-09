@@ -13,15 +13,26 @@ const findQuestionByLevel = (questions, level) => {
 };
 const PDFKit = require("pdfkit");
 const path = require("path");
+const subjectRepository = require("../repository/subject.repository");
+const authService = require("./auth.service");
 module.exports = {
-  getAll: async () => {
+  getAll: async (id) => {
     try {
-      var data = await testRepository.getAll();
-      return new BaseAPIResponse(
-        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
-        data,
-        null
-      );
+      const isAdmin = await authService.isAdmin(id);
+      if (isAdmin) {
+        var data = await testRepository.getAll();
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await testRepository.getAll(),
+          null
+        );
+      } else {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await testRepository.getAllByUserId(id),
+          null
+        );
+      }
     } catch (err) {
       logger.error("get all test failed!");
       console.log(err);
@@ -364,6 +375,45 @@ module.exports = {
       );
     }
   },
+  updateTestDetail: async (questions, testId) => {
+    try {
+      let testQuestions = await testRepository.getTestQuestionByTestId(testId);
+      const testQuestionIds = testQuestions.map((item) => item.question_id);
+      if (questions?.sort().join(",") === testQuestionIds.sort().join(",")) {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          true,
+          null
+        );
+      }
+      if (testQuestionIds.length > 0) {
+        await testRepository.deleteListTestQuestion(
+          `(${testQuestionIds.join(",")})`,
+          testId
+        );
+      }
+      console.log(testQuestions);
+      const pushList = questions.map((item, index) => ({
+        id: item,
+        order: index + 1,
+      }));
+      console.log("pushList", pushList);
+      await testRepository.createTestQuestion(pushList, testId);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        true,
+        null
+      );
+    } catch (err) {
+      logger.error(`update test question failed`);
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        false,
+        err.message
+      );
+    }
+  },
   deleteTestQuestion: async () => {
     try {
       let testModel = await testRepository.getTestQuestionById(id);
@@ -390,6 +440,8 @@ module.exports = {
     try {
       let test = await testRepository.getById(id);
       test = test.dataValues;
+      let subject = await subjectRepository.getById(test.subject_id);
+      console.log(subject);
       const doc = new PDFKit({
         margins: { top: 20, left: 20, bottom: 20, right: 20 },
       });
@@ -421,8 +473,8 @@ module.exports = {
         continued: false,
         align: "right",
       });
-      doc.text("KHOA: CÔNG NGHỆ THÔNG TIN 2");
-      doc.text("BỘ MÔN: Cấu trúc dữ liệu và giải thuật");
+      doc.text(`KHOA: ${subject?.department_name?.toUpperCase()}`);
+      doc.text(`BỘ MÔN: ${subject?.name}`);
       //header
 
       doc.text("MSSV: ........................................", {

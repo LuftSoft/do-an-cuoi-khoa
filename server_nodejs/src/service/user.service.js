@@ -12,6 +12,8 @@ const { CONSTANTS } = require("../shared/constant");
 const { URL_CONFIG } = require("../shared/url.constant");
 const clusterRepository = require("../repository/cluster.repository");
 const userClusterSubjectRepository = require("../repository/user_cluster_subject.repository");
+const xlsx = require("xlsx");
+const fs = require("fs");
 module.exports = {
   create: async (user) => {
     const userByEmail = await userRepository.getByEmail(user.email);
@@ -342,6 +344,82 @@ module.exports = {
         null,
         err.message
       );
+    }
+  },
+  /**
+   *
+   * @param {*} file
+   * @returns
+   */
+  import: async (file) => {
+    if (!file) {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        "Không có file nào được chọn"
+      );
+    } else {
+      try {
+        const workBook = xlsx.read(file.buffer, { type: "buffer" });
+        const sheet = workBook.SheetNames[0];
+        const workSheet = workBook.Sheets[sheet];
+
+        const jsonData = xlsx.utils.sheet_to_json(workSheet);
+        let total = jsonData.length;
+        let successQ = 0,
+          failedQ = 0;
+        for (let row of jsonData) {
+          console.log("row bang: ", row);
+          try {
+            await userRepository.create({
+              firstName: row.firstName,
+              lastName: row.lastName,
+              email: row.email,
+              type:
+                row.type === "Giảng viên"
+                  ? CONSTANTS.USER.TYPE.GV
+                  : CONSTANTS.USER.TYPE.SV,
+              passwordHash: authService.hashPassword(
+                CONSTANTS.USER.DEFAULT_PASSWORD
+              ),
+              code: row.email?.split("@")[0].toUpperCase(),
+              dateOfBirth: row.dateOfBirth,
+            });
+            successQ++;
+          } catch (err) {
+            logger.error(err);
+            failedQ++;
+          }
+        }
+
+        let resWorkBook = xlsx.utils.book_new();
+        let sheetName = "Kết quả import";
+        const resSheet = xlsx.utils.aoa_to_sheet([
+          ["Kết quả import người dùng vào hệ thống", ""],
+          ["Thời gian", new Date().toString()],
+          ["Tổng số tài khoản được import", total],
+          ["Thành công", successQ],
+          ["Thất bại", failedQ],
+        ]);
+        xlsx.utils.book_append_sheet(resWorkBook, resSheet, sheetName);
+        const exportFilePath = "question_import_result.xlsx";
+        xlsx.writeFile(resWorkBook, exportFilePath);
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          fs.readFileSync("question_import_result.xlsx", {
+            encoding: "base64",
+          }),
+          "ok"
+        );
+      } catch (err) {
+        logger.error(`import question failed`);
+        console.log(err);
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.ERROR,
+          null,
+          err.message
+        );
+      }
     }
   },
 };

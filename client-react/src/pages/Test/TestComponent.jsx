@@ -38,24 +38,22 @@ export default function TestComponent() {
 	useEffect(() => {
 		const fetchData = async () => {
 			await getTests();
-			console.log(tests);
 		};
 		fetchData();
 	}, []);
-	console.log(tests);
-	function getTests() {
-		return TestService.getAllTest()
-			.then((response) => {
-				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-					setTests(response.data?.data);
-					console.log(response.data?.data);
-				} else {
-				}
-			})
-			.catch((err) => {
-				toast.error("get all tests failed");
-				console.log("get all tests error: ", err);
-			});
+	async function getTests() {
+		try {
+			const response = await TestService.getAllTest(accessToken);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				setTests(response.data?.data);
+				console.log(response.data?.data);
+			} else {
+				toast.error("Tải danh sách đề thi thất bại");
+			}
+		} catch (err) {
+			toast.error("Tải danh sách đề thi thất bại");
+			console.log("get all tests error: ", err);
+		}
 	}
 
 	function handleCreateTest() {
@@ -104,7 +102,7 @@ export default function TestComponent() {
 	return (
 		<Box>
 			<div>
-				<TitleButtonComponent title={title} buttons={HAS_ADMIN_PERMISSION ? buttons : []} />
+				<TitleButtonComponent title={title} buttons={buttons} />
 			</div>
 			<div className="test-container my-3">
 				{tests.map((test, index) => (
@@ -131,24 +129,24 @@ export default function TestComponent() {
 								Thời gian làm bài: <span style={{ fontWeight: "bold" }}>{test.time} phút</span>
 							</Typography>
 							<CardActions className="card-action p-0 mt-3">
-								<Button
-									size="small"
-									color="info"
-									className="btn-opt"
-									variant="outlined"
-									onClick={(e) => showDetail(test)}>
-									Xem chi tiết
-								</Button>
 								{HAS_ADMIN_PERMISSION ? (
 									<Button
 										size="small"
 										color="primary"
 										className="btn-opt"
-										variant="contained"
+										variant="outlined"
 										onClick={(e) => handleAssignTest(test)}>
 										Phân cho lớp tín chỉ
 									</Button>
 								) : null}
+								<Button
+									size="small"
+									color="info"
+									className="btn-opt"
+									variant="contained"
+									onClick={(e) => showDetail(test)}>
+									Xem chi tiết
+								</Button>
 							</CardActions>
 						</CardContent>
 					</Card>

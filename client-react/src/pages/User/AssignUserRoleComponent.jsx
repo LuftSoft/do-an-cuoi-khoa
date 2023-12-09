@@ -100,6 +100,7 @@ export default function AssignUserRoleComponent() {
 				toast.error("Tải danh sách tài khoản thất bại");
 			}
 		} catch (err) {
+			console.log(err);
 			toast.error("Tải danh sách tài khoản thất bại");
 		}
 	}
@@ -116,10 +117,10 @@ export default function AssignUserRoleComponent() {
 			const response = await UserService.getAllUser();
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 				response.data?.data.forEach((user) => {
-					user.full_name = `${user.firstName} ${user.lastName}`;
-					user.dateOfBirth = user.dateOfBirth.substring(0, 10);
-					user.gender_translate = FeHelpers.translateGender(user.gender);
-					user.type_translate = FeHelpers.translateUserType(user.type);
+					user.full_name = `${user?.firstName} ${user?.lastName}`;
+					user.dateOfBirth = user?.dateOfBirth?.substring(0, 10);
+					user.gender_translate = FeHelpers.translateGender(user?.gender);
+					user.type_translate = FeHelpers.translateUserType(user?.type);
 					user.className = {};
 					switch (user?.type) {
 						case CONST.USER.TYPE.SV:

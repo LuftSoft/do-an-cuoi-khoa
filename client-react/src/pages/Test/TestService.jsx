@@ -1,11 +1,12 @@
 import axios from "axios";
 import { CONST } from "../../utils/const";
+import { FeHelpers } from "../../utils/helpers";
 
 const TEST_ROUTE = CONST.BASE_URL + CONST.ROUTES.TEST;
 const TEST_CLASS_ROUTE = CONST.BASE_URL + CONST.ROUTES.TEST + CONST.ROUTES.CREDIT_CLASS;
 export const TestService = {
-	getAllTest: async () => {
-		return await axios.get(TEST_ROUTE);
+	getAllTest: async (token) => {
+		return await FeHelpers.axiosWithJwt.GET(TEST_ROUTE, token);
 	},
 	getOneTest: async (id) => {
 		return await axios.get(`${TEST_ROUTE}/${id}`);
@@ -15,6 +16,16 @@ export const TestService = {
 	},
 	updateTest: async () => {
 		return await axios.post(TEST_ROUTE, {});
+	},
+	/**
+	 * update question of the test.
+	 * @param {*} questions
+	 * @param {*} testId
+	 * @param {*} token
+	 * @returns
+	 */
+	updateTestDetail: async (questions, testId, token) => {
+		return await FeHelpers.axiosWithJwt.PUT(`${TEST_ROUTE}/detail`, { questions: questions, id: testId }, token);
 	},
 	deleteTest: async (id, token) => {
 		return await axios.delete(`${TEST_ROUTE}/${id}`, { headers: { Authorization: `Bearer ${token}` } });

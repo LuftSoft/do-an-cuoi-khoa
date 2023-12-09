@@ -37,4 +37,13 @@ export const CreditClassService = {
 	removeUserClass: async (id) => {
 		return await axios.delete(`${CREDIT_CLASS_ROUTE}/user/${id}`);
 	},
+	importUserClass: async (data, id, token) => {
+		return await axios.post(
+			`${CREDIT_CLASS_ROUTE}/user/import`,
+			{ ...data, id: id },
+			{
+				headers: { Authorization: "Bearer " + token, "Content-Type": "multipart/form-data" },
+			},
+		);
+	},
 };

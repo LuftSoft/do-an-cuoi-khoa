@@ -2,6 +2,7 @@ const express = require("express");
 const testService = require("../service/test.service");
 const { authorize } = require("../extension/middleware/application.middleware");
 const authService = require("../service/common/auth.common.service");
+const commonService = require("../service/common.service");
 const router = express.Router();
 router.post("/export/:id", async (req, res) => {
   const id = req.params.id;
@@ -51,13 +52,22 @@ router.put("/question", async (req, res) => {
   res.send(await testService.updateTestQuestion(testQuestion));
 });
 
+router.put("/detail", authorize([]), async (req, res) => {
+  const { questions, id } = req.body;
+  res.send(await testService.updateTestDetail(questions, id));
+});
+
 router.delete("/question/:id", async (req, res) => {
   const id = req.params.id;
   res.send(await testService.deleteTestQuestion(id));
 });
 //
-router.get("/", async (req, res) => {
-  res.send(await testService.getAll());
+router.get("/", authorize([]), async (req, res) => {
+  const accessToken = req.accessToken;
+  const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
+  if (userId) {
+    res.send(await testService.getAll(userId));
+  }
 });
 
 router.get("/:id", async (req, res) => {

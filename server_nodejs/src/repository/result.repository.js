@@ -49,7 +49,7 @@ module.exports = {
     return test_class;
   },
   getByTestCreditClassesId: async (id) => {
-    const query = `SELECT rs.*, CONCAT(us.firstName,' ', us.lastName) as user_name, us.code as user_code 
+    const query = `SELECT rs.*, CONCAT(us.firstName,' ', us.lastName) as user_name,us.email as user_email, us.code as user_code 
     FROM results as rs
     INNER JOIN test_credit_classes as tc ON rs.test_credit_classes_id = tc.id
     INNER JOIN users as us on rs.user_id = us.id

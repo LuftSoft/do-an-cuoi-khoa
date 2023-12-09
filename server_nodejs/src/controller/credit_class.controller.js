@@ -1,6 +1,9 @@
 const express = require("express");
 const creditClassService = require("../service/credit_class.service");
 const creditClassDetailService = require("../service/credit_classes_detail.service");
+const { uploadUtil } = require("../util/upload.util");
+const commonService = require("../service/common.service");
+const { authorize } = require("../extension/middleware/application.middleware");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -47,6 +50,30 @@ router.post("/user/list", async (req, res) => {
   res.send(await creditClassDetailService.createListUserClass(data));
 });
 
+router.post(
+  "/user/import",
+  authorize([]),
+  uploadUtil.upload.single("file"),
+  async (req, res) => {
+    console.log(req.body.id);
+    const creditClassId = req.body.id;
+    const accessToken = req.accessToken;
+    const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
+    if (userId) {
+      const file = req.file;
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="import_question_result.xlsx"'
+      );
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.send(await creditClassService.import(file, creditClassId));
+    }
+  }
+);
+
 router.put("/user", async (req, res) => {
   const group = req.body;
   res.send(await creditClassDetailService.banUserGroup(group));
@@ -56,4 +83,5 @@ router.delete("/user/:id", async (req, res) => {
   const id = req.params.id;
   res.send(await creditClassDetailService.deleteUserClass(id));
 });
+
 module.exports = router;

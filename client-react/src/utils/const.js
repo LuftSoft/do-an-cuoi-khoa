@@ -173,6 +173,12 @@ const CONST = {
 		SV: "sv",
 		GV: "gv",
 	},
+	PAGINATION: {
+		DEFAULT_PAGE: 0,
+		DEFAULT_ROW_PER_PAGE: 10,
+		OPTIONS: [10, 25, 50, 100],
+		DEFAULT_COUNT: 100,
+	},
 };
 
 export { CONST };

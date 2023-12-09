@@ -21,5 +21,6 @@ module.exports.CONSTANTS = {
       MALE: "MALE",
       FEMALE: "FEMALE",
     },
+    DEFAULT_PASSWORD: "Ptithcm2023",
   },
 };

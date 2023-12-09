@@ -22,8 +22,15 @@ module.exports = {
     return result;
   },
   getById: async (id) => {
-    const subject = await subjects.findByPk(id);
-    return subject;
+    const query = `SELECT sj.*,dp.name as department_name FROM subjects AS sj  
+      INNER JOIN departments AS dp
+      ON sj.department_id = dp.id
+      WHERE sj.id='${id}';
+    `;
+    const subject = await subjects.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return subject[0];
   },
   getAll: async () => {
     const query = `SELECT sj.*, dp.name as department_name FROM subjects as sj
