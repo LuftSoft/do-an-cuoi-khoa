@@ -29,22 +29,22 @@ export default function TablePaginationActions(props) {
 
 	return (
 		<Box sx={{ flexShrink: 0, ml: 2.5 }}>
-			<IconButton onClick={handleFirstPageButtonClick} disabled={page === 0} aria-label="first page">
+			<IconButton onClick={handleFirstPageButtonClick} disabled={page === 0} aria-label="Trang đầu">
 				{theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
 			</IconButton>
-			<IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+			<IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="Trang trước">
 				{theme.direction === "rtl" ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
 			</IconButton>
 			<IconButton
 				onClick={handleNextButtonClick}
 				disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-				aria-label="next page">
+				aria-label="Trang kế">
 				{theme.direction === "rtl" ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
 			</IconButton>
 			<IconButton
 				onClick={handleLastPageButtonClick}
 				disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-				aria-label="last page">
+				aria-label="Trang cuối">
 				{theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
 			</IconButton>
 		</Box>

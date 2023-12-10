@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { loginSuccess } from "../../redux/authSlice";
-import { selectUser } from "../../redux/selectors";
+import { selectAccessToken, selectRefreshToken, selectUser } from "../../redux/selectors";
 import { routes } from "../../routes";
-import { getUser } from "../../services/userServices";
+import { getUser, logout } from "../../services/userServices";
 import { validateEmail, validatePassword } from "../../utils/helpers";
 import { axiosPost, url } from "../../utils/httpRequest";
 import { useLoadingService } from "../../contexts/loadingContext";
@@ -30,6 +30,7 @@ export default function SignInPage() {
 	const emailRef = useRef();
 	const passwordRef = useRef();
 	const currentUser = useSelector(selectUser);
+	const refreshToken = useSelector(selectRefreshToken);
 	const [showPw, setShowPw] = useState(false);
 	const [error, setError] = useState(initState);
 	const [formData, setFormData] = useState(initState);
@@ -70,6 +71,25 @@ export default function SignInPage() {
 						const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
 						const HAS_GV_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.GV);
 						const HAS_SV_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.SV);
+						let refreshTokenInterval = setInterval(async () => {
+							const auth = JSON.parse(window.localStorage.getItem("persist:root"));
+							const user = JSON.parse(auth?.user);
+							const authToken = JSON.parse(auth?.auth);
+							const response = await UserService.refreshToken({
+								id: user?.currentUser?.id,
+								token: authToken?.refreshToken,
+							});
+							if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+								const res = response.data?.data;
+								dispatch(loginSuccess({ accessToken: res.accessToken, refreshToken: res.refreshToken }));
+							} else {
+								toast.error("Phiên làm việc đã hết hạn, vui lòng đăng nhập lại");
+								setTimeout(() => {
+									clearInterval(refreshTokenInterval);
+									logout(dispatch);
+								}, 2000);
+							}
+						}, CONST.ACCESS_TOKEN_EXPIRED);
 						if (HAS_ADMIN_PERMISSION) {
 							navigate(routes.OVERVIEW);
 						} else if (HAS_GV_PERMISSION) {

@@ -6,11 +6,12 @@ import { toast } from "react-toastify";
 import { useLoadingService } from "../../contexts/loadingContext";
 import { FeHelpers } from "../../utils/helpers";
 import { UserService } from "./UserService";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectAccessToken, selectUser } from "../../redux/selectors";
 import { CONST } from "../../utils/const";
 import TitleButtonComponent from "../../components/Common/CommonHeader/CommonHeaderComponent";
 import "./User.css";
+import { updateUser } from "../../redux/userSlice";
 
 const initialValues = {
 	id: "",
@@ -35,6 +36,7 @@ const UserSettingComponent = () => {
 	const GENDER = CONST.USER.GENDER;
 	const TYPE = CONST.USER.TYPE;
 	const avatarRef = useRef(null);
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -88,7 +90,7 @@ const UserSettingComponent = () => {
 		tmp.dateOfBirth = tmp.dateOfBirth ? tmp.dateOfBirth.substring(0, 10) : "";
 		setFormData(tmp);
 	}
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		const errors = {};
 		Object.keys(errors).forEach((item) => {
@@ -109,18 +111,22 @@ const UserSettingComponent = () => {
 		Object.keys(submitData).forEach((item) => {
 			formSubmitData.append(item, submitData[item]);
 		});
-		UserService.updateUser(formSubmitData, accessToken)
-			.then((response) => {
-				if (response.data?.code === "SUCCESS") {
-					toast.success("Chỉnh sửa người dùng thành công!");
-					onSubmit(response.data);
-				} else {
-					toast.error(
-						`Chỉnh sửa người dùng thất bại. Lỗi: ${response.data.message ? response.data.message : "Không xác định!"}`,
-					);
-				}
-			})
-			.catch((err) => console.log("Error when updating user: ", err));
+		try {
+			loadingService.setLoading(true);
+			const response = await UserService.updateUser(formSubmitData, accessToken);
+			if (response.data?.code === "SUCCESS") {
+				toast.success("Chỉnh sửa người dùng thành công!");
+				dispatch(updateUser(response.data?.data));
+			} else {
+				toast.error(
+					`Chỉnh sửa người dùng thất bại. Lỗi: ${response.data.message ? response.data.message : "Không xác định!"}`,
+				);
+			}
+			loadingService.setLoading(false);
+		} catch (err) {
+			console.log("Error when updating user: ", err);
+			loadingService.setLoading(false);
+		}
 	};
 	const getPreviewStr = (previewAvatar) => {
 		if (previewAvatar.substring(0, 4) === "blob") {

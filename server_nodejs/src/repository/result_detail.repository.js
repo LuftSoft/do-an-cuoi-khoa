@@ -19,6 +19,13 @@ module.exports = {
       },
     });
   },
+  getAllByQuestionId: async (id) => {
+    return await result_details.findAll({
+      where: {
+        question_id: id,
+      },
+    });
+  },
   create: async (result_detail) => {
     const result_detailCreate = await result_details.create(result_detail);
     return result_detailCreate;

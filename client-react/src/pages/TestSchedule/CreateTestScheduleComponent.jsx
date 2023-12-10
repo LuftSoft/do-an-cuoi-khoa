@@ -16,7 +16,7 @@ const initialValues = {
 	name: "",
 	semester_year: "",
 	semester_id: "",
-	date: formatCurrentDate(),
+	date: "",
 };
 
 const levels = CONST.QUESTION.LEVEL_OBJ;
@@ -32,7 +32,8 @@ function formatCurrentDate() {
 
 	const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-	return formattedDate;
+	//return formattedDate;
+	return FeHelpers.convertDateTime(new Date());
 }
 
 const CreateTestSchedule = ({ onSubmit }) => {
@@ -58,6 +59,7 @@ const CreateTestSchedule = ({ onSubmit }) => {
 		loadingService.setLoading(false);
 	}
 	useEffect(() => {
+		initialValues.date = formatCurrentDate();
 		async function fetchData() {
 			await getInitData();
 		}
@@ -113,7 +115,6 @@ const CreateTestSchedule = ({ onSubmit }) => {
 			<form onSubmit={handleSubmit}>
 				<TextField
 					label="Năm học"
-					handleYearChange
 					variant="outlined"
 					name="semester_year"
 					select

@@ -1,16 +1,16 @@
 .result-card-container {
 	border-left: 5px solid #1976d2;
-	max-width: 33%;
+	max-width: calc(100% / 3 - 6px);
 }
 
 .result-container {
-	justify-content: space-between;
 	display: flex;
 	flex-wrap: wrap;
+	gap: 9px;
 }
 
 @media only screen and (max-width: 1200px) {
 	.result-card-container {
-		max-width: 49%;
+		max-width: calc(100% / 2 - 5px);
 	}
 }

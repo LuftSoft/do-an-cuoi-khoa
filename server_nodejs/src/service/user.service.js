@@ -60,6 +60,38 @@ module.exports = {
       refreshToken: refreshToken,
     };
   },
+  refreshToken: async (id, token) => {
+    try {
+      const user = await userRepository.getById(id);
+      if (!user) {
+        throw new Error(CONFIG.ERROR_RESPONSE.USER.LOGIN);
+      }
+      const isTokenValid = authService.verifyToken(
+        token,
+        process.env.REFRESH_TOKEN_KEY
+      );
+      console.log("isTokenValid", isTokenValid);
+      if (!isTokenValid) {
+        return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, "");
+      } else {
+        const accessToken = authService.generateAccessToken(user.id);
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          {
+            refreshToken: token,
+            accessToken: accessToken,
+          },
+          ""
+        );
+      }
+    } catch (err) {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
   logOut: (req, res, next) => {
     const { _id } = req.data;
     new User()
@@ -292,6 +324,17 @@ module.exports = {
       user.email = userInfo.email;
       user.type = userInfo.type;
       const userUpdate = await userRepository.update(user);
+      userUpdate.dataValues.roles = await userRepository.getRoles(
+        userUpdate?.dataValues?.id
+      );
+      if (userUpdate?.dataValues?.roles) {
+        let permissions = [];
+        for (let r of userUpdate?.dataValues?.roles) {
+          permissions.push(await userRepository.getPemissions(r.id));
+        }
+        userUpdate.dataValues.permissions = permissions;
+      }
+      console.log(userUpdate);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
         userUpdate,

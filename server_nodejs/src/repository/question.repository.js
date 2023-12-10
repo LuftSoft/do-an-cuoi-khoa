@@ -1,5 +1,6 @@
 const { QueryTypes } = require("sequelize");
 const dbContext = require("../database/models/config/dbContext");
+const { logger, Helpers } = require("../extension/helper");
 const questions = dbContext.questions;
 
 module.exports = {
@@ -12,6 +13,7 @@ module.exports = {
       INNER JOIN subjects AS sj ON ch.subject_id = sj.id
       INNER JOIN clusters AS cl ON q.cluster_id = cl.id
       INNER JOIN users AS u ON cl.user_id = u.id
+      WHERE q.isDelete <> true OR q.isDelete IS NULL
       ORDER BY id;`;
     const listquestion = await questions.sequelize.query(query, {
       type: QueryTypes.SELECT,
@@ -32,7 +34,7 @@ module.exports = {
       INNER JOIN chapters AS ch ON ch.id = q.chapter_id AND ch.subject_id = sj.id
       INNER JOIN clusters AS cl ON cl.id = ucs.cluster_id
       INNER JOIN users AS u ON u.id = cl.user_id
-      WHERE ucs.user_id = '${userId}'
+      WHERE ucs.user_id = '${userId}' AND q.isDelete <> true OR q.isDelete IS NULL
       ORDER BY id;`;
     const listquestion = await questions.sequelize.query(query, {
       type: QueryTypes.SELECT,
@@ -109,9 +111,29 @@ module.exports = {
       where: {
         id: id,
       },
-      truncate: true,
     });
     return result;
+  },
+  sortDelete: async (question) => {
+    console.log(question, question.id);
+    const transaction = await questions.sequelize.transaction();
+    try {
+      const questionEntity = await questions.findByPk(question.id);
+      questionEntity.isDelete = true;
+      const updateRes = await questionEntity.save();
+      if (!updateRes) {
+        throw new Error("Sort delete question failed");
+      }
+      let createQuestion = Helpers.cloneObject(question);
+      createQuestion.id = 0;
+      createQuestion.isDelete = false;
+      const questionUpdate = await questions.create(createQuestion);
+      await transaction.commit();
+      return questionUpdate;
+    } catch (err) {
+      logger.error("update question error: " + err);
+      transaction.rollback();
+    }
   },
   canDelete: async (id) => {
     const query = `SELECT COUNT(*) as num FROM test_details as td WHERE td.question_id = ${id}`;

@@ -12,4 +12,7 @@ export const UserService = {
 	resetPassword: (data) => {
 		return axios.put(`${CONST.BASE_URL}${routes.USER}${routes.RESET_PASSWORD}`, data);
 	},
+	refreshToken: async (data) => {
+		return await axios.post(`${CONST.BASE_URL}${routes.USER}/refresh-token`, data);
+	},
 };

@@ -14,7 +14,6 @@ module.exports = {
     const user = await users.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
-    console.log(user);
     return user[0]?.cnt;
   },
 };

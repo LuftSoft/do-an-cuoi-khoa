@@ -228,8 +228,8 @@ export default function TestDetailComponent(props) {
 
 			// Create a download link
 			const link = document.createElement("a");
+			link.setAttribute("target", "_blank");
 			link.href = window.URL.createObjectURL(blob);
-			link.download = "test_export.pdf";
 			document.body.appendChild(link);
 
 			// Trigger the download

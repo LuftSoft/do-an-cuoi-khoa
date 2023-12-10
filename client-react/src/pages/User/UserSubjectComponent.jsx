@@ -34,6 +34,9 @@ export default function UserSubjectComponent() {
 					user.full_name = `${user.firstName} ${user.lastName}`;
 					user.type_translate = FeHelpers.translateUserType(user.type);
 					user.subject_names = user?.subject_names?.split(",").join(`, `);
+					if (user?.subject_names?.length > 32) {
+						user.subject_names = user?.subject_names?.substring(0, 32) + " ...";
+					}
 					user.className = {};
 					switch (user?.type) {
 						case CONST.USER.TYPE.SV:
@@ -51,6 +54,7 @@ export default function UserSubjectComponent() {
 				toast.error("Tải danh sách tài khoản thất bại");
 			}
 		} catch (err) {
+			console.log(err);
 			toast.error("Tải danh sách tài khoản thất bại");
 		}
 	}

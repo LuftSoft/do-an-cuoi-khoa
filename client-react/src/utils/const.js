@@ -179,6 +179,7 @@ const CONST = {
 		OPTIONS: [10, 25, 50, 100],
 		DEFAULT_COUNT: 100,
 	},
+	ACCESS_TOKEN_EXPIRED: 3600000,
 };
 
 export { CONST };

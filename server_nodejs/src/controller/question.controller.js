@@ -55,9 +55,9 @@ router.post("/", authorize([]), async (req, res) => {
       )
     );
   } else {
-    const subject = req.body;
-    subject.userId = userId;
-    res.send(await questionService.create(subject));
+    const question = req.body;
+    question.userId = userId;
+    res.send(await questionService.create(question));
   }
 });
 

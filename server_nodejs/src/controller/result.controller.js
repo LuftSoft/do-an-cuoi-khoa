@@ -4,10 +4,16 @@ const resultDetailService = require("../service/result_detail.service");
 const { authorize } = require("../extension/middleware/application.middleware");
 const authService = require("../service/common/auth.common.service");
 const BaseAPIResponse = require("../dto/baseApiResponse");
+const commonService = require("../service/common.service");
 const router = express.Router();
 //get all test-credit-class
-router.get("/", async (req, res) => {
-  res.send(await resultService.getAll());
+router.get("/", authorize([]), async (req, res) => {
+  const accessToken = req.accessToken;
+  const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
+  if (userId) {
+    console.log(userId);
+    res.send(await resultService.getAll(userId));
+  }
 });
 
 router.get("/user/:id", async (req, res) => {

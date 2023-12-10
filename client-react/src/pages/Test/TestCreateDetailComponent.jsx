@@ -15,76 +15,35 @@ import { CommonDialogComponent } from "../../components/Common";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import { CreateQuestionComponent } from "../Question";
 
-export default function TestEditComponent({ id, handleSubmit }) {
-	const title = "Đề thi";
-
-	const buttons = [
-		{
-			name: "Tạo đề thi",
-			onClick: handleCreateTest,
-		},
-	];
+export default function TestCreateDetailComponent({ test, handleSubmit }) {
 	const currentUser = useSelector(selectUser);
 	const accessToken = useSelector(selectAccessToken);
-	const [test, setTest] = useState({});
 	const [questions, setQuestions] = useState([]);
 	const [questionFilters, setQuestionFilters] = useState([]);
+	const [selectedQuestions, setSelectedQuestions] = useState([]);
 	const [openCreateTestDialog, setOpenCreateTestDialog] = useState(false);
 	const [openAssignTestDialog, setOpenAssignTestDialog] = useState(false);
 	const [openTestDetailDialog, setOpenTestDetailDialog] = useState(false);
 	const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 	const [openCreateQuestionDialog, setOpenCreateQuestionDialog] = useState(false);
-	const permissions = currentUser.permissions[0] || [];
-	const chapterRef = useRef("");
-	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
 	const EASY_LEVEL = CONST.QUESTION.LEVEL[0];
 	const MEDUIM_LEVEL = CONST.QUESTION.LEVEL[1];
 	const DIFFICULT_LEVEL = CONST.QUESTION.LEVEL[2];
 	useEffect(() => {
+		test.easy_question = Number.parseInt(test?.easy_question || "0");
+		test.medium_question = Number.parseInt(test?.medium_question || "0");
+		test.difficult_question = Number.parseInt(test?.difficult_question || "0");
 		const fetchData = async () => {
-			await getTestDetail(id);
-			await getQuestionByChapterId();
+			console.log("test", test);
+			await getQuestionByChapterId(test?.chapters || "");
 		};
 		fetchData();
 	}, []);
 	/**
-	 * get test detail
-	 * @param {*} id
-	 */
-	async function getTestDetail(id) {
-		const response = await TestService.getOneTest(id);
-		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-			let testDetail = response.data?.data;
-			chapterRef.current = testDetail?.chapters || "";
-			testDetail.questions = testDetail.questions.sort((a, b) => b.id - a.id);
-			testDetail.questions.forEach((item) => {
-				item.className = {};
-				switch (item?.level) {
-					case CONST.QUESTION.LEVEL[0]:
-						item.levelTranslate = "DỄ";
-						item.className.level = "bg-easy";
-						break;
-					case CONST.QUESTION.LEVEL[1]:
-						item.levelTranslate = "VỪA";
-						item.className.level = "bg-medium";
-						break;
-					case CONST.QUESTION.LEVEL[2]:
-						item.levelTranslate = "KHÓ";
-						item.className.level = "bg-difficult";
-						break;
-				}
-			});
-			setTest(testDetail);
-			console.log(testDetail);
-		} else {
-			toast.error("Không tìm thấy đề thi.");
-		}
-	}
-	/**
 	 *
 	 */
-	const getQuestionByChapterId = async () => {
-		const response = await QuestionService.getQuestionByChapter(chapterRef.current);
+	const getQuestionByChapterId = async (chapters) => {
+		const response = await QuestionService.getQuestionByChapter(chapters);
 		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 			let tmpQuestion = response.data?.data;
 			tmpQuestion = tmpQuestion.sort((a, b) => b.id - a.id);
@@ -124,37 +83,9 @@ export default function TestEditComponent({ id, handleSubmit }) {
 			setOpenTestDetailDialog(false);
 		}
 	}
-	function getDialogTitle() {
-		switch (type) {
-			case CONST.DIALOG.TYPE.CREATE:
-				return "Tạo mới đề thi";
-			case CONST.DIALOG.TYPE.VIEW:
-				return "Chi tiết đề thi";
-			case CONST.DIALOG.TYPE.EDIT:
-				return "Chỉnh sửa đề thi";
-			default:
-				break;
-		}
-		return title;
-	}
 	function onClose() {
-		if (openCreateTestDialog) {
-			setOpenCreateTestDialog(false);
-		} else if (openAssignTestDialog) {
-			setOpenAssignTestDialog(false);
-		} else if (openTestDetailDialog) {
-			setOpenTestDetailDialog(false);
-		}
 		setOpenConfirmDialog(false);
 		setOpenCreateQuestionDialog(false);
-	}
-	function handleAssignTest(data) {
-		if (data) setTest(data);
-		setOpenAssignTestDialog(true);
-	}
-	function showDetail(data) {
-		if (data) setTest(data);
-		setOpenTestDetailDialog(true);
 	}
 	const handleSearchChange = () => {
 		console.log(handleSearchChange);
@@ -180,19 +111,18 @@ export default function TestEditComponent({ id, handleSubmit }) {
 		setQuestionFilters(questions.slice(DEFAULT_PAGE * _rowPerPage, _rowPerPage * (DEFAULT_PAGE + 1)));
 	}
 	function isQuestionChecked(id) {
-		return test.questions.filter((item) => item.id === id).length > 0;
+		return selectedQuestions.filter((item) => item.id === id).length > 0;
 	}
 	function handleCheckedQuestion(question) {
-		console.log(question);
-		const checked = test.questions.filter((item) => item.id === question.id).length > 0;
-		var testTmp = FeHelpers.cloneDeep(test);
+		const checked = selectedQuestions.filter((item) => item.id === question.id).length > 0;
+		var selectedQTmp = FeHelpers.cloneDeep(selectedQuestions);
 		if (checked) {
-			testTmp.questions = testTmp.questions.filter((item) => item.id !== question.id);
-			setTest(testTmp);
+			selectedQTmp = selectedQTmp.filter((item) => item.id !== question.id);
+			setSelectedQuestions(selectedQTmp);
 		} else {
 			if (checkValidToAdd(question)) {
-				testTmp.questions.push(question);
-				setTest(testTmp);
+				selectedQTmp.push(question);
+				setSelectedQuestions(selectedQTmp);
 			}
 		}
 	}
@@ -203,21 +133,21 @@ export default function TestEditComponent({ id, handleSubmit }) {
 	function checkValidToAdd(question) {
 		switch (question.level) {
 			case EASY_LEVEL:
-				if (test.questions.filter((item) => item.level === EASY_LEVEL).length === test.easy_question) {
+				if (selectedQuestions?.filter((item) => item.level === EASY_LEVEL).length === test?.easy_question) {
 					toast.error("Đã đủ câu hỏi dễ");
 					return false;
 				} else {
 					return true;
 				}
 			case MEDUIM_LEVEL:
-				if (test.questions.filter((item) => item.level === MEDUIM_LEVEL).length === test.medium_question) {
+				if (selectedQuestions?.filter((item) => item.level === MEDUIM_LEVEL).length === test?.medium_question) {
 					toast.error("Đã đủ câu hỏi vừa");
 					return false;
 				} else {
 					return true;
 				}
 			case DIFFICULT_LEVEL:
-				if (test.questions.filter((item) => item.level === DIFFICULT_LEVEL).length === test.difficult_question) {
+				if (selectedQuestions?.filter((item) => item.level === DIFFICULT_LEVEL).length === test?.difficult_question) {
 					toast.error("Đã đủ câu hỏi khó");
 					return false;
 				} else {
@@ -231,11 +161,11 @@ export default function TestEditComponent({ id, handleSubmit }) {
 	function getCountQuestion(level) {
 		switch (level) {
 			case EASY_LEVEL:
-				return test?.questions?.filter((item) => item.level === EASY_LEVEL).length;
+				return selectedQuestions?.filter((item) => item.level === EASY_LEVEL).length;
 			case MEDUIM_LEVEL:
-				return test?.questions?.filter((item) => item.level === MEDUIM_LEVEL).length;
+				return selectedQuestions?.filter((item) => item.level === MEDUIM_LEVEL).length;
 			case DIFFICULT_LEVEL:
-				return test?.questions?.filter((item) => item.level === DIFFICULT_LEVEL).length;
+				return selectedQuestions?.filter((item) => item.level === DIFFICULT_LEVEL).length;
 			default:
 				return 0;
 		}
@@ -244,18 +174,17 @@ export default function TestEditComponent({ id, handleSubmit }) {
 	async function handleConfirmDialog(data) {
 		if (data) {
 			try {
-				const questions = test.questions.map((item) => item.id);
-				const id = test.id;
-				const response = await TestService.updateTestDetail(questions, id, accessToken);
+				const questions = selectedQuestions.map((item) => item.id);
+				const response = await TestService.createManualTest({ test: test, questions: questions }, accessToken);
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-					toast.success("Lưu chi tiết đề thi thành công");
-					handleSubmit(true);
+					toast.success("Tạo đề thi thành công");
 				} else {
-					toast.error("Lưu chi tiết đề thi không thành công");
+					toast.error("Tạo đề thi thất bại");
 				}
 			} catch (err) {
-				toast.error("Lưu chi tiết đề thi không thành công");
+				toast.error("Tạo đề thi thất bại");
 			}
+			handleSubmit();
 		}
 		setOpenConfirmDialog(false);
 	}
@@ -266,9 +195,9 @@ export default function TestEditComponent({ id, handleSubmit }) {
 	async function handleSaveTestDetail() {}
 	function canSaveTest() {
 		return (
-			test?.questions?.filter((item) => item.level === EASY_LEVEL).length === test.easy_question &&
-			test?.questions?.filter((item) => item.level === MEDUIM_LEVEL).length === test.medium_question &&
-			test?.questions?.filter((item) => item.level === DIFFICULT_LEVEL).length === test.difficult_question
+			selectedQuestions?.filter((item) => item.level === EASY_LEVEL).length === test?.easy_question &&
+			selectedQuestions?.filter((item) => item.level === MEDUIM_LEVEL).length === test?.medium_question &&
+			selectedQuestions?.filter((item) => item.level === DIFFICULT_LEVEL).length === test?.difficult_question
 		);
 	}
 	return (
@@ -325,7 +254,7 @@ export default function TestEditComponent({ id, handleSubmit }) {
 					</div>
 					<TablePagination
 						component="div"
-						count={questions.length || 100}
+						count={questions.length || 0}
 						rowsPerPageOptions={DEFAULT_OPTIONS}
 						labelRowsPerPage="Số dòng mỗi trang"
 						SelectProps={{
@@ -347,13 +276,13 @@ export default function TestEditComponent({ id, handleSubmit }) {
 								Tỷ lệ câu hỏi:
 							</span>
 							<span className="bg-easy me-2">
-								Dễ: ({getCountQuestion(EASY_LEVEL)}/{test.easy_question})
+								Dễ: ({getCountQuestion(EASY_LEVEL)}/{test?.easy_question})
 							</span>
 							<span className="bg-medium me-2">
-								Vừa: ({getCountQuestion(MEDUIM_LEVEL)}/{test.medium_question})
+								Vừa: ({getCountQuestion(MEDUIM_LEVEL)}/{test?.medium_question})
 							</span>
 							<span className="bg-difficult me-2">
-								Khó: ({getCountQuestion(DIFFICULT_LEVEL)}/{test.difficult_question})
+								Khó: ({getCountQuestion(DIFFICULT_LEVEL)}/{test?.difficult_question})
 							</span>
 						</div>
 						<div>
@@ -365,7 +294,7 @@ export default function TestEditComponent({ id, handleSubmit }) {
 					</div>
 					<hr />
 					<div className="px-3">
-						{test?.questions?.map((question, index) => (
+						{selectedQuestions?.map((question, index) => (
 							<div className="mb-3">
 								<Typography variant="body1" style={{ fontWeight: "bold" }}>
 									<Typography style={styles.answer_title}>Câu {index + 1}:</Typography>

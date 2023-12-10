@@ -71,6 +71,18 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
+      cluster_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "clusters",
+          key: "id",
+        },
+      },
+      isDelete: {
+        type: DataTypes.BOOLEAN,
+        values: false,
+      },
     },
     {
       sequelize,

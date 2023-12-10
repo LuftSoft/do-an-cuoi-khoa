@@ -18,6 +18,8 @@ import { CommonDialogComponent } from "../../components/Common";
 import ResultDetailComponent from "./ResultDetailComponent";
 import TitleButtonComponent from "../../components/Common/CommonHeader/CommonHeaderComponent";
 import CommonFilterComponent from "../../components/Common/CommonFilter/CommonFilterComponent";
+import { selectAccessToken } from "../../redux/selectors";
+import { useSelector } from "react-redux";
 
 const bull = (
 	<Box component="span" sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}>
@@ -32,6 +34,7 @@ export default function ResultComponent() {
 	const [testSchedules, setTestSchedules] = useState([]);
 	const [results, setResults] = useState([]);
 	const [openResultDetailDialog, setOpenResultDetailDialog] = useState(false);
+	const accessToken = useSelector(selectAccessToken);
 	const resultDetailDataRef = useRef(undefined);
 	const buttons = [
 		// {
@@ -79,11 +82,11 @@ export default function ResultComponent() {
 	}, []);
 	async function getInitData() {
 		setLoading(true);
-		await getResults();
+		await getResults(accessToken);
 		setLoading(false);
 	}
-	async function getResults() {
-		const response = await ResultService.getAll();
+	async function getResults(token) {
+		const response = await ResultService.getAll(token);
 		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 			setResults(response.data?.data);
 		} else {
@@ -168,30 +171,32 @@ export default function ResultComponent() {
 					<Card className="result-card-container mb-2">
 						<div className="row" key={index}>
 							<div className="col-12">
-								<CardContent>
+								<CardContent className="pb-0">
 									<Typography variant="h5" component="div">
 										{item.test_name}
 									</Typography>
-									<Typography variant="body1" sx={{ mb: 0.5 }}>
-										<i className="fa-solid fa-book-open me-2"></i>Môn học: {item.subject_name}
+									<Typography variant="body1" sx={{ mb: 0.5 }} style={styles.boldText}>
+										<i className="fa-solid fa-book-open me-2"></i>
+										{item.subject_name}
 									</Typography>
 									<Typography variant="body1" sx={{ mb: 0.5 }}>
-										<i className="fa-solid fa-layer-group me-2"></i>LTC: {item.credit_class_name}
+										<i className="fa-solid fa-layer-group me-2" style={styles.boldText}></i>
+										{item.credit_class_name}
 									</Typography>
-									<Typography variant="body1">
+									<Typography variant="body1" sx={{ mb: 0.5 }}>
 										<i className="fa-solid fa-clock me-2"></i>
 										{FeHelpers.convertDateTime(item.test_schedule_date)}
-										{bull} {item.test_time}(phút)
+										{bull} {item.test_time} (phút)
 									</Typography>
+									<Button size="small" color="primary" variant="outlined" style={{ pointerEvents: "none" }}>
+										Số kết quả: <span style={{ fontWeight: "bold" }}>{item.result_count}</span>
+									</Button>
 								</CardContent>
 							</div>
 							<div className="col-12 d-flex justify-content-end mb-2">
 								<CardActions>
-									<Button size="small" color="primary" variant="outlined">
-										<i className="fa-regular fa-flag me-2"></i>Trang thai
-									</Button>
 									<Button size="small" color="primary" variant="contained" onClick={() => handleResultDetail(item)}>
-										<i className="fa-solid fa-circle-info me-2"></i>Chi tiet
+										<i className="fa-solid fa-circle-info me-2"></i>Chi tiết kết quả
 									</Button>
 								</CardActions>
 							</div>
@@ -212,3 +217,8 @@ export default function ResultComponent() {
 		</Box>
 	);
 }
+const styles = {
+	boldText: {
+		fontWeight: "bold",
+	},
+};

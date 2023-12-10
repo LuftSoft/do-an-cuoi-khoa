@@ -101,7 +101,8 @@ router.put("/reset-password", async (req, res) => {
 });
 
 router.post("/refresh-token", async (req, res) => {
-  const user = req.body;
+  const { id, token } = req.body;
+  res.send(await userService.refreshToken(id, token));
 });
 router.get("/", async (req, res) => {
   res.send(

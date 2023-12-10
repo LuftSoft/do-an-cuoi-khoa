@@ -14,6 +14,9 @@ export const TestService = {
 	createTest: async (data, token) => {
 		return await axios.post(TEST_ROUTE, data, { headers: { Authorization: "Bearer " + token } });
 	},
+	createManualTest: async (data, token) => {
+		return await axios.post(`${TEST_ROUTE}/manual`, data, { headers: { Authorization: "Bearer " + token } });
+	},
 	updateTest: async () => {
 		return await axios.post(TEST_ROUTE, {});
 	},

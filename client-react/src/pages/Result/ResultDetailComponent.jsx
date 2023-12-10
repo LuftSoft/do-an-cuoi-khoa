@@ -78,8 +78,9 @@ export default function ResultDetailComponent(props) {
 
 			// Create a download link
 			const link = document.createElement("a");
+			link.setAttribute("target", "_blank");
 			link.href = window.URL.createObjectURL(blob);
-			link.download = `bang_diem_export_${new Date().getTime().toString()}.pdf`;
+			//link.download = `bang_diem_export_${new Date().getTime().toString()}.pdf`;
 			document.body.appendChild(link);
 
 			// Trigger the download

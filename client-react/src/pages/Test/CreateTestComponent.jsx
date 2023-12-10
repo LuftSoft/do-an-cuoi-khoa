@@ -15,6 +15,10 @@ import { selectAccessToken, selectUser } from "../../redux/selectors";
 import { TestScheduleService } from "../TestSchedule/TetsScheduleService";
 import { TestService } from "./TestService";
 import { SemesterService } from "../Semesters/SemesterService";
+import { CommonDialogComponent } from "../../components/Common";
+import TestDetailComponent from "./TestDetailComponent";
+import TestEditComponent from "./TestEditComponent";
+import TestCreateDetailComponent from "./TestCreateDetailComponent";
 
 const initialValues = {
 	id: "",
@@ -100,6 +104,8 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 	const [years, setYears] = useState([]);
 	const [semesters, setSemesters] = useState([]);
 	const [semestersFilter, setSemestersFilter] = useState([]);
+	const [openTestEditDialog, setOpenTestEditDialog] = useState(false);
+	const [test, setTest] = useState({});
 
 	async function getAllSubject() {
 		loadingService.setLoading(true);
@@ -234,18 +240,22 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 					.catch((err) => console.log("Error when create question: ", err));
 				break;
 			case CONST.DIALOG.TYPE.CREATE:
-				TestService.createTest(formData, accessToken)
-					.then((response) => {
-						if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-							toast.success("Tạo đề thi thành công!");
-							onSubmit(response.data);
-						} else {
-							toast.error(
-								`Tạo đề thi thất bại. Lỗi: ${response.data.message ? response.data.message : "Không xác định!"}`,
-							);
-						}
-					})
-					.catch((err) => console.log("Error when create question: ", err));
+				if (!formData.auto_generate_question) {
+					setOpenTestEditDialog(true);
+				} else {
+					TestService.createTest(formData, accessToken)
+						.then((response) => {
+							if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+								toast.success("Tạo đề thi thành công!");
+								onSubmit(response.data);
+							} else {
+								toast.error(
+									`Tạo đề thi thất bại. Lỗi: ${response.data.message ? response.data.message : "Không xác định!"}`,
+								);
+							}
+						})
+						.catch((err) => console.log("Error when create question: ", err));
+				}
 				break;
 		}
 	};
@@ -279,6 +289,13 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 			}
 		} catch (err) {}
 	}
+	const onCloseDialog = () => {
+		setOpenTestEditDialog(false);
+	};
+	const handleTestDetailSubmit = async () => {
+		setOpenTestEditDialog(false);
+		onSubmit(false);
+	};
 	return (
 		<Container style={{ padding: "0 24px 24px 24px" }}>
 			<form onSubmit={handleSubmit}>
@@ -291,6 +308,7 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 					error={Boolean(errors.name)}
 					onChange={handleChange}
 					fullWidth
+					required
 					margin="normal"
 				/>
 
@@ -300,6 +318,7 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 						variant="outlined"
 						name="subject_id"
 						select
+						required
 						className={isView() ? "disable-field w-8" : " w-8"}
 						value={formData.subject_id}
 						onChange={handleSubjectChange}
@@ -317,6 +336,7 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 						name="total_mark"
 						margin="normal"
 						type="number"
+						required
 						InputProps={{ inputProps: { min: 0 } }}
 						variant="outlined"
 						onChange={handleChange}
@@ -330,6 +350,7 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 					multiple
 					id="tags-outlined"
 					options={chapters}
+					noOptionsText="Chưa có dữ liệu"
 					filterSelectedOptions
 					getOptionLabel={(option) => option.name}
 					onChange={handleAutocompleteChange}
@@ -343,6 +364,7 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 						variant="outlined"
 						name="semester_year"
 						select
+						required
 						type="number"
 						value={formData.semester_year}
 						onChange={handleYearChange}
@@ -358,6 +380,7 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 					<TextField
 						label="Học kỳ"
 						variant="outlined"
+						required
 						name="semester_id"
 						error={Boolean(errors.semester_id)}
 						select
@@ -380,6 +403,7 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 						name="time"
 						type="number"
 						margin="normal"
+						required
 						variant="outlined"
 						onChange={handleChange}
 						value={formData.time}
@@ -524,6 +548,15 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 					</div>
 				)}
 			</form>
+			<CommonDialogComponent
+				open={openTestEditDialog}
+				title={"Tạo chi tiết đề thi"}
+				icon="fa-solid fa-circle-info"
+				width="60vw"
+				height="auto"
+				onClose={onCloseDialog}>
+				<TestCreateDetailComponent handleSubmit={handleTestDetailSubmit} test={formData}></TestCreateDetailComponent>
+			</CommonDialogComponent>
 		</Container>
 	);
 };

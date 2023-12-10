@@ -15,25 +15,25 @@ module.exports = {
         INNER JOIN semesters as sm ON t.semester_id = sm.id
         INNER JOIN subjects as sj ON t.subject_id = sj.id
         ORDER BY sm.id DESC`;
-    const listtest = await tests.sequelize.query(query, {
+    const res = await tests.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
-    return listtest;
+    return res;
   },
   getAllByUserId: async (id) => {
     const query = `SELECT DISTINCT t.*,ass.user_id AS ass_user_id, (SELECT count(*) from test_details AS td where td.test_id=t.id) AS total_questions,
         sj.name AS subject_name, sm.semester AS semester_semester, sm.year AS semester_year, sm.id AS semester_id
         FROM tests AS t 
-        INNER JOIN test_credit_classes AS tcc ON t.id = tcc.test_id
-        INNER JOIN assigns AS ass ON ass.credit_class_id = tcc.credit_class_id
+        LEFT JOIN test_credit_classes AS tcc ON t.id = tcc.test_id
+        LEFT JOIN assigns AS ass ON ass.credit_class_id = tcc.credit_class_id
         INNER JOIN semesters as sm ON t.semester_id = sm.id
         INNER JOIN subjects as sj ON t.subject_id = sj.id
         WHERE t.user_id = '${id}' OR ass.user_id='${id}'
         ORDER BY sm.id DESC;`;
-    const listtest = await tests.sequelize.query(query, {
+    const res = await tests.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
-    return listtest;
+    return res;
   },
   getById: async (id) => {
     var test = await tests.findByPk(id, {});
@@ -59,12 +59,21 @@ module.exports = {
     return test;
   },
   delete: async (id) => {
-    const result = await tests.destroy({
-      where: {
-        id: id,
-      },
-    });
-    return result;
+    const transaction = await tests.sequelize.transaction();
+    try {
+      const query = `DELETE FROM test_details as td WHERE td.test_id = '${id}'`;
+      await tests.sequelize.query(query, { type: QueryTypes.DELETE });
+      const res = await tests.destroy({
+        where: {
+          id: id,
+        },
+      });
+      transaction.commit();
+      return res;
+    } catch (err) {
+      transaction.rollback();
+      return false;
+    }
   },
 
   /**/
@@ -163,6 +172,26 @@ module.exports = {
     return await test_details.sequelize.query(exeQuery, {
       type: QueryTypes.INSERT,
     });
+  },
+  createTestManual: async (test, questions) => {
+    let query = [];
+    const transaction = await tests.sequelize.transaction();
+    try {
+      test.id = Helpers.generateUiid(8);
+      const res = await tests.create(test);
+      for (let i = 0; i < questions.length; i++) {
+        query.push(`(0, '${res.id}', ${questions[i]}, ${i + 1})`);
+      }
+      const exeQuery = `INSERT INTO test_details(id, test_id, question_id, test_details.order) VALUES ${query}`;
+      await test_details.sequelize.query(exeQuery, {
+        type: QueryTypes.INSERT,
+      });
+      transaction.commit();
+      return res;
+    } catch (err) {
+      transaction.rollback();
+      return false;
+    }
   },
   updateTestQuestion: async (testQuestion) => {
     const result = await test_details.update(testQuestion);

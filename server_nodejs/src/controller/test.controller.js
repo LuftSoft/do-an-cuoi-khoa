@@ -86,14 +86,28 @@ router.post("/", authorize([]), async (req, res) => {
   res.send(await testService.create(test));
 });
 
+router.post("/manual", authorize([]), async (req, res) => {
+  const accessToken = req.accessToken;
+  const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
+  if (userId) {
+    const { test, questions } = req.body;
+    test.user_id = userId;
+    res.send(await testService.createManual(test, questions));
+  }
+});
+
 router.put("/", async (req, res) => {
   const test = req.body;
   res.send(await testService.update(test));
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authorize([]), async (req, res) => {
+  const accessToken = req.accessToken;
+  const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
   const id = req.params.id;
-  res.send(await testService.delete(id));
+  if (userId) {
+    res.send(await testService.delete(id));
+  }
 });
 
 module.exports = router;

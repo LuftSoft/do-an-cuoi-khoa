@@ -54,7 +54,9 @@ const OverviewComponent: React.FC<Props> = ({navigation}) => {
   const backgroundLeftRight = require('../../assets/overview/left-right.png');
   const backgroundLeftBottom = require('../../assets/overview/bottom-left.png');
   const backgroundRightBottom = require('../../assets/overview/bottom-right.png');
-
+  navigation.addListener('focus', async () => {
+    await getInitData();
+  });
   useEffect(() => {
     const fetchData = async () => {
       await getInitData();

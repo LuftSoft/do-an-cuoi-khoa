@@ -9,6 +9,9 @@ const { Helpers, logger } = require("../extension/helper");
 const subjectConverter = require("./converter/subject.converter");
 const chapterRepository = require("../repository/chapter.repository");
 const authService = require("./auth.service");
+const questionService = require("./question.service");
+const commonService = require("./common.service");
+const userRepository = require("../repository/user.repository");
 
 module.exports = {
   getAll: async () => {
@@ -76,6 +79,12 @@ module.exports = {
   create: async (subject) => {
     try {
       let data = await subjectRepository.create(subject);
+      //add  permission to subject for admin.
+      const admin = await userRepository.getFirstAdmin();
+      await commonService.createUserClusterSubject({
+        subject_id: data.id,
+        user_id: admin.id,
+      });
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
         data,

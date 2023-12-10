@@ -65,10 +65,9 @@ module.exports = {
     try {
       //option ko auto create question
       if (!test.auto_generate_question) {
-        let data = await testRepository.create(test);
         return new BaseAPIResponse(
           CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
-          data,
+          await testRepository.create(test),
           null
         );
       }
@@ -160,6 +159,28 @@ module.exports = {
       );
     }
   },
+  createManual: async (test, questions) => {
+    try {
+      const res = await testRepository.createTestManual(test, questions);
+      if (res) {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          res,
+          ""
+        );
+      } else {
+        return new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.ERROR, null, "");
+      }
+    } catch (err) {
+      console.log(err);
+      logger.error("create test manual failed");
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
   update: async (test) => {
     try {
       let testModel = await testRepository.getById(test.id);
@@ -188,6 +209,14 @@ module.exports = {
       let testModel = await testRepository.getById(id);
       if (!testModel) {
         throw new Error("Đề thi không tồn tại");
+      }
+      const testClass = await testRepository.getTestClassByTestId(id);
+      if (testClass.length > 0) {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.ERROR,
+          null,
+          "Đề thi đã được phân công, không thể xóa"
+        );
       }
       var data = await testRepository.delete(id);
       return new BaseAPIResponse(

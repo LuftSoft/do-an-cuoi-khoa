@@ -7,15 +7,25 @@ const resultDetailService = require("./result_detail.service");
 const fs = require("fs");
 const PDFKit = require("pdfkit");
 const path = require("path");
+const { isAdmin } = require("./user.service");
+const authService = require("./auth.service");
 module.exports = {
-  getAll: async () => {
+  getAll: async (userId) => {
     try {
-      var data = await resultRepository.getAll();
-      return new BaseAPIResponse(
-        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
-        data,
-        null
-      );
+      const isAdmin = await authService.isAdmin(userId);
+      if (isAdmin) {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await resultRepository.getAll(),
+          null
+        );
+      } else {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await resultRepository.getAllByUserId(userId),
+          null
+        );
+      }
     } catch (err) {
       logger.error("get all result failed!");
       console.log(err);

@@ -12,6 +12,8 @@ const fs = require("fs");
 const { json } = require("body-parser");
 const testRepository = require("../repository/test.repository");
 const authService = require("./auth.service");
+const clusterRepository = require("../repository/cluster.repository");
+const resultDetailRepository = require("../repository/result_detail.repository");
 
 module.exports = {
   getAll: async (userId) => {
@@ -71,12 +73,14 @@ module.exports = {
       if (!user) {
         logger.error(`question service - user with id ${userId} is undefined`);
       }
+      const cluster = await clusterRepository.getByUserId(userId);
       const role = user.roles[0]?.name;
       console.log;
       if (role === CONFIG.ROLE.ADMIN) {
         question.is_admin_create = true;
       }
       question.user_create = userId;
+      question.cluster_id = cluster.id;
       let data = await questionRepository.create(question);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
@@ -99,13 +103,25 @@ module.exports = {
       if (!questionModel) {
         throw new Error("Chương không tồn tại");
       }
-      questionConverter.convertDataToModel(questionModel, question);
-      var data = await questionRepository.update(questionModel);
-      return new BaseAPIResponse(
-        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
-        data,
-        null
+      let isContainResult = await resultDetailRepository.getAllByQuestionId(
+        question.id
       );
+      console.log("isContainResult", isContainResult);
+      questionConverter.convertDataToModel(questionModel, question);
+      if (isContainResult.length > 0) {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await questionRepository.sortDelete(questionModel),
+          null
+        );
+      } else {
+        var data = await questionRepository.update(questionModel);
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          data,
+          null
+        );
+      }
     } catch (err) {
       logger.error(`update question failed`);
       console.log(err);

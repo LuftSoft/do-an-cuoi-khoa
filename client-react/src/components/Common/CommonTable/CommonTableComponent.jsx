@@ -151,9 +151,10 @@ export default function CommonTableComponent(props) {
 							count={dataSource.length}
 							rowsPerPage={rowsPerPage}
 							page={page}
+							labelRowsPerPage="Số dòng mỗi trang"
 							SelectProps={{
 								inputProps: {
-									"aria-label": "rows per page",
+									"aria-label": "Số dòng mỗi trang",
 								},
 								native: true,
 							}}

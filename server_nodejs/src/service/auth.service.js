@@ -6,12 +6,12 @@ const authRepository = require("../repository/auth.repository");
 module.exports = {
   /**
    * check user is admin or not by id of user
-   * @param {*} id
+   * @param {*} userId
    * @returns boolean
    */
-  isAdmin: async (id) => {
+  isAdmin: async (userId) => {
     try {
-      return await authRepository.isAdmin(id);
+      return await authRepository.isAdmin(userId);
     } catch (err) {
       logger.error("check is admin of user failed!");
       console.log(err);

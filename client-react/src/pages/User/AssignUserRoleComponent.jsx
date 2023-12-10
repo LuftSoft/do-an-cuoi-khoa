@@ -65,12 +65,14 @@ export default function AssignUserRoleComponent() {
 		type: CONST.DIALOG.TYPE.ADD,
 		id: null,
 	});
+	const ADMIN = "admin";
 	const accessToken = useSelector(selectAccessToken);
 	async function getRoles() {
 		try {
 			const response = await UserService.getRoles();
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-				setRoles(response.data?.data);
+				console.log(response.data?.data);
+				setRoles(response.data?.data?.filter((item) => item.name !== ADMIN));
 			} else {
 				toast.error("Tải danh sách tài khoản thất bại");
 			}
@@ -225,7 +227,7 @@ export default function AssignUserRoleComponent() {
 			<div className="row">
 				<div className="col-md-4 col-6">
 					<CommonListComponent
-						isAdd={true}
+						isAdd={false}
 						handleAdd={handleAddUserRole}
 						handleChange={handleRoleChange}
 						data={roles || []}
@@ -235,7 +237,7 @@ export default function AssignUserRoleComponent() {
 				</div>
 				<div className="col-md-4 col-6">
 					<CommonListComponent
-						isAdd={rolePermissions.length > 0 ? true : false}
+						isAdd={false}
 						handleAdd={handleAddUserRole}
 						paramKey={"id"}
 						paramValue={"permission_name"}

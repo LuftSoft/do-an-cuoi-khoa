@@ -15,6 +15,7 @@ import { CommonDialogComponent } from "../../components/Common";
 import CreateTest from "./CreateTestComponent";
 import AssignTestComponent from "./AssignTestComponent";
 import TestDetailComponent from "./TestDetailComponent";
+import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 
 export default function TestComponent() {
 	const title = "Đề thi";
@@ -33,6 +34,8 @@ export default function TestComponent() {
 	const [openCreateTestDialog, setOpenCreateTestDialog] = useState(false);
 	const [openAssignTestDialog, setOpenAssignTestDialog] = useState(false);
 	const [openTestDetailDialog, setOpenTestDetailDialog] = useState(false);
+	const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+	const [testDeleteId, setTestDeleteId] = useState(false);
 	const permissions = currentUser.permissions[0] || [];
 	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
 	useEffect(() => {
@@ -99,6 +102,22 @@ export default function TestComponent() {
 		if (data) setTest(data);
 		setOpenTestDetailDialog(true);
 	}
+	async function handleSubmitDeleteTest(data) {
+		if (data) {
+			const response = await TestService.deleteTest(testDeleteId, accessToken);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				toast.success("Xóa đề thi thành công!");
+			} else {
+				toast.error("Đề thi đã được phân công, không thể xóa!");
+			}
+			await getTests();
+		}
+		setOpenConfirmDialog(false);
+	}
+	const handleDeleteTest = (id) => {
+		setTestDeleteId(id);
+		setOpenConfirmDialog(true);
+	};
 	return (
 		<Box>
 			<div>
@@ -107,7 +126,9 @@ export default function TestComponent() {
 			<div className="test-container my-3">
 				{tests.map((test, index) => (
 					<Card className="custom-card" label="Delete">
-						{HAS_ADMIN_PERMISSION ? <i className="fa-solid fa-trash delete_test"></i> : null}
+						{HAS_ADMIN_PERMISSION ? (
+							<i className="fa-solid fa-trash delete_test" onClick={() => handleDeleteTest(test.id)}></i>
+						) : null}
 						<CardMedia component="img" height="100" className="bg-radient" />
 						<CardContent className="pb-3 test-card-content">
 							<Typography gutterBottom variant="h5" component="div" className="card-two-row">
@@ -164,7 +185,7 @@ export default function TestComponent() {
 			<CommonDialogComponent
 				open={openAssignTestDialog}
 				title={"Phân công đề thi"}
-				icon="fa-solid fa-circle-plus"
+				icon="fa-solid fa-pen-to-square"
 				width="60vw"
 				height="auto"
 				onClose={onClose}>
@@ -173,11 +194,22 @@ export default function TestComponent() {
 			<CommonDialogComponent
 				open={openTestDetailDialog}
 				title={"Chi tiết đề thi"}
-				icon="fa-solid fa-circle-plus"
+				icon="fa-solid fa-circle-info"
 				width="60vw"
 				height="auto"
 				onClose={onClose}>
 				<TestDetailComponent onSubmit={handleCloseDialog} data={test}></TestDetailComponent>
+			</CommonDialogComponent>
+			<CommonDialogComponent
+				open={openConfirmDialog}
+				title={"Xác nhận xóa đề thi"}
+				icon="fa-solid fa-triangle-exclamation"
+				width="30vw"
+				height="auto"
+				onClose={onClose}>
+				<ConfirmDialog
+					handleClose={handleSubmitDeleteTest}
+					message="Bạn chắc chắn muốn xóa đề thi này?"></ConfirmDialog>
 			</CommonDialogComponent>
 		</Box>
 	);
