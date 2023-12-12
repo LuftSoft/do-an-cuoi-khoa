@@ -71,7 +71,7 @@ export default function CreateAssignComponent(props) {
 		}
 	};
 	const getUsers = async () => {
-		const response = await UserService.getAllGV();
+		const response = await CreditClassService.getAllGVForCreditClassId(props?.data?.id);
 		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 			setUsers(response.data?.data);
 		}

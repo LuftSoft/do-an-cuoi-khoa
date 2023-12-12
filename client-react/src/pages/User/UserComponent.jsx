@@ -63,7 +63,7 @@ export default function UserComponent() {
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 				response.data?.data.forEach((user) => {
 					user.full_name = `${user?.firstName} ${user?.lastName}`;
-					user.dateOfBirth = user?.dateOfBirth?.substring(0, 10);
+					user.dateOfBirth = FeHelpers.convertDate(user?.dateOfBirth);
 					user.gender_translate = FeHelpers.translateGender(user?.gender);
 					user.type_translate = FeHelpers.translateUserType(user?.type);
 					user.className = {};

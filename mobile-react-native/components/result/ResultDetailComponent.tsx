@@ -1,6 +1,13 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useEffect, useRef, useState} from 'react';
-import {Button, FlatList, StyleSheet, Text, View} from 'react-native';
+import {
+  BackHandler,
+  Button,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {Portal, RadioButton} from 'react-native-paper';
 import {CONFIG} from '../../utils/config';
 import ResultRadioButton from './ResultRadioButton';
@@ -18,6 +25,7 @@ import {
 import {useUserProvider} from '../../utils/user.context';
 import {Helpers} from '../../utils/common.util';
 import {ResultService} from './ResultService';
+import {useIsFocused} from '@react-navigation/native';
 
 type OverViewNavigationProp = StackNavigationProp<RootStackParamList, 'Test'>;
 type Props = {
@@ -117,7 +125,10 @@ const ResultDetailComponent: React.FC<Props> = ({navigation}) => {
     <View style={styles.container}>
       <View style={styles.infoBar}>
         <Text style={{color: '#fff', fontSize: 15}}>
-          Tổng điểm: {results.mark}
+          Tổng điểm:{' '}
+          <Text style={{fontWeight: 'bold'}}>
+            {results.mark}/{results.total_mark}
+          </Text>
         </Text>
       </View>
 

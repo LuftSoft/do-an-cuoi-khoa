@@ -194,7 +194,7 @@ export default function TestTakeComponent({ type = "result" | "test", data }) {
 					<div className="col-md-2 col-sm-12 q-test-item" style={{}}>
 						<Typography variant="body1">Thời gian bắt đầu: {data.start_time}</Typography>
 						<Typography variant="h5" className="mark-field mb-3" align="center">
-							Điểm số: {data.mark}
+							Điểm số: {data.mark}/{dataSource.total_mark || 0}
 						</Typography>
 						<hr />
 						<Typography variant="h6">Bảng chọn đáp án</Typography>

@@ -45,10 +45,9 @@ module.exports = {
   },
   getOne: async (id) => {
     try {
-      var data = await testRepository.getById(id);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
-        data,
+        await testRepository.getById(id),
         null
       );
     } catch (err) {

@@ -5,3 +5,4 @@ export { default as UserSubjectComponent } from "./UserSubjectComponent";
 export { default as UserSettingComponent } from "./UserSettingComponent";
 export { default as CreateUserSubjectComponent } from "./CreateUserSubjectComponent";
 export { default as UserSubjectDetailComponent } from "./UserSubjectDetailComponent";
+export { default as UserChangePasswordComponent } from "./UserChangePasswordComponent";

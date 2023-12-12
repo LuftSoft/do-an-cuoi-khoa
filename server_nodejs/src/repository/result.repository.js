@@ -8,7 +8,7 @@ const resultDetailRepository = require("./result_detail.repository");
 
 module.exports = {
   getAll: async () => {
-    const query = `SELECT tc.*, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, sj.name as subject_name,
+    const query = `SELECT tc.*, sm.id as semester_id, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, sj.name as subject_name,
     CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date,  te.name as test_name,
     te.time as test_time, (SELECT count(*) FROM results as rs WHERE rs.test_credit_classes_id = tc.id) as result_count
       FROM test_credit_classes AS tc
@@ -16,13 +16,30 @@ module.exports = {
       INNER JOIN credit_classes AS cc ON tc.credit_class_id = cc.id
       INNER JOIN test_schedules AS ts ON tc.test_schedule_id = ts.id
       INNER JOIN semesters AS sm ON ts.semester_id = sm.id
-      INNER JOIN subjects AS sj ON cc.subject_id = sj.id`;
+      INNER JOIN subjects AS sj ON cc.subject_id = sj.id
+      ORDER BY ts.date DESC, te.time DESC;`;
     return await test_credit_classes.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
   },
-  getAllByUserId: async (id) => {
-    const query = `SELECT tc.*, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, sj.name as subject_name,
+  getAllFilter: async (filterQuery) => {
+    let query = `SELECT tc.*, sm.id as semester_id, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, sj.name as subject_name,
+    CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date,  te.name as test_name,
+    te.time as test_time, (SELECT count(*) FROM results as rs WHERE rs.test_credit_classes_id = tc.id) as result_count
+      FROM test_credit_classes AS tc
+      INNER JOIN tests AS te ON tc.test_id = te.id
+      INNER JOIN credit_classes AS cc ON tc.credit_class_id = cc.id
+      INNER JOIN test_schedules AS ts ON tc.test_schedule_id = ts.id
+      INNER JOIN semesters AS sm ON ts.semester_id = sm.id
+      INNER JOIN subjects AS sj ON cc.subject_id = sj.id
+      ${filterQuery}
+      ORDER BY ts.date DESC, te.time DESC;`;
+    return await test_credit_classes.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+  },
+  getAllFilterByUserId: async (filterQuery) => {
+    const query = `SELECT tc.*, sm.id as semester_id, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, sj.name as subject_name,
     CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date,  te.name as test_name,
     te.time as test_time, (SELECT count(*) FROM results as rs WHERE rs.test_credit_classes_id = tc.id) as result_count
       FROM test_credit_classes AS tc
@@ -32,7 +49,25 @@ module.exports = {
       INNER JOIN semesters AS sm ON ts.semester_id = sm.id
       INNER JOIN subjects AS sj ON cc.subject_id = sj.id
       INNER JOIN assigns AS ass ON tc.credit_class_id = ass.credit_class_id
-      WHERE ass.user_id = '${id}'`;
+      ${filterQuery}
+      ORDER BY ts.date DESC, te.time DESC;`;
+    return await test_credit_classes.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+  },
+  getAllByUserId: async (id) => {
+    const query = `SELECT tc.*, sm.id as semester_id, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, sj.name as subject_name,
+    CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date,  te.name as test_name,
+    te.time as test_time, (SELECT count(*) FROM results as rs WHERE rs.test_credit_classes_id = tc.id) as result_count
+      FROM test_credit_classes AS tc
+      INNER JOIN tests AS te ON tc.test_id = te.id
+      INNER JOIN credit_classes AS cc ON tc.credit_class_id = cc.id
+      INNER JOIN test_schedules AS ts ON tc.test_schedule_id = ts.id
+      INNER JOIN semesters AS sm ON ts.semester_id = sm.id
+      INNER JOIN subjects AS sj ON cc.subject_id = sj.id
+      INNER JOIN assigns AS ass ON tc.credit_class_id = ass.credit_class_id
+      WHERE ass.user_id = '${id}'
+      ORDER BY ts.date DESC, te.time DESC;`;
     return await test_credit_classes.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
@@ -76,8 +111,14 @@ module.exports = {
     return data;
   },
   getById: async (id) => {
-    const result = await results.findByPk(id);
-    return result;
+    const query = `SELECT rs.*,te.total_mark AS total_mark from results AS rs
+      INNER JOIN test_credit_classes AS tc ON rs.test_credit_classes_id = tc.id
+      INNER JOIN tests AS te ON tc.test_id = te.id
+      WHERE rs.id = ${id};`;
+    const result = await results.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return result[0];
   },
   getByTestId: async (id) => {
     const query = `SELECT rs.* 

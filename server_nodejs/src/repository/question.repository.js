@@ -26,7 +26,7 @@ module.exports = {
    * @returns
    */
   getAllByUserId: async (userId) => {
-    const query = `SELECT q.*,sj.id AS subject_id,sj.name AS subject_name, concat(u.firstName,' ',u.lastName) AS user_name, 
+    const query = `SELECT DISTINCT q.*,sj.id AS subject_id,sj.name AS subject_name, concat(u.firstName,' ',u.lastName) AS user_name, 
       u.id AS user_id,u.email AS user_email, ch.id AS chapter_id,ch.name AS chapter_name 
       FROM user_cluster_subjects AS ucs
       INNER JOIN questions AS q ON q.cluster_id = ucs.cluster_id
@@ -34,7 +34,7 @@ module.exports = {
       INNER JOIN chapters AS ch ON ch.id = q.chapter_id AND ch.subject_id = sj.id
       INNER JOIN clusters AS cl ON cl.id = ucs.cluster_id
       INNER JOIN users AS u ON u.id = cl.user_id
-      WHERE ucs.user_id = '${userId}' AND q.isDelete <> true OR q.isDelete IS NULL
+      WHERE ucs.user_id = '${userId}' AND (q.isDelete <> true OR q.isDelete IS NULL)
       ORDER BY id;`;
     const listquestion = await questions.sequelize.query(query, {
       type: QueryTypes.SELECT,

@@ -37,6 +37,7 @@ const UserSettingComponent = () => {
 	const TYPE = CONST.USER.TYPE;
 	const avatarRef = useRef(null);
 	const dispatch = useDispatch();
+	const buttons = [];
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -138,7 +139,7 @@ const UserSettingComponent = () => {
 	return (
 		<Container style={{ padding: "0 24px 24px 24px" }}>
 			<div className="mb-3">
-				<TitleButtonComponent title={"thông tin cá nhân"} buttons={[]} />
+				<TitleButtonComponent title={"thông tin cá nhân"} buttons={buttons} />
 			</div>
 			<div className="row">
 				<div className="col-3 mt-16 center-item">
@@ -224,21 +225,13 @@ const UserSettingComponent = () => {
 							</div>
 							<div className="col-4">
 								<TextField
-									select
 									fullWidth
+									disabled
 									name="type"
-									label="Loại"
 									variant="outlined"
-									value={formData.type}
+									value={formData.type === CONST.USER.TYPE.GV ? "Giảng viên" : "Sinh viên"}
 									error={errors.type}
-									onChange={handleChange}
-									margin="normal">
-									{Object.keys(TYPE).map((type, index) => (
-										<MenuItem key={index} value={TYPE[type]}>
-											{FeHelpers.translateUserType(TYPE[type])}
-										</MenuItem>
-									))}
-								</TextField>
+									margin="normal"></TextField>
 							</div>
 						</div>
 						<TextField
@@ -246,13 +239,14 @@ const UserSettingComponent = () => {
 							variant="outlined"
 							name="email"
 							type="email"
+							disabled
 							value={formData.email}
 							error={errors.email}
 							onChange={handleChange}
 							fullWidth
 							margin="normal"
 						/>
-						<TextField
+						{/* <TextField
 							label="Mật khẩu"
 							type="password"
 							variant="outlined"
@@ -264,7 +258,7 @@ const UserSettingComponent = () => {
 							onChange={handleChange}
 							fullWidth
 							margin="normal"
-						/>
+						/> */}
 						<div className="form-footer">
 							<Button type="submit" variant="contained" color="primary" className="mt-3 px-4">
 								<i className="fa-solid fa-floppy-disk me-2"></i> {"Lưu thông tin"}

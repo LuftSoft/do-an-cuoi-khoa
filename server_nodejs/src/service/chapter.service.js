@@ -7,16 +7,28 @@ const { CONFIG } = require("../shared/common.constants");
 const sendMailService = require("./common/sendmail.service");
 const { Helpers, logger } = require("../extension/helper");
 const chapterConverter = require("./converter/chapter.converter");
+const commonService = require("./common.service");
+const authService = require("./auth.service");
 
 module.exports = {
-  getAll: async () => {
+  getAll: async (id) => {
     try {
-      var data = await chapterRepository.getAll();
-      return new BaseAPIResponse(
-        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
-        data,
-        null
-      );
+      const isAdmin = await authService.isAdmin(id);
+      if (isAdmin) {
+        console.log("is admin", id);
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await chapterRepository.getAll(),
+          null
+        );
+      } else {
+        console.log("not admin");
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await chapterRepository.getAllByUserId(id),
+          null
+        );
+      }
     } catch (err) {
       logger.error("get all chapter failed!");
       console.log(err);

@@ -7,6 +7,9 @@ export const CreditClassService = {
 	getAllCreditClass: async () => {
 		return await axios.get(CREDIT_CLASS_ROUTE);
 	},
+	getAllGVForCreditClassId: async (id) => {
+		return await axios.get(`${CREDIT_CLASS_ROUTE}/gv/${id}`);
+	},
 	createCreditClass: async (data) => {
 		return await axios.post(CREDIT_CLASS_ROUTE, data);
 	},

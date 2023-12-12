@@ -10,7 +10,7 @@ const questions = dbContext.questions;
 module.exports = {
   getAll: async () => {
     const query = `SELECT t.*,(SELECT count(*) from test_details as td where td.test_id=t.id) as total_questions,
-       sj.name as subject_name, sm.semester as semester_semester, sm.year as semester_year, sm.id AS semester_id
+       sj.name as subject_name, sm.semester as semester_semester, CONCAT(sm.year,' - ',sm.year+1) as semester_year, sm.id AS semester_id
         FROM tests as t 
         INNER JOIN semesters as sm ON t.semester_id = sm.id
         INNER JOIN subjects as sj ON t.subject_id = sj.id
@@ -22,7 +22,7 @@ module.exports = {
   },
   getAllByUserId: async (id) => {
     const query = `SELECT DISTINCT t.*,ass.user_id AS ass_user_id, (SELECT count(*) from test_details AS td where td.test_id=t.id) AS total_questions,
-        sj.name AS subject_name, sm.semester AS semester_semester, sm.year AS semester_year, sm.id AS semester_id
+        sj.name AS subject_name, sm.semester AS semester_semester, CONCAT(sm.year,' - ',sm.year+1) AS semester_year, sm.id AS semester_id
         FROM tests AS t 
         LEFT JOIN test_credit_classes AS tcc ON t.id = tcc.test_id
         LEFT JOIN assigns AS ass ON ass.credit_class_id = tcc.credit_class_id

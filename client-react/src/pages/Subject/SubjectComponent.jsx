@@ -34,7 +34,7 @@ export default function SubjectComponent() {
 	const permissions = useSelector(selectUser).permissions[0] || [];
 	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
 	function getSubjects() {
-		SubjectService.getAllSubject()
+		SubjectService.getSubjectDropdownByUserId(accessToken)
 			.then((response) => {
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 					setDataSource(response.data?.data);
@@ -117,7 +117,7 @@ export default function SubjectComponent() {
 		setDeleteSubjectId(row.id);
 	}
 	async function handleCloseConfirmDialog(data) {
-		console.log("close", data);
+		SubjectService.getAllChapter();
 		if (data) {
 			try {
 				loadingService.setLoading(true);

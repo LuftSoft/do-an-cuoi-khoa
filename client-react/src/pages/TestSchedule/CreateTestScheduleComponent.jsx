@@ -124,7 +124,7 @@ const CreateTestSchedule = ({ onSubmit }) => {
 					margin="normal">
 					{years.map((year, index) => (
 						<MenuItem key={year} value={year}>
-							Năm học {year}
+							Năm học {year} - {year + 1}
 						</MenuItem>
 					))}
 				</TextField>

@@ -47,13 +47,24 @@ module.exports = {
     return credit_class;
   },
   getAll: async () => {
-    const query = `SELECT cc.*, sj.name as subject_name, sm.semester as semester_semester, sm.year as semester_year
+    const query = `SELECT cc.*, sj.name as subject_name, sm.semester as semester_semester, CONCAT(sm.year,' - ', sm.year+1) as semester_year
     FROM credit_classes as cc,subjects as sj, semesters as sm 
-    WHERE cc.subject_id = sj.id AND cc.semester_id = sm.id `;
+    WHERE cc.subject_id = sj.id AND cc.semester_id = sm.id 
+    ORDER BY sm.id DESC`;
     const listcredit_class = await credit_classes.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
     return listcredit_class;
+  },
+  getGVByCreditClassId: async (id) => {
+    const query = `SELECT us.* from credit_classes AS cc
+    INNER JOIN user_cluster_subjects AS ucs ON ucs.subject_id = cc.subject_id
+    INNER JOIN users AS us ON us.id = ucs.user_id
+    INNER JOIN clusters AS cl ON cl.user_id = us.id
+    WHERE  cc.id = ${id};`;
+    return await credit_classes.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
   },
   //lấy danh sách lớp tín chỉ kèm tất cả assign của lớp tín chỉ đấy (không sử dụng nữa)
   /*

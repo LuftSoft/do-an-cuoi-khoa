@@ -16,6 +16,16 @@ router.get("/", authorize([]), async (req, res) => {
   }
 });
 
+router.get("/filter", authorize([]), async (req, res) => {
+  const accessToken = req.accessToken;
+  const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
+  if (userId) {
+    console.log(userId);
+    console.log(req.query);
+    res.send(await resultService.getAllFilter(userId, req.query));
+  }
+});
+
 router.get("/user/:id", async (req, res) => {
   const id = req.params.id;
   res.send(await resultService.getByUserId(id));

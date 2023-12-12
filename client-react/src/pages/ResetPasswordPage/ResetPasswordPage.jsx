@@ -109,7 +109,7 @@ export default function SignInPage() {
 								helperText={error.newPassword}
 							/>
 							<Button className="mt-3 btn-submit" variant="contained" color="primary" type="submit">
-								<i className="fa-solid fa-right-to-bracket me-2"></i> Gửi mail khôi phục mật khẩu
+								<i className="fa-solid fa-right-to-bracket me-2"></i> Đặt lại mật khẩu
 							</Button>
 						</form>
 						<div className="form-footer">

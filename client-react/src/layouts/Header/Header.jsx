@@ -53,6 +53,9 @@ export default function Header() {
 							<Link to={"/setting"} className="dropdown-item">
 								<i class="fa-solid fa-gear me-2"></i>Cài đặt
 							</Link>
+							<Link to={"/change-password"} className="dropdown-item">
+								<i class="fa-solid fa-key me-2"></i>Đổi mật khẩu
+							</Link>
 							<a onClick={handleLogout} href="#" className="dropdown-item">
 								<i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất
 							</a>

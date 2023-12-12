@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -38,15 +38,16 @@ export default function SignInPage() {
 	const dispatch = useDispatch();
 	let canNext = false;
 
-	// if (currentUser) {
-	// 	//call api get new refresh-token and access-token
-	// 	return <Navigate to={routes.OVERVIEW} />;
-	// }
+	useEffect(() => {
+		if (currentUser) {
+			//call api get new refresh-token and access-token
+			return <Navigate to={routes.OVERVIEW} />;
+		}
+	}, []);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		const errors = {};
-		console.log(formData);
 		const email = formData.email;
 		const password = formData.password;
 		validateEmail(errors, email);
@@ -91,14 +92,20 @@ export default function SignInPage() {
 							}
 						}, CONST.ACCESS_TOKEN_EXPIRED);
 						if (HAS_ADMIN_PERMISSION) {
+							console.log("navigate admin");
 							navigate(routes.OVERVIEW);
 						} else if (HAS_GV_PERMISSION) {
+							console.log("navigate gv");
 							navigate(routes.SUBJECT);
-						} else if (HAS_SV_PERMISSION) {
-							navigate(routes.STUDENT + routes.TEST);
 						} else {
-							navigate(routes.STUDENT + routes.TEST);
+							console.log("navigate gv");
+							navigate(routes.SUBJECT);
 						}
+						// else if (HAS_SV_PERMISSION) {
+						// 	navigate(routes.STUDENT + routes.TEST);
+						// } else {
+						// 	navigate(routes.STUDENT + routes.TEST);
+						// }
 					} else {
 						if (data.user.isBlock) {
 							toast.error("Tài khoản của bạn đã bị khóa");
@@ -136,9 +143,6 @@ export default function SignInPage() {
 		const { name, value } = e.target;
 		setFormData({ ...formData, [name]: value });
 	};
-	if (currentUser) {
-		return <Navigate to={routes.OVERVIEW} />;
-	}
 	return (
 		<div>
 			<div className="row wrapper">

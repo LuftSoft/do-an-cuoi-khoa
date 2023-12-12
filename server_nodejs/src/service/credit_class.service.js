@@ -51,6 +51,23 @@ module.exports = {
       );
     }
   },
+  getGVByCreditClassId: async (id) => {
+    try {
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        await credit_classRepository.getGVByCreditClassId(id),
+        null
+      );
+    } catch (err) {
+      logger.error(`get credit class with id "${id}" failed`);
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
   create: async (credit_class) => {
     try {
       let data = await credit_classRepository.create(credit_class);

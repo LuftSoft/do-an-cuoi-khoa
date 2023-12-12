@@ -54,20 +54,20 @@ const OverviewComponent: React.FC<Props> = ({navigation}) => {
   const backgroundLeftRight = require('../../assets/overview/left-right.png');
   const backgroundLeftBottom = require('../../assets/overview/bottom-left.png');
   const backgroundRightBottom = require('../../assets/overview/bottom-right.png');
-  navigation.addListener('focus', async () => {
-    await getInitData();
-  });
   useEffect(() => {
+    navigation.addListener('focus', async () => {
+      await getInitData();
+    });
     const fetchData = async () => {
       await getInitData();
     };
     fetchData();
-  }, []);
+  }, [navigation]);
   const getInitData = async () => {
     try {
       const response = await CommonService.getUserInfo(user?.user?.id);
       if (response.data?.code === CONFIG.API_RESPONSE_STATUS.SUCCESS) {
-        console.log('response.data?.data', response.data?.data);
+        // console.log('response.data?.data', response.data?.data);
         setUserInfo(response.data?.data || {});
       }
     } catch (err) {

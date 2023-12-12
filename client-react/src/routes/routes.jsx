@@ -13,6 +13,7 @@ import TestComponent from "../pages/Test/TestComponent";
 import TestTakeComponent from "../pages/Test/TestTakeComponent";
 import TestScheduleComponent from "../pages/TestSchedule/TestScheduleComponent";
 import UserSettingComponent from "../pages/User/UserSettingComponent";
+import UserChangePasswordComponent from "../pages/User/UserChangePasswordComponent";
 import UserLayoutComponent from "../pages/User/UserLayoutComponent";
 import AssignUserRoleComponent from "../pages/User/AssignUserRoleComponent";
 import { CONST } from "../utils/const";
@@ -22,14 +23,8 @@ export const routes = {
 	signUp: "/sign-up",
 	FORGOT_PASSWORD: "/forgot-password",
 	RESET_PASSWORD: "/reset-password",
+	CHANGE_PASSWORD: "/change-password",
 
-	hotel: "/hotel",
-	createHotel: "/hotel/create",
-	updateHotel: "/hotel/:hotelId",
-	room: "/hotel/:hotelId/room",
-	createRoom: "/hotel/:hotelId/room/create",
-	updateRoom: "/hotel/:hotelId/room/:roomId",
-	booking: "/hotel/:hotelId/booking",
 	//new project
 	OVERVIEW: "/overview",
 	USER: "/user",
@@ -57,6 +52,7 @@ export const privateRoutes = [
 	{ path: routes.SUBJECT, page: SubjectLayoutComponent, layout: null, permissions: [] },
 	{ path: routes.USER, page: UserLayoutComponent, layout: null, permissions: [CONST.PERMISSION.ADMIN] },
 	{ path: routes.SETTING, page: UserSettingComponent, layout: null, permissions: [] },
+	{ path: routes.CHANGE_PASSWORD, page: UserChangePasswordComponent, layout: null, permissions: [] },
 	{ path: routes.PERMISSION, page: AssignUserRoleComponent, layout: null, permissions: [] },
 	{ path: routes.QUESTION, page: QuestionComponent, layout: null, permissions: [] },
 	{ path: routes.CREDIT_CLASS, page: CreditClassLayoutComponent, layout: null, permissions: [] },

@@ -127,7 +127,7 @@ export default function CreateCreditClass({ onSubmit }) {
 					margin="normal">
 					{years.map((y, index) => (
 						<MenuItem key={index} value={y}>
-							Năm học {y}
+							{y} - {y + 1}
 						</MenuItem>
 					))}
 				</TextField>
@@ -176,7 +176,7 @@ export default function CreateCreditClass({ onSubmit }) {
 					margin="normal"
 				/>
 				<TextField
-					label="Số lượng"
+					label="Sỉ số"
 					variant="outlined"
 					type="number"
 					inputProps={{ min: QUANTITY.MIN, max: QUANTITY.MAX }}

@@ -19,8 +19,10 @@ type Props = {
   navigation: LoginScreenNavigationProp;
 };
 const initValues: LoginModel = {
-  email: 'sv@student.ptithcm.edu.vn',
-  password: 'Ptithcm2023',
+  // email: 'sv@student.ptithcm.edu.vn',
+  // password: 'Ptithcm2023',
+  email: '',
+  password: '',
 };
 const LoginComponent: React.FC<Props> = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -39,7 +41,7 @@ const LoginComponent: React.FC<Props> = ({navigation}) => {
       setErrors({...errors, email: 'email is min length 6'});
       return;
     }
-    const response = await LoginService.login(formData);
+    const response = await LoginService.loginMobile(formData);
     if (response?.data?.code === CONFIG.API_RESPONSE_STATUS.SUCCESS) {
       const responseData = response?.data?.data;
       setUser({

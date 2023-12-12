@@ -1,6 +1,7 @@
 import axios from "axios";
 import { CONST } from "../../utils/const";
 import { axiosJWT } from "../../utils/httpRequest";
+import { FeHelpers } from "../../utils/helpers";
 
 const USER_ROUTE = CONST.BASE_URL + CONST.ROUTES.USER;
 const GV_ROUTE = USER_ROUTE + "/type/gv";
@@ -27,6 +28,9 @@ export const UserService = {
 	updateUser: async (data, token) => {
 		console.log(data);
 		return await axios.put(USER_ROUTE, data, { headers: { "Content-Type": "multipart/form-data" } });
+	},
+	changePassword: async (data, token) => {
+		return await FeHelpers.axiosWithJwt.PUT(`${USER_ROUTE}/password`, data, token);
 	},
 	deleteUser: async (id, token) => {
 		return await axios.delete(`${USER_ROUTE}/${id}`, { headers: { Authorization: `Bearer ${token}` } });

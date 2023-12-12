@@ -36,6 +36,55 @@ module.exports = {
       );
     }
   },
+  getAllFilter: async (userId, filterData) => {
+    try {
+      let filter = [];
+      if (filterData.subject_id && filterData.subject_id != "ALL") {
+        filter.push({ key: "sj.id", value: filterData.subject_id });
+      }
+      if (Number.parseInt(filterData.year)) {
+        filter.push({ key: "sm.year", value: filterData.year });
+      }
+      if (Number.parseInt(filterData.semester)) {
+        filter.push({ key: "sm.semester", value: filterData.semester });
+      }
+      let query = "";
+      if (filter.length > 0) {
+        filter = filter.map((item) => {
+          if (item.key === "sj.id") return ` ${item.key}='${item.value}' `;
+          else return ` ${item.key}=${item.value} `;
+        });
+        query = ` WHERE ${filter.join(" AND ")} `;
+      }
+      const isAdmin = await authService.isAdmin(userId);
+      if (isAdmin) {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await resultRepository.getAllFilter(query),
+          null
+        );
+      } else {
+        if (query.length > 0) {
+          query += ` AND ass.user_id='${userId}' `;
+        } else {
+          query += ` WHERE ass.user_id='${userId}' `;
+        }
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await resultRepository.getAllFilterByUserId(query),
+          null
+        );
+      }
+    } catch (err) {
+      logger.error("get all result failed!");
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
   getOne: async (id) => {
     try {
       var data = await resultRepository.getById(id);
@@ -47,11 +96,11 @@ module.exports = {
         );
       }
       const detail = await resultDetailService.getByResultId(id);
-      data.dataValues.detail = detail;
+      data.detail = detail;
       console.log("result data bang: ", data);
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
-        data.dataValues,
+        data,
         null
       );
     } catch (err) {

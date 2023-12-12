@@ -9,6 +9,17 @@ export const ResultService = {
 	getAll: async (token) => {
 		return FeHelpers.axiosWithJwt.GET(RESULT_ROUTE, token);
 	},
+	/**
+	 *
+	 * @param {subject_id:'',year:'',semester:''} filterData
+	 * @returns
+	 */
+	filterResult: async (filterData, token) => {
+		return FeHelpers.axiosWithJwt.GET(
+			`${RESULT_ROUTE}/filter?subject_id=${filterData.subject_id}&year=${filterData.year}&semester=${filterData.semester}`,
+			token,
+		);
+	},
 	getById: async (id) => {
 		return await axios.get(`${RESULT_ROUTE}/${id}`);
 	},
@@ -17,5 +28,11 @@ export const ResultService = {
 	},
 	exportTranscript: async (id) => {
 		return await axios.post(`${RESULT_ROUTE}/export/${id}`);
+	},
+	getAllSemesterYear: async () => {
+		return await axios.get(`${CONST.BASE_URL}/semester/year`);
+	},
+	getAllSemesters: async () => {
+		return await axios.get(`${CONST.BASE_URL}/semester/semester`);
 	},
 };

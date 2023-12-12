@@ -54,7 +54,7 @@ export default function ResultLayoutComponent() {
 			<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
 				<Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
 					<Tab label="Kết quả" {...genIndex(0)} />
-					<Tab label="Thống kê" {...genIndex(1)} />
+					{/* <Tab label="Thống kê" {...genIndex(1)} /> */}
 				</Tabs>
 			</Box>
 			<CustomTabPanel value={value} index={0}>

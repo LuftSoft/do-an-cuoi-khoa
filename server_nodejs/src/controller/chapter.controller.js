@@ -1,9 +1,15 @@
 const express = require("express");
 const chapterService = require("../service/chapter.service");
+const commonService = require("../service/common.service");
+const { authorize } = require("../extension/middleware/application.middleware");
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  res.send(await chapterService.getAll());
+router.get("/", authorize([]), async (req, res) => {
+  const accessToken = req.accessToken;
+  const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
+  if (userId) {
+    res.send(await chapterService.getAll(userId));
+  }
 });
 
 router.get("/:id", async (req, res) => {

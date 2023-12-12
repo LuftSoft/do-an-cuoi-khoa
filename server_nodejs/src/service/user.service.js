@@ -37,6 +37,41 @@ module.exports = {
     if (!user) {
       throw new Error(CONFIG.ERROR_RESPONSE.USER.LOGIN);
     }
+    if (user.type === CONSTANTS.USER.TYPE.SV) {
+      throw new Error("Không có quyền đăng nhập");
+    }
+    const isPasswordCorrect = authService.comparePassword(
+      password,
+      user.passwordHash
+    );
+    if (!isPasswordCorrect) {
+      throw new Error(CONFIG.ERROR_RESPONSE.USER.LOGIN);
+    }
+    user.roles = await userRepository.getRoles(user.id);
+    if (user.roles) {
+      let permissions = [];
+      for (let r of user.roles) {
+        permissions.push(await userRepository.getPemissions(r.id));
+      }
+      user.permissions = permissions;
+    }
+    const accessToken = authService.generateAccessToken(user.id);
+    const refreshToken = authService.generateRefreshToken(user.id);
+    return {
+      user: user,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    };
+  },
+  loginMobile: async (userLogin) => {
+    const { email, password } = userLogin;
+    const user = await userRepository.getByEmail(email);
+    if (!user) {
+      throw new Error(CONFIG.ERROR_RESPONSE.USER.LOGIN);
+    }
+    if (user.type !== CONSTANTS.USER.TYPE.SV) {
+      throw new Error("Không có quyền đăng nhập");
+    }
     const isPasswordCorrect = authService.comparePassword(
       password,
       user.passwordHash
@@ -173,17 +208,10 @@ module.exports = {
       refreshToken: refreshToken,
     };
   },
-  changePasswordController: async (userPassword, token) => {
+  changePasswordController: async (userId, userPassword, token) => {
     try {
       const { oldPassword, newPassword } = userPassword;
-      const id = authService.getUserIdFromJWTToken(
-        token,
-        process.env.SECRET_TOKEN_KEY
-      );
-      if (!id) {
-        throw new Error(CONFIG.ERROR_RESPONSE.USER.TOKEN_INVALID);
-      }
-      const user = await userRepository.getById(id);
+      const user = await userRepository.getById(userId);
       if (!user) {
         throw new Error(CONFIG.ERROR_RESPONSE.USER.LOGIN);
       }

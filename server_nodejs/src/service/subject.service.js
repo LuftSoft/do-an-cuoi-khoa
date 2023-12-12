@@ -58,6 +58,32 @@ module.exports = {
       );
     }
   },
+  getSubjectDropdownByUserId: async (id) => {
+    try {
+      const isAdmin = await authService.isAdmin(id);
+      if (isAdmin) {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await subjectRepository.getAll(),
+          null
+        );
+      } else {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await subjectRepository.getSubjectDropdownByUserId(id),
+          null
+        );
+      }
+    } catch (err) {
+      logger.error("get all subject failed!");
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
   getOne: async (id) => {
     try {
       var data = await subjectRepository.getById(id);

@@ -20,6 +20,7 @@ import TitleButtonComponent from "../../components/Common/CommonHeader/CommonHea
 import CommonFilterComponent from "../../components/Common/CommonFilter/CommonFilterComponent";
 import { selectAccessToken } from "../../redux/selectors";
 import { useSelector } from "react-redux";
+import { SubjectService } from "../Subject/SubjectService";
 
 const bull = (
 	<Box component="span" sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}>
@@ -32,23 +33,18 @@ export default function ResultComponent() {
 	const testClassesRef = useRef([]);
 	const [testClasses, setTestClasses] = useState([]);
 	const [testSchedules, setTestSchedules] = useState([]);
+	const [subjects, setSubjects] = useState([]);
 	const [results, setResults] = useState([]);
 	const [openResultDetailDialog, setOpenResultDetailDialog] = useState(false);
 	const accessToken = useSelector(selectAccessToken);
 	const resultDetailDataRef = useRef(undefined);
-	const buttons = [
-		// {
-		// 	name: "Tạo câu hỏi",
-		// 	icon: "fa-solid fa-plus",
-		// 	onClick: handleButtonClick,
-		// 	color: CONST.BUTTON.COLOR.PRIMARY,
-		// },
-	];
+	const filterRef = useRef({
+		subject_id: "",
+		year: "",
+		semester: "",
+	});
+	const buttons = [];
 	const [commonFilter, setCommonFilter] = useState({
-		// search: {
-		// 	title: "Tìm kiếm câu hỏi",
-		// 	handleChange: handleSearchQuestion,
-		// },
 		dropdowns: {
 			subjectFilter: {
 				placeholder: "Môn học",
@@ -56,15 +52,16 @@ export default function ResultComponent() {
 				options: [{ key: "Tất cả", value: "ALL" }],
 				handleChange: handleSubjectFilterChange,
 			},
-			levelFilter: {
+			yearFilter: {
+				placeholder: "Năm học",
+				value: "",
+				options: [{ key: "Tất cả", value: "ALL" }],
+				handleChange: handleYearFilterChange,
+			},
+			semesterFilter: {
 				placeholder: "Học kỳ",
 				value: "",
-				options: [
-					{ key: "Tất cả", value: "ALL" },
-					{ key: "Dễ", value: "EASY" },
-					{ key: "Vừa", value: "MEDIUM" },
-					{ key: "Khó", value: "DIFFICULT" },
-				],
+				options: [{ key: "Tất cả", value: "ALL" }],
 				handleChange: handleSemesterFilterChange,
 			},
 		},
@@ -83,6 +80,9 @@ export default function ResultComponent() {
 	async function getInitData() {
 		setLoading(true);
 		await getResults(accessToken);
+		await getSubjects(accessToken);
+		await getYears();
+		await getSemesters();
 		setLoading(false);
 	}
 	async function getResults(token) {
@@ -94,22 +94,53 @@ export default function ResultComponent() {
 			return [];
 		}
 	}
-	async function getTestSchedules() {
-		const response = await TestScheduleService.getAllTestSchedule();
-		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-			let testSchedules = response.data?.data;
-			return setTestSchedules(testSchedules);
-		} else {
-			toast.error("Get test schedule failed");
-			return [];
+
+	async function getSubjects(token) {
+		try {
+			const response = await SubjectService.getSubjectDropdownByUserId(token);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				let opts = commonFilter.dropdowns;
+				let sjOpts = opts?.subjectFilter?.options;
+				sjOpts = sjOpts.length >= 1 ? sjOpts.slice(0, 1) : sjOpts;
+				response.data?.data?.forEach((item) => {
+					sjOpts.push({ key: item.name, value: item.id });
+				});
+				opts.subjectFilter.options = sjOpts;
+				setCommonFilter({ ...commonFilter, dropdowns: opts });
+			}
+		} catch (err) {
+			console.log("err", err);
 		}
 	}
-	async function getTestClass() {
+	async function getYears() {
 		try {
-			const response = await TestService.getAllTestClass();
+			const response = await ResultService.getAllSemesterYear();
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-				console.log("success");
-				setTestClasses(response.data?.data);
+				let opts = commonFilter.dropdowns;
+				let sjOpts = opts?.yearFilter?.options;
+				sjOpts = sjOpts.length >= 1 ? sjOpts.slice(0, 1) : sjOpts;
+				response.data?.data?.forEach((item) => {
+					sjOpts.push({ key: `${item.year}-${item.year + 1}`, value: item.year });
+				});
+				opts.yearFilter.options = sjOpts;
+				setCommonFilter({ ...commonFilter, dropdowns: opts });
+			}
+		} catch (err) {
+			console.log("err", err);
+		}
+	}
+	async function getSemesters() {
+		try {
+			const response = await ResultService.getAllSemesters();
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				let opts = commonFilter.dropdowns;
+				let sjOpts = opts?.semesterFilter?.options;
+				sjOpts = sjOpts.length >= 1 ? sjOpts.slice(0, 1) : sjOpts;
+				response.data?.data?.forEach((item) => {
+					sjOpts.push({ key: `Học kỳ ${item.semester}`, value: item.semester });
+				});
+				opts.semesterFilter.options = sjOpts;
+				setCommonFilter({ ...commonFilter, dropdowns: opts });
 			}
 		} catch (err) {
 			console.log("err", err);
@@ -123,42 +154,36 @@ export default function ResultComponent() {
 		setOpenResultDetailDialog(true);
 	}
 
-	function handleSubjectFilterChange(id) {
-		commonFilterValue.current.subject = id;
-		handleFilter();
+	async function handleSubjectFilterChange(id) {
+		filterRef.current = { ...filterRef.current, subject_id: id };
+		console.log(filterRef.current);
+		await handleFilter();
 	}
-	function handleSemesterFilterChange(id) {
-		commonFilterValue.current.semester = id;
-		handleFilter();
+	async function handleSemesterFilterChange(id) {
+		filterRef.current = { ...filterRef.current, semester: id };
+		console.log(filterRef.current);
+		await handleFilter();
 	}
-	const handleFilter = () => {
-		console.log("commonFasdasdilterValue", commonFilterValue);
+	async function handleYearFilterChange(id) {
+		filterRef.current = { ...filterRef.current, year: id };
+		console.log(filterRef.current);
+		await handleFilter();
+	}
+	const handleFilter = async () => {
 		setLoading(true);
-		//let questionsTmp = FeHelpers.cloneDeep(questionRef.current);
 		try {
-			// let searchRef = commonFilterValue.current.search;
-			// let subjectRef = commonFilterValue.current.subject;
-			// let levelRef = commonFilterValue.current.level;
-			// if (searchRef !== null && searchRef.length > 0) {
-			// 	questionsTmp = questionsTmp.filter(
-			// 		(item) =>
-			// 			FeHelpers.chuanhoadaucau(item.question).toLowerCase().includes(searchRef) ||
-			// 			FeHelpers.chuanhoadaucau(item.subject_name).toLowerCase().includes(searchRef),
-			// 	);
-			// }
-			// if (subjectRef !== null && subjectRef.length > 0) {
-			// 	questionsTmp = questionsTmp.filter((item) => item.subject_id === subjectRef);
-			// }
-			// if (levelRef !== null && levelRef.length > 0) {
-			// 	questionsTmp = questionsTmp.filter((item) => item.level === levelRef);
-			// }
-			// setDataSource(questionsTmp);
+			console.log("handleFilter");
+			const response = await ResultService.filterResult(filterRef.current, accessToken);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				setResults(response.data?.data);
+			} else {
+				toast.error("Lọc kết quả thất bại");
+			}
 		} catch (err) {
+			toast.error("Lọc kết quả thất bại");
 			console.log("err when filter", err);
 		}
-		setTimeout(() => {
-			setLoading(false);
-		}, 500);
+		setLoading(false);
 	};
 	return (
 		<Box>

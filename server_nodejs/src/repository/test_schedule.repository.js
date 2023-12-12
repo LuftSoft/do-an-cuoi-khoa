@@ -25,9 +25,10 @@ module.exports = {
     return test_schedule;
   },
   getAll: async () => {
-    const query = `SELECT ts.*,se.semester as semester, se.year as year
+    const query = `SELECT ts.*,se.semester as semester, CONCAT(se.year,' - ',se.year+1) as year
         FROM test_schedules as ts 
-        INNER JOIN semesters as se ON ts.semester_id = se.id`;
+        INNER JOIN semesters as se ON ts.semester_id = se.id
+        ORDER BY ts.date DESC;`;
     const listtest_schedule = await test_schedules.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });

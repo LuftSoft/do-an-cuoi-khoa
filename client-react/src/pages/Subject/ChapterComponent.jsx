@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { CreateChapterComponent } from ".";
@@ -10,6 +10,8 @@ import { useLoadingService } from "../../contexts/loadingContext";
 import { CONST } from "../../utils/const";
 import { SubjectService } from "./SubjectService";
 import { selectAccessToken, selectUser } from "../../redux/selectors";
+import CommonFilterComponent from "../../components/Common/CommonFilter/CommonFilterComponent";
+import { FeHelpers } from "../../utils/helpers";
 
 export default function ChapterComponent() {
 	const title = "Danh sách môn học";
@@ -29,22 +31,37 @@ export default function ChapterComponent() {
 	const accessToken = useSelector(selectAccessToken);
 	const permissions = useSelector(selectUser).permissions[0] || [];
 	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
-	function getChapters() {
-		setLoading(true);
-		SubjectService.getAllChapter()
-			.then((response) => {
-				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-					const data = response.data?.data ? response.data?.data : [];
-					setDataSource(data);
-				}
-			})
-			.catch((err) => console.log(err));
-		setLoading(false);
+	const dataSourceRef = useRef([]);
+	const [dataSourceFilter, setDataSourceFilter] = useState([]);
+	const OPTION_ALL = "ALL";
+	const [commonFilter, setCommonFilter] = useState({
+		dropdowns: {
+			subjectFilter: {
+				placeholder: "Môn học",
+				value: "",
+				options: [{ key: "Tất cả", value: "ALL" }],
+				handleChange: handleSubjectFilterChange,
+			},
+		},
+	});
+	async function getChapters() {
+		try {
+			const response = await SubjectService.getAllChapter(accessToken);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				const data = response.data?.data ? response.data?.data : [];
+				dataSourceRef.current = data;
+				setDataSourceFilter(data);
+			} else {
+				toast.error("Tải danh sách chương thất bại");
+			}
+		} catch (err) {
+			console.log(err);
+		}
 	}
-	function handleClose(data) {
+	async function handleClose(data) {
 		if (data.data.code === "SUCCESS") {
 			setOpenCreateChapterDialog(false);
-			getChapters();
+			await getChapters();
 		} else {
 			setOpenCreateChapterDialog(true);
 		}
@@ -58,6 +75,10 @@ export default function ChapterComponent() {
 			colDef: "name",
 		},
 		{
+			colName: "Mã chương",
+			colDef: "id",
+		},
+		{
 			colName: "Môn học",
 			colDef: "subject_name",
 		},
@@ -66,11 +87,33 @@ export default function ChapterComponent() {
 			colDef: "index",
 		},
 	];
-
-	var [dataSource, setDataSource] = useState([]);
+	//init
 	useEffect(() => {
-		getChapters();
+		const fetchData = async () => {
+			await getSubjects();
+			await getChapters();
+		};
+		fetchData();
 	}, []);
+	async function getSubjects() {
+		try {
+			const response = await SubjectService.getSubjectDropdownByUserId(accessToken);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				let opts = commonFilter.dropdowns;
+				let sjOpts = opts?.subjectFilter?.options;
+				sjOpts = sjOpts.length >= 1 ? sjOpts.slice(0, 1) : sjOpts;
+				response.data?.data?.forEach((item) => {
+					sjOpts.push({ key: item.name, value: item.id });
+				});
+				opts.subjectFilter.options = sjOpts;
+				setCommonFilter({ ...commonFilter, dropdowns: opts });
+			} else {
+				toast.error(response.data?.message);
+			}
+		} catch (err) {
+			toast.error(err.message);
+		}
+	}
 	function handleButtonClick() {
 		setDetailChapterDialogData({
 			type: "add",
@@ -96,7 +139,7 @@ export default function ChapterComponent() {
 				const response = await SubjectService.deleteChapter(deleteChapterId, accessToken);
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 					toast.success("Xóa chương thành công");
-					getChapters();
+					await getChapters();
 				} else {
 					toast.error("Chương đã có môn học, không thể xóa");
 				}
@@ -108,14 +151,23 @@ export default function ChapterComponent() {
 		}
 		setOpenConfirmDialog(false);
 	}
+	async function handleSubjectFilterChange(id) {
+		console.log(id);
+		if (id === OPTION_ALL) {
+			setDataSourceFilter(dataSourceRef.current);
+			return;
+		}
+		setDataSourceFilter(dataSourceRef.current.filter((item) => item.subject_id === id));
+	}
 	return (
 		<Box>
 			<div>
 				<TitleButtonComponent title={title} buttons={HAS_ADMIN_PERMISSION ? buttons : []} />
+				<CommonFilterComponent dropdowns={commonFilter.dropdowns}></CommonFilterComponent>
 			</div>
 			<CommonTableComponent
 				columnDef={columnDef}
-				dataSource={dataSource}
+				dataSource={dataSourceFilter}
 				onEdit={HAS_ADMIN_PERMISSION ? handleEdit : null}
 				onDelete={HAS_ADMIN_PERMISSION ? handleDelete : null}></CommonTableComponent>
 			<CommonDialogComponent

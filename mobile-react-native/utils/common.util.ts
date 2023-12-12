@@ -13,10 +13,10 @@ export const Helpers = {
     return JSON.parse(JSON.stringify(data));
   },
   convertToDate: (date: any) => {
-    return dayjs(date).format('YYYY-MM-DD');
+    return dayjs(date).format('DD-MM-YYYY');
   },
   convertToDateTime: (date: any) => {
-    return dayjs(date).format('YYYY-MM-DD HH:mm:ss');
+    return dayjs(date).format('HH:mm:ss DD-MM-YYYY');
   },
   arrayBufferToBase64(buffer: any) {
     var binary = "";

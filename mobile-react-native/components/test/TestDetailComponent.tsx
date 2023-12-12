@@ -1,6 +1,13 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useEffect, useRef, useState} from 'react';
-import {Button, FlatList, StyleSheet, Text, View} from 'react-native';
+import {
+  BackHandler,
+  Button,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {Portal, RadioButton} from 'react-native-paper';
 import {CONFIG} from '../../utils/config';
 import CustomRadioButton from '../common/radio.button';
@@ -30,6 +37,7 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
   const count = useRef(0);
   const timerIntervalRef = useRef<any>({interval: null, initTime: 0});
   const {user, setUser} = useUserProvider();
+  const isSubmit = useRef(false);
   const [timer, setTimer] = useState(Number.MAX_VALUE);
   const [questions, setQuestions] = useState([] as QuestionModel[]);
   const [answers, setAnswers] = useState([]);
@@ -66,6 +74,16 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    navigation.addListener('beforeRemove', e => {
+      if (!isSubmit.current) {
+        e.preventDefault();
+        handleSubmit();
+      }
+    });
+  }, [navigation]);
+
   const getInitData = async () => {
     await getTestByUserid(id);
   };
@@ -80,8 +98,15 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
         setTest(testResponse);
         setQuestions(testResponse.questions);
         if (Number.parseInt(testResponse.time) > 0) {
-          count.current = Number.parseInt(testResponse.time) * 60;
-          setTimer(Number.parseInt(testResponse.time) * 60);
+          const testTime = Number.parseInt(testResponse.time) * 60;
+          const join_time = Math.floor(new Date().getTime() / 1000);
+          const begin_time = Math.floor(
+            new Date(test_schedule_date).getTime() / 1000,
+          );
+          console.log('join_time', join_time);
+          console.log('begin_time', begin_time);
+          count.current = testTime;
+          setTimer(testTime - (join_time - begin_time));
         }
       }
     } catch (err) {
@@ -150,9 +175,10 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
       case CONFIG.TEST.SUBMIT_TYPE.QUIT:
         setConfirmDialogData({
           ...confirmDialogData,
-          content: 'Lưu ý',
-          title: `Hệ thống sẽ tự động nộp bài nếu bạn 
-        thoát ngay lúc này!`,
+          content: `Hệ thống sẽ tự động nộp bài nếu bạn 
+          thoát ngay lúc này!`,
+          title: `Lưu ý`,
+          fullTimeSubmit: 0,
         });
         setOpenConfirmDialog(true);
         break;
@@ -167,6 +193,7 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
           ...confirmDialogData,
           title: 'Xác nhận',
           content: message,
+          fullTimeSubmit: 0,
         });
         setOpenConfirmDialog(true);
         break;
@@ -200,8 +227,8 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
   };
   const handleCloseConfirmDialog = async (e: boolean) => {
     if (e) {
-      console.log('dialog true');
       await submitTest();
+      isSubmit.current = true;
     } else {
       console.log('false');
     }

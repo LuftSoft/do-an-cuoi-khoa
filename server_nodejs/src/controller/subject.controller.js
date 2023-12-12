@@ -18,6 +18,14 @@ router.get("/user", authorize([]), async (req, res) => {
     res.send(await subjectService.getAllByUserId(userId));
   }
 });
+//Lấy môn học được quyền tạo câu hỏi, cho GV.
+router.get("/user/dropdown", authorize([]), async (req, res) => {
+  const accessToken = req.accessToken;
+  const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
+  if (userId) {
+    res.send(await subjectService.getSubjectDropdownByUserId(userId));
+  }
+});
 
 router.get("/:id", async (req, res) => {
   const id = req.params.id;

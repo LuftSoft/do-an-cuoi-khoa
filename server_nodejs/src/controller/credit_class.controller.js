@@ -36,6 +36,10 @@ router.delete("/:id", async (req, res) => {
 });
 //
 /**/
+router.get("/gv/:id", async (req, res) => {
+  const id = req.params.id;
+  res.send(await creditClassService.getGVByCreditClassId(id));
+});
 router.get("/user/:id", async (req, res) => {
   const id = req.params.id;
   res.send(await creditClassDetailService.getListUserClass(id));

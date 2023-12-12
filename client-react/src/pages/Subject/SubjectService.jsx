@@ -12,6 +12,9 @@ export const SubjectService = {
 	getSubjectByUserId: async (token) => {
 		return await FeHelpers.axiosWithJwt.GET(SUBJECT_ROUTE + "/user", token);
 	},
+	getSubjectDropdownByUserId: async (token) => {
+		return await FeHelpers.axiosWithJwt.GET(SUBJECT_ROUTE + "/user/dropdown", token);
+	},
 	getOneSubject: async (id) => {
 		return await axios.get(`${SUBJECT_ROUTE}/${id}`);
 	},
@@ -25,8 +28,8 @@ export const SubjectService = {
 		return await axios.delete(`${SUBJECT_ROUTE}/${id}`, { headers: { Authorization: `Bearer ${token}` } });
 	},
 	//chapter
-	getAllChapter: async () => {
-		return await axios.get(CHAPTER_ROUTE, {});
+	getAllChapter: async (token) => {
+		return await FeHelpers.axiosWithJwt.GET(CHAPTER_ROUTE, token);
 	},
 	getOneChapter: async (id) => {
 		return await axios.get(`${CHAPTER_ROUTE}/${id}`, {});

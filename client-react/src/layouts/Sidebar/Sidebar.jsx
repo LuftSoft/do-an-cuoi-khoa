@@ -16,6 +16,7 @@ export default function Sidebar() {
 	const [selectedIndex, setSelectedIndex] = useState(null);
 	const [collapse, setCollapse] = useState([]);
 	const dropDownClass = "fa-solid fa-chevron-down sidebar-dropdown-collapse";
+	const HAS_ADMIN_PERMISSION = permissions.some((p) => p === CONST.PERMISSION.ADMIN);
 	function toggleDropdown(index) {
 		if (collapse.includes(index)) {
 			let tmp = collapse.filter((item) => item !== index);
@@ -36,9 +37,11 @@ export default function Sidebar() {
 			{/* Sidebar Start */}
 			<div className="sidebar pb-3 app-sidebar">
 				<nav className="navbar p-0">
-					<a href={routes.OVERVIEW} className="navbar-brand m-0 bg-red w-100 ps-4">
-						<h3 className="text-default">Trang chủ</h3>
-					</a>
+					<Link
+						to={HAS_ADMIN_PERMISSION ? routes.OVERVIEW : routes.SUBJECT}
+						className="navbar-brand m-0 bg-red w-100 ps-4">
+						<img src="/public/img/ptit-logo.jpg" alt="logo" style={{ height: "100%" }} />
+					</Link>
 					<div className="navbar-nav w-100 custom-nav-border">
 						{sideBarValue.map((item, index) => {
 							if (item.childs?.length > 0) {

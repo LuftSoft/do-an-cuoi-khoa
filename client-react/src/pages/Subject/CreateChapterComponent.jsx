@@ -97,7 +97,7 @@ export default function CreateChapter({ onSubmit, data }) {
 					error={Boolean(error.name)}
 					helperText={error.name}
 				/>
-				<TextField
+				{/* <TextField
 					label="Thứ tự"
 					variant="outlined"
 					fullWidth
@@ -108,7 +108,7 @@ export default function CreateChapter({ onSubmit, data }) {
 					onChange={(e) => setChapter({ ...chapter, index: e.target.value })}
 					error={Boolean(error.index)}
 					helperText={error.index}
-				/>
+				/> */}
 				<TextField
 					select
 					label="Môn học"

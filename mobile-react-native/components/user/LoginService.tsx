@@ -11,6 +11,9 @@ export const LoginService = {
       console.error('error when login: ', err);
     }
   },
+  loginMobile: async (data: LoginModel) => {
+    return await axios.post(USER_ROUTE + ROUTE.LOGIN + '/mobile', data);
+  },
   signup: async (data: any) => {
     await axios.post(USER_ROUTE + ROUTE.SIGNUP, data);
   },

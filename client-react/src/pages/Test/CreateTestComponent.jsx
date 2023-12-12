@@ -109,7 +109,7 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 
 	async function getAllSubject() {
 		loadingService.setLoading(true);
-		const subject = await SubjectService.getAllSubject();
+		const subject = await SubjectService.getSubjectByUserId(accessToken);
 		loadingService.setLoading(false);
 		return subject;
 	}
@@ -373,7 +373,7 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 						className={isView() ? "disable-field w-3" : "w-3"}>
 						{years.map((y, index) => (
 							<MenuItem key={index} value={y}>
-								Năm học {y}
+								Năm học {y} - {y + 1}
 							</MenuItem>
 						))}
 					</TextField>

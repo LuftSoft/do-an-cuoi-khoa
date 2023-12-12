@@ -174,7 +174,6 @@ const urlLogo =
 
 const inputId = "myFileInput";
 // setFileInInput(urlLogo, inputId);
-
 export const FeHelpers = {
 	isStringEmpty(str) {
 		if (typeof str === "string") {
@@ -187,10 +186,10 @@ export const FeHelpers = {
 		return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
 	},
 	convertDate(date) {
-		return dayjs(date).format("YYYY-MM-DD");
+		return dayjs(date).format("DD-MM-YYYY");
 	},
 	convertDateTime(date) {
-		return dayjs(date).format("YYYY-MM-DD HH:mm:ss");
+		return dayjs(date).format("HH:mm:ss DD-MM-YYYY");
 	},
 	translateGender(gender) {
 		let result = undefined;
@@ -241,6 +240,17 @@ export const FeHelpers = {
 	},
 	cloneDeep(data) {
 		return JSON.parse(JSON.stringify(data));
+	},
+	checkPassword: (password) => {
+		const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+
+		const isPasswordValid = passwordRegex.test(password);
+
+		if (isPasswordValid) {
+			return true;
+		} else {
+			return false;
+		}
 	},
 	chuanhoadaucau: function removeVietnameseTones(str) {
 		str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");

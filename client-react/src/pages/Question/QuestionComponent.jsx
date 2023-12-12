@@ -55,6 +55,7 @@ export default function QuestionComponent() {
 	const [openImportDialog, setOpenImportDialog] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
 	const [question, setQuestion] = useState({});
+	const DEFAULT_OPTION = "ALL";
 	const [commonFilter, setCommonFilter] = useState({
 		search: {
 			title: "Tìm kiếm câu hỏi",
@@ -91,7 +92,7 @@ export default function QuestionComponent() {
 	const leveleveDifficultVN = "KHÓ";
 	function getSubjects() {
 		console.log("get subject");
-		SubjectService.getAllSubject()
+		SubjectService.getSubjectDropdownByUserId(accessToken)
 			.then((response) => {
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 					let opts = commonFilter.dropdowns;
@@ -346,13 +347,13 @@ export default function QuestionComponent() {
 		}, 500);
 	}, [commonFilterValue]);
 	const handleFilter = () => {
-		console.log("commonFasdasdilterValue", commonFilterValue);
 		loadingService.setLoading(true);
 		let questionsTmp = FeHelpers.cloneDeep(questionRef.current);
 		try {
 			let searchRef = commonFilterValue.current.search;
 			let subjectRef = commonFilterValue.current.subject;
 			let levelRef = commonFilterValue.current.level;
+			console.log("subjectRef", subjectRef);
 			if (searchRef !== null && searchRef.length > 0) {
 				questionsTmp = questionsTmp.filter(
 					(item) =>
@@ -360,10 +361,10 @@ export default function QuestionComponent() {
 						FeHelpers.chuanhoadaucau(item.subject_name).toLowerCase().includes(searchRef),
 				);
 			}
-			if (subjectRef !== null && subjectRef.length > 0) {
+			if (subjectRef !== null && subjectRef.length > 0 && subjectRef !== DEFAULT_OPTION) {
 				questionsTmp = questionsTmp.filter((item) => item.subject_id === subjectRef);
 			}
-			if (levelRef !== null && levelRef.length > 0) {
+			if (levelRef !== null && levelRef.length > 0 && levelRef !== DEFAULT_OPTION) {
 				questionsTmp = questionsTmp.filter((item) => item.level === levelRef);
 			}
 			setDataSource(questionsTmp);

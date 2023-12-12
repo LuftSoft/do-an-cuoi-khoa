@@ -101,7 +101,6 @@ const TestComponent: React.FC<Props> = ({navigation}) => {
     const begin = new Date(beginTime).getTime();
     const end = new Date(beginTime).getTime() + time * 60 * 1000;
     const now = new Date().getTime();
-    return true;
     return now >= begin && now <= end;
   };
   const expiredTime = (beginTime: string, time: number) => {

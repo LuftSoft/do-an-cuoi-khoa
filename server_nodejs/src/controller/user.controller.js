@@ -57,6 +57,27 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.post("/login/mobile", async (req, res) => {
+  const user = req.body;
+  try {
+    const response = await userService.loginMobile(user);
+    res.send(
+      new BaseAPIResponse(CONFIG.RESPONSE_STATUS_CODE.SUCCESS, response, "")
+    );
+  } catch (err) {
+    logger.error(
+      `Login failed - Email: "${user.email}" - Error: ${err?.message}`
+    );
+    res.send(
+      new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err?.message || CONFIG.ERROR.VALIDATION_ERROR
+      )
+    );
+  }
+});
+
 router.post("/forgot-password", async (req, res) => {
   const user = req.body;
   try {
@@ -138,14 +159,18 @@ router.put("/avatar", uploadUtil.upload.single("avatar"), async (req, res) => {
   const avatar = req.file;
   res.send(await userService.updateAvatar(avatar, token));
 });
-router.put("/password", async (req, res) => {
-  const token = req.headers["authorization"].split(" ")[1];
-  const userPassword = req.body;
-  const result = await userService.changePasswordController(
-    userPassword,
-    token
-  );
-  res.send(result);
+router.put("/password", authorize([]), async (req, res) => {
+  const accessToken = req.accessToken;
+  const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
+  if (userId) {
+    const userPassword = req.body;
+    const result = await userService.changePasswordController(
+      userId,
+      userPassword,
+      accessToken
+    );
+    res.send(result);
+  }
 });
 router.put("/", uploadUtil.upload.single("avatar"), async (req, res) => {
   const user = req.body;

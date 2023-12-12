@@ -45,7 +45,7 @@ const UserSettingLayoutComponent: React.FC<Props> = ({navigation}) => {
     init();
   }, []);
   const init = () => {
-    console.log(Helpers.arrayBufferToBase64(user?.user?.avatar?.data));
+    // console.log(Helpers.arrayBufferToBase64(user?.user?.avatar?.data));
     setAvatar(Helpers.arrayBufferToBase64(user?.user?.avatar?.data));
   };
   const renderItem = ({item}: {item: itemType}) => {

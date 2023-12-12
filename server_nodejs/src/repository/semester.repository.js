@@ -41,4 +41,12 @@ module.exports = {
     console.log(new Date().getTime() - now);
     return listsemester;
   },
+  getAllYear: async () => {
+    const query = `SELECT DISTINCT year FROM semesters ORDER BY year DESC;`;
+    return await semesters.sequelize.query(query, { type: QueryTypes.SELECT });
+  },
+  getAllSemester: async () => {
+    const query = `SELECT DISTINCT semester FROM semesters ORDER BY semester DESC;`;
+    return await semesters.sequelize.query(query, { type: QueryTypes.SELECT });
+  },
 };

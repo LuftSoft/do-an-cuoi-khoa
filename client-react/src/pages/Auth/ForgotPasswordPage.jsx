@@ -1,5 +1,5 @@
 import { Button, TextField } from "@mui/material";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -28,10 +28,11 @@ export default function SignInPage() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	if (currentUser) {
-		//call api get new refresh-token and access-token
-		return <Navigate to={routes.OVERVIEW} />;
-	}
+	useEffect(() => {
+		if (currentUser) {
+			return <Navigate to={routes.OVERVIEW} />;
+		}
+	}, []);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -68,9 +69,6 @@ export default function SignInPage() {
 		const { name, value } = e.target;
 		setFormData({ ...formData, [name]: value });
 	};
-	if (currentUser) {
-		return <Navigate to={routes.OVERVIEW} />;
-	}
 	return (
 		<div>
 			<div className="row wrapper">

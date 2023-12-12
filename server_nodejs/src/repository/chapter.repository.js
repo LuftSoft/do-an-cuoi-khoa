@@ -11,8 +11,17 @@ module.exports = {
     const listchapter = await chapters.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
-    console.log(listchapter);
     return listchapter;
+  },
+  getAllByUserId: async (id) => {
+    const query = `SELECT DISTINCT ch.*, sj.name AS subject_name FROM user_cluster_subjects as ucs
+    INNER JOIN subjects AS sj ON ucs.subject_id = sj.id
+    INNER JOIN chapters AS ch ON ch.subject_id = sj.id
+    WHERE ucs.user_id = '${id}';`;
+    const res = await chapters.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return res;
   },
   getById: async (id) => {
     const chapter = await chapters.findByPk(id);
@@ -27,7 +36,17 @@ module.exports = {
     return listchapter;
   },
   create: async (chapter) => {
-    const chapterCreate = await chapters.create(chapter);
+    const query =
+      "INSERT INTO chapters(`name`,`index`,`subject_id`) VALUES('" +
+      chapter.name +
+      "', (SELECT(SELECT id FROM chapters AS ch WHERE ch.subject_id = '" +
+      chapter.subject_id +
+      "' ORDER BY ch.index LIMIT 1) + 1), '" +
+      chapter.subject_id +
+      "')";
+    const chapterCreate = await chapters.sequelize.query(query, {
+      type: QueryTypes.INSERT,
+    });
     return chapterCreate;
   },
   update: async (chapter) => {
