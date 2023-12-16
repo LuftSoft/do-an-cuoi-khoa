@@ -1,24 +1,19 @@
-import { Autocomplete, Container } from "@mui/material";
+import { Container } from "@mui/material";
 import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
-import TextField from "@mui/material/TextField";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { useLoadingService } from "../../contexts/loadingContext";
-import { CONST } from "../../utils/const";
-import { FeHelpers } from "../../utils/helpers";
-import { SubjectService } from "../Subject/SubjectService";
-import { QuestionService } from "../Question/QuestionService";
-import { SemesterService } from "../Semesters/SemesterService";
-import { CreditClassService } from "../CreditClass/CreditClassService";
-import { UserService } from "../User/UserService";
-import "./TestComp.css";
 import { CommonDialogComponent, CommonTableComponent } from "../../components/Common";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
+import { useLoadingService } from "../../contexts/loadingContext";
+import { selectAccessToken, selectUser } from "../../redux/selectors";
+import { CONST } from "../../utils/const";
+import { FeHelpers } from "../../utils/helpers";
+import { CreditClassService } from "../CreditClass/CreditClassService";
 import { TestScheduleService } from "../TestSchedule/TetsScheduleService";
-import { TestService } from "./TestService";
-import fs from "fs";
+import "./TestComp.css";
 import TestEditComponent from "./TestEditComponent";
+import { TestService } from "./TestService";
+import { useSelector } from "react-redux";
 
 const initialValues = {
 	id: 0,
@@ -45,6 +40,11 @@ export default function TestDetailComponent(props) {
 	const [testClassRemove, setTestClassRemove] = useState({});
 	const [confirmRemoveUserDialog, setConfirmRemoveUserDialog] = useState(false);
 	const [openTestEditDialog, setOpenTestEditDialog] = useState(false);
+	const currentUser = useSelector(selectUser);
+	const permissions = FeHelpers.getUserPermission(currentUser);
+	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
+	const CURRENT_USER_ID = FeHelpers.getUserId(currentUser);
+	const accessToken = useSelector(selectAccessToken);
 	async function getInitData() {
 		setLoading(true);
 		await getCreditClasses();
@@ -76,20 +76,6 @@ export default function TestDetailComponent(props) {
 	}, []);
 	const [formData, setFormData] = useState(initialValues);
 
-	const handleChange = (e) => {
-		const { name, value } = e.target;
-		if (name === "credit_class_id") {
-			formData.test_schedule_id = "";
-			const creditClass = creditClasses.filter((item) => item.id === value)[0];
-			console.log(
-				"on choose credit class",
-				creditClass.semester_id,
-				testSchedulesRef.current.filter((item) => item.semester_id === creditClass.semester_id),
-			);
-			setTestSchedules(testSchedulesRef.current.filter((item) => item.semester_id === creditClass.semester_id));
-		}
-		setFormData({ ...formData, [name]: value });
-	};
 	const initFormData = () => {
 		if (test) {
 			formData.test_id = test.id || "";
@@ -149,7 +135,7 @@ export default function TestDetailComponent(props) {
 	}
 	const getTestClass = async (id) => {
 		try {
-			const response = await TestService.getAllTestClassByTestId(id);
+			const response = await TestService.getAllTestClassByTestId(id, accessToken);
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 				const testClasses = response.data?.data;
 				console.log("data", testClasses);
@@ -229,6 +215,7 @@ export default function TestDetailComponent(props) {
 			// Create a download link
 			const link = document.createElement("a");
 			link.setAttribute("target", "_blank");
+			//link.download = "test_export.pdf";
 			link.href = window.URL.createObjectURL(blob);
 			document.body.appendChild(link);
 
@@ -274,15 +261,17 @@ export default function TestDetailComponent(props) {
 			<div className="d-flex mt-3 mb-2 position-relative">
 				<h4 className="w-6">Danh sách câu hỏi</h4>
 				<div className="w-4 d-flex" style={{ justifyContent: "flex-end" }}>
-					<Button
-						type="submit"
-						variant="contained"
-						color="warning"
-						className="me-2"
-						onClick={() => handleEditTest(test)}>
-						<i class="fa-regular fa-pen-to-square me-2"></i>
-						Chỉnh sửa đề thi
-					</Button>
+					{HAS_ADMIN_PERMISSION || CURRENT_USER_ID === test.user_id ? (
+						<Button
+							type="submit"
+							variant="contained"
+							color="warning"
+							className="me-2"
+							onClick={() => handleEditTest(test)}>
+							<i class="fa-regular fa-pen-to-square me-2"></i>
+							Chỉnh sửa đề thi
+						</Button>
+					) : null}
 					<Button type="submit" variant="contained" color="success" onClick={(e) => handleExportTest(test.id)}>
 						<i className="fa-solid fa-file-export me-2"></i> Export
 					</Button>

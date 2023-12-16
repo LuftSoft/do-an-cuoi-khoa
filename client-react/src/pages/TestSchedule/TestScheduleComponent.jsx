@@ -27,27 +27,24 @@ export default function TestScheduleComponent() {
 	const [dataSource, setDataSource] = useState([]);
 	const [confirmDialog, setConfirmDialog] = useState(false);
 	const [deleteTestScheduleId, setDeleteTestScheduleId] = useState(null);
-	function getTestSchedules() {
-		loadingService.setLoading(true);
-		TestScheduleService.getAllTestSchedule()
-			.then((response) => {
-				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-					const data = response.data?.data;
-					data.forEach((item) => (item.date = dayjs(item.date).format("HH:mm:ss DD-MM-YYYY")));
-					setDataSource(data);
-				} else {
-					toast.error("Không tìm thấy ca thi.");
-				}
-			})
-			.catch((err) => {
-				console.log("get all question failed, error: ", err);
+	async function getTestSchedules() {
+		try {
+			const response = await TestScheduleService.getAllTestSchedule();
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				const data = response.data?.data;
+				data.forEach((item) => (item.date = dayjs(item.date).format("HH:mm:ss DD-MM-YYYY")));
+				setDataSource(data);
+			} else {
 				toast.error("Không tìm thấy ca thi.");
-			});
-		loadingService.setLoading(false);
+			}
+		} catch (err) {
+			console.log("get all question failed, error: ", err);
+			toast.error("Không tìm thấy ca thi.");
+		}
 	}
-	function handleClose(data) {
+	async function handleClose(data) {
 		if (data?.code === CONST.API_RESPONSE.SUCCESS) {
-			getTestSchedules();
+			await getTestSchedules();
 			setOpenCreateTestScheduleDialog(false);
 		} else {
 			setOpenCreateTestScheduleDialog(true);
@@ -73,6 +70,10 @@ export default function TestScheduleComponent() {
 			colName: "Thời gian bắt đầu",
 			colDef: "date",
 		},
+		{
+			colName: "Số bài thi",
+			colDef: "quantity",
+		},
 	];
 
 	function handleButtonClick() {
@@ -80,8 +81,16 @@ export default function TestScheduleComponent() {
 		console.log("is clicked");
 	}
 	//init data
+	const getInitData = async () => {
+		loadingService.setLoading(true);
+		await getTestSchedules();
+		loadingService.setLoading(false);
+	};
 	useEffect(() => {
-		getTestSchedules();
+		const fetchData = async () => {
+			await getInitData();
+		};
+		fetchData();
 	}, []);
 	function handleDelete(row) {
 		setDeleteTestScheduleId(row?.id);
@@ -92,6 +101,7 @@ export default function TestScheduleComponent() {
 			const response = await TestScheduleService.deleteTestSchedule(deleteTestScheduleId);
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 				toast.success("Xóa ca thi thành công!");
+				await getInitData();
 			} else {
 				toast.error("Xóa ca thi thất bại, ca thi đã được đăng ký");
 			}

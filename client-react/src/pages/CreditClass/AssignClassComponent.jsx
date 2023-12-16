@@ -87,8 +87,8 @@ export default function AssignClassComponent() {
 	}
 	const columnDef = [
 		{
-			colName: "Tên giảng viên",
-			colDef: "user_namme",
+			colName: "Mã lớp tín chỉ",
+			colDef: "class_code",
 		},
 		{
 			colName: "Năm học",
@@ -100,7 +100,7 @@ export default function AssignClassComponent() {
 		},
 		{
 			colName: "Lớp tín chỉ",
-			colDef: "credit_class_name",
+			colDef: "name",
 		},
 		{
 			colName: "Môn học",

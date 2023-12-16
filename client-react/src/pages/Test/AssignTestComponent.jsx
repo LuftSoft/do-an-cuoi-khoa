@@ -13,6 +13,8 @@ import { CreditClassService } from "../CreditClass/CreditClassService";
 import { TestScheduleService } from "../TestSchedule/TetsScheduleService";
 import "./TestComp.css";
 import { TestService } from "./TestService";
+import { selectAccessToken } from "../../redux/selectors";
+import { useSelector } from "react-redux";
 
 const initialValues = {
 	id: 0,
@@ -36,6 +38,7 @@ export default function AssignTestComponent(props) {
 	const [dataSource, setDataSource] = useState([]);
 	const [testClassRemove, setTestClassRemove] = useState({});
 	const [confirmRemoveUserDialog, setConfirmRemoveUserDialog] = useState(false);
+	const accessToken = useSelector(selectAccessToken);
 	async function getInitData() {
 		setLoading(true);
 		await getCreditClasses();
@@ -71,11 +74,6 @@ export default function AssignTestComponent(props) {
 		if (name === "credit_class_id") {
 			formData.test_schedule_id = "";
 			const creditClass = creditClasses.filter((item) => item.id === value)[0];
-			console.log(
-				"on choose credit class",
-				creditClass.semester_id,
-				testSchedulesRef.current.filter((item) => item.semester_id === creditClass.semester_id),
-			);
 			setTestSchedules(testSchedulesRef.current.filter((item) => item.semester_id === creditClass.semester_id));
 		}
 		setFormData({ ...formData, [name]: value });
@@ -111,10 +109,9 @@ export default function AssignTestComponent(props) {
 	}
 	const getTestClass = async (id) => {
 		try {
-			const response = await TestService.getAllTestClassByTestId(id);
+			const response = await TestService.getAllTestClassByTestId(id, accessToken);
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 				const testClasses = response.data?.data;
-				console.log("data", testClasses);
 				testClasses.forEach((item) => {
 					if (item.test_schedule_date) {
 						item.test_schedule_date = FeHelpers.convertDateTime(item.test_schedule_date);
@@ -214,8 +211,8 @@ export default function AssignTestComponent(props) {
 					) : null}
 					{creditClasses.map((creditClass, index) => (
 						<MenuItem key={index} value={creditClass.id}>
-							{creditClass.name} - {creditClass.class_code} - Học kỳ {creditClass.semester_semester} Năm học{" "}
-							{creditClass.semester_year}
+							{creditClass.class_code} - {creditClass.name}(Học kỳ {creditClass.semester_semester}, Năm học
+							{creditClass.semester_year})
 						</MenuItem>
 					))}
 				</TextField>

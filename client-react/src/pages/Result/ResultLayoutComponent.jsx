@@ -8,6 +8,8 @@ import { selectUser } from "../../redux/selectors";
 import { useRouteGuard } from "../../utils/route.guard";
 import ResultComponent from "./ResultComponent";
 import StatComponent from "./StatComponent";
+import { FeHelpers } from "../../utils/helpers";
+import { CONST } from "../../utils/const";
 
 function CustomTabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -42,7 +44,9 @@ function genIndex(index) {
 }
 
 export default function ResultLayoutComponent() {
-	const permissions = useSelector(selectUser).permissions[0] || [];
+	const currentUser = useSelector(selectUser);
+	const permissions = FeHelpers.getUserPermission(currentUser);
+	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
 	useRouteGuard(["gv"], permissions);
 	const [value, setValue] = React.useState(0);
 

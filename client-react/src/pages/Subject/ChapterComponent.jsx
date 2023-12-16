@@ -29,8 +29,10 @@ export default function ChapterComponent() {
 	const [deleteChapterId, setDeleteChapterId] = useState(null);
 	const [detailChapterDialogData, setDetailChapterDialogData] = useState({ type: "add", id: null });
 	const accessToken = useSelector(selectAccessToken);
-	const permissions = useSelector(selectUser).permissions[0] || [];
-	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
+	const currentUser = useSelector(selectUser);
+	const permissions = FeHelpers.getUserPermission(currentUser);
+	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
+	const CURRENT_USER_ID = FeHelpers.getUserId(currentUser);
 	const dataSourceRef = useRef([]);
 	const [dataSourceFilter, setDataSourceFilter] = useState([]);
 	const OPTION_ALL = "ALL";
@@ -71,12 +73,12 @@ export default function ChapterComponent() {
 	}
 	const columnDef = [
 		{
-			colName: "Tên chương",
-			colDef: "name",
-		},
-		{
 			colName: "Mã chương",
 			colDef: "id",
+		},
+		{
+			colName: "Tên chương",
+			colDef: "name",
 		},
 		{
 			colName: "Môn học",

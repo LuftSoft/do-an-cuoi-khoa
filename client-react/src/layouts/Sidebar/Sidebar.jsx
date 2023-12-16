@@ -10,7 +10,7 @@ import "./Sidebar.css";
 export default function Sidebar() {
 	const currentUser = useSelector(selectUser);
 	const permissions = [];
-	(currentUser?.permissions[0] || []).forEach((item) => permissions.push(item.name));
+	(currentUser?.permissions || []).forEach((item) => permissions.push(item.name));
 	const sideBarValue = CONST.SIDEBAR;
 	const id = "sideBarId";
 	const [selectedIndex, setSelectedIndex] = useState(null);

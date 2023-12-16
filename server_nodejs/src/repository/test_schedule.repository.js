@@ -12,20 +12,28 @@ module.exports = {
     return test_schedule;
   },
   delete: async (id) => {
-    const result = await test_schedules.destroy({
-      where: {
-        id: id,
-      },
-      truncate: true,
+    const query = `SELECT count(*) as quantity FROM test_credit_classes as tc WHERE tc.test_schedule_id=${id}`;
+    const isTestScheduleAssigned = await test_schedules.sequelize.query(query, {
+      type: QueryTypes.SELECT,
     });
-    return result;
+    console.log("isTestScheduleAssigned", isTestScheduleAssigned);
+    if (isTestScheduleAssigned[0]?.quantity === 0) {
+      console.log("should delete here");
+      return await test_schedules.destroy({
+        where: {
+          id: id,
+        },
+      });
+    } else {
+      throw new Error("delete test schedule failed");
+    }
   },
   getById: async (id) => {
     const test_schedule = await test_schedules.findByPk(id);
     return test_schedule;
   },
   getAll: async () => {
-    const query = `SELECT ts.*,se.semester as semester, CONCAT(se.year,' - ',se.year+1) as year
+    const query = `SELECT (SELECT count(*) FROM test_credit_classes AS tc WHERE tc.test_schedule_id = ts.id) as quantity, ts.*,se.semester as semester, CONCAT(se.year,' - ',se.year+1) as year
         FROM test_schedules as ts 
         INNER JOIN semesters as se ON ts.semester_id = se.id
         ORDER BY ts.date DESC;`;

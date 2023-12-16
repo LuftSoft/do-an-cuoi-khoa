@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import { UserComponent, UserSubjectComponent } from ".";
 import { selectUser } from "../../redux/selectors";
 import { useRouteGuard } from "../../utils/route.guard";
+import { FeHelpers } from "../../utils/helpers";
+import { CONST } from "../../utils/const";
 
 function CustomTabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -41,7 +43,9 @@ function genIndex(index) {
 }
 
 export default function UserLayoutComponent() {
-	const permissions = useSelector(selectUser).permissions[0] || [];
+	const currentUser = useSelector(selectUser);
+	const permissions = FeHelpers.getUserPermission(currentUser);
+	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
 	useRouteGuard(["admin", "gv"], permissions);
 	const [value, setValue] = React.useState(0);
 

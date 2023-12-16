@@ -81,7 +81,7 @@ module.exports = {
   },
   getUserByRole: (id) => {
     return user_roles.sequelize.query(
-      `SELECT ur.*, CONCAT(u.firstName,' ',u.lastName) as user_name FROM user_roles as ur 
+      `SELECT ur.*, CONCAT(u.firstName,' ',u.lastName) as user_name, u.email as user_email FROM user_roles as ur 
     INNER JOIN users as u ON ur.user_id = u.id
     WHERE ur.role_id = '${id}'`,
       { type: QueryTypes.SELECT }

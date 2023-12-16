@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import { FeHelpers } from "../../utils/helpers";
 import TestTakeComponent from "../Test/TestTakeComponent";
 import { Box, Button } from "@mui/material";
+import { Chart } from "react-chartjs-2";
 const columnDef = [
 	{
 		colName: "Mã sinh viên",
@@ -32,6 +33,21 @@ export default function ResultDetailComponent(props) {
 	const [dataSource, setDataSource] = useState([]);
 	const [openTestTakeDialog, setOpenTestTakeDialog] = useState(false);
 	const [resultDialogData, setResultDialogData] = useState(null);
+	const [barChartData, setBarChartData] = useState([]);
+	const chartData = {
+		labels: barChartData.map((i) => `${i.mark}`),
+		datasets: [
+			{
+				label: "Số bài thi",
+				backgroundColor: "rgba(54, 162, 235, 0.8)",
+				borderColor: "rgba(54, 162, 235, 1)",
+				borderWidth: 1,
+				hoverBackgroundColor: "rgba(54, 162, 235, 1)",
+				hoverBorderColor: "rgba(75,192,192,1)",
+				data: barChartData.map((i) => i.quantity),
+			},
+		],
+	};
 	useEffect(() => {
 		const fetchData = async () => {
 			await getInitData();
@@ -41,6 +57,7 @@ export default function ResultDetailComponent(props) {
 	async function getInitData() {
 		setLoading(true);
 		await getResultDetail(data?.id);
+		await getResultChartDetail(data?.id);
 		setLoading(false);
 	}
 	async function getResultDetail(id) {
@@ -49,10 +66,19 @@ export default function ResultDetailComponent(props) {
 			const data = response.data?.data;
 			data.forEach((item) => {
 				if (item.start_time) {
-					item.start_time = FeHelpers.convertDate(item.start_time);
+					item.start_time = FeHelpers.convertDateTime(item.start_time);
 				}
 			});
 			setDataSource(data);
+		} else {
+			toast.error("Get all result failed");
+			return [];
+		}
+	}
+	async function getResultChartDetail(id) {
+		const response = await ResultService.getChartByCreditClassesId(id);
+		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+			setBarChartData(response.data?.data);
 		} else {
 			toast.error("Get all result failed");
 			return [];
@@ -92,12 +118,23 @@ export default function ResultDetailComponent(props) {
 		}
 	}
 	return (
-		<Box>
+		<div style={{ marginLeft: 24, marginRight: 24 }}>
 			<div className="my-2 mx-4 d-flex justify-content-end">
 				<Button type="submit" variant="contained" color="success" onClick={() => handleExportTranscript(data?.id)}>
 					<i className="fa-solid fa-file-export me-2"></i> Xuất bảng điểm
 				</Button>
 			</div>
+			<div className="d-flex justify-content-center">
+				<div className="mt-2 w-7">
+					<Chart type="bar" data={chartData} title="Phổ điểm" />
+					<p className="my-2" style={{ fontStyle: "italic", textAlign: "center" }}>
+						Biểu đồ phổ điểm kết quả
+					</p>
+				</div>
+			</div>
+			<p className="my-2" style={{ fontWeight: "bold" }}>
+				Danh sách kết quả làm bài thi
+			</p>
 			<CommonTableComponent columnDef={columnDef} dataSource={dataSource} onView={handleView}></CommonTableComponent>
 			<CommonDialogComponent
 				open={openTestTakeDialog}
@@ -108,6 +145,6 @@ export default function ResultDetailComponent(props) {
 				icon="fa-solid fa-circle-info">
 				<TestTakeComponent data={resultDialogData} type="result"></TestTakeComponent>
 			</CommonDialogComponent>
-		</Box>
+		</div>
 	);
 }

@@ -167,6 +167,7 @@ const CONST = {
 		ASSIGN: "/assign",
 		COMMON: "/common",
 		DEPARTMENT: "/department",
+		CHART: "/chart",
 	},
 	PERMISSION: {
 		ADMIN: "admin",
@@ -181,5 +182,15 @@ const CONST = {
 	},
 	ACCESS_TOKEN_EXPIRED: 3600000,
 };
-
-export { CONST };
+const RESPONSE_MESSAGE = {
+	RESULT: {
+		GET_RESULT_ERROR: "Tải danh sách kết quả thất bại",
+		GET_RESULT_SUCCESS: "",
+		FILTER_RESULT_ERROR: "Lọc kết quả thất bại",
+	},
+	CREDIT_CLASS: {
+		DELETE_SUCCESS: "Xóa lớp tín thành công",
+		DELETE_FAILED: "Lớp tín chỉ đã được sử dụng, không thể xóa",
+	},
+};
+export { CONST, RESPONSE_MESSAGE };

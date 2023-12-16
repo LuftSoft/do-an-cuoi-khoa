@@ -46,8 +46,9 @@ function genIndex(index) {
 }
 
 export default function SubjectLayout() {
-	const permissions = useSelector(selectUser).permissions[0] || [];
-	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
+	const currentUser = useSelector(selectUser);
+	const permissions = FeHelpers.getUserPermission(currentUser);
+	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
 	useRouteGuard(["gv"], permissions);
 	const [value, setValue] = React.useState(0);
 

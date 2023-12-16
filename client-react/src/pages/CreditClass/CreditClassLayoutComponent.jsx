@@ -9,6 +9,7 @@ import { useRouteGuard } from "../../utils/route.guard";
 import CreditClassComponent from "./CreditClassComponent";
 import AssignClassComponent from "./AssignClassComponent";
 import { CONST } from "../../utils/const";
+import { FeHelpers } from "../../utils/helpers";
 
 function CustomTabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -43,8 +44,9 @@ function genIndex(index) {
 }
 
 export default function CreditClassLayoutComponent() {
-	const permissions = useSelector(selectUser).permissions[0] || [];
-	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
+	const currentUser = useSelector(selectUser);
+	const permissions = FeHelpers.getUserPermission(currentUser);
+	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
 	useRouteGuard(["gv"], permissions);
 	const [value, setValue] = React.useState(0);
 	const handleChange = (event, newValue) => {

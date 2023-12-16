@@ -37,8 +37,8 @@ export const TestService = {
 	getAllTestClass: async () => {
 		return await axios.get(`${TEST_CLASS_ROUTE}`);
 	},
-	getAllTestClassByTestId: async (id) => {
-		return await axios.get(`${TEST_CLASS_ROUTE}/${id}`);
+	getAllTestClassByTestId: async (id, token) => {
+		return FeHelpers.axiosWithJwt.GET(`${TEST_CLASS_ROUTE}/${id}`, token);
 	},
 	createTestClass: async (data, token) => {
 		return await axios.post(TEST_CLASS_ROUTE, data, { headers: { Authorization: "Bearer " + token } });

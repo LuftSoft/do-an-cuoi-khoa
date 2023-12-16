@@ -4,6 +4,7 @@ const { authorize } = require("../extension/middleware/application.middleware");
 const authService = require("../service/common/auth.common.service");
 const commonService = require("../service/common.service");
 const router = express.Router();
+
 router.post("/export/:id", async (req, res) => {
   const id = req.params.id;
   res.send(await testService.export(id));
@@ -17,9 +18,13 @@ router.get("/user/:id", async (req, res) => {
 router.get("/credit-class", async (req, res) => {
   res.send(await testService.getTestClasses());
 });
-router.get("/credit-class/:id", async (req, res) => {
+router.get("/credit-class/:id", authorize([]), async (req, res) => {
   const id = req.params.id;
-  res.send(await testService.getTestClassByTestId(id));
+  const accessToken = req.accessToken;
+  const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
+  if (userId) {
+    res.send(await testService.getTestClassByTestId(id, userId));
+  }
 });
 router.post("/credit-class", async (req, res) => {
   const testClass = req.body;

@@ -115,7 +115,24 @@ module.exports = {
   },
   getByUserId: async (id) => {
     try {
-      var data = await resultRepository.getAllResultByUserId(id);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        await resultRepository.getAllResultByUserId(id),
+        null
+      );
+    } catch (err) {
+      logger.error(`get result with id "${id}" failed`);
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+  getByTestCreditClassesId: async (id) => {
+    try {
+      var data = await resultRepository.getByTestCreditClassesId(id);
       if (!data) {
         return new BaseAPIResponse(
           CONFIG.RESPONSE_STATUS_CODE.ERROR,
@@ -138,9 +155,9 @@ module.exports = {
       );
     }
   },
-  getByTestCreditClassesId: async (id) => {
+  getChartByTestCreditClassesId: async (id) => {
     try {
-      var data = await resultRepository.getByTestCreditClassesId(id);
+      var data = await resultRepository.getChartByTestCreditClassesId(id);
       if (!data) {
         return new BaseAPIResponse(
           CONFIG.RESPONSE_STATUS_CODE.ERROR,
@@ -316,8 +333,7 @@ module.exports = {
       const doc = new PDFKit({
         margins: { top: 20, left: 20, bottom: 20, right: 20 },
       });
-      doc.pipe(fs.createWriteStream("bang_diem_export.pdf"));
-      ``;
+      const writeStream = fs.createWriteStream("bang_diem_export.pdf");
 
       // Write content to the PDF
       //doc.setEncoding("ascii");
@@ -348,10 +364,18 @@ module.exports = {
       doc.font("regularFont");
       drawTable();
       // Finalize the PDF
+      const writeContent = new Promise((resolve, reject) => {
+        writeStream.on("finish", (err, data) => {
+          resolve(
+            fs.readFileSync("bang_diem_export.pdf", { encoding: "base64" })
+          );
+        });
+      });
+      doc.pipe(writeStream);
       doc.end();
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
-        fs.readFileSync("bang_diem_export.pdf", { encoding: "base64" }),
+        await writeContent,
         "export file success"
       );
     } catch (err) {

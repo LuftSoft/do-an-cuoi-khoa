@@ -41,7 +41,8 @@ export default function SignInPage() {
 	useEffect(() => {
 		if (currentUser) {
 			//call api get new refresh-token and access-token
-			return <Navigate to={routes.OVERVIEW} />;
+			// return <Navigate to={routes.OVERVIEW} />;
+			navigate(routes.OVERVIEW);
 		}
 	}, []);
 
@@ -68,11 +69,13 @@ export default function SignInPage() {
 						toast.success("Đăng nhập thành công");
 						dispatch(updateUser(data.user));
 						dispatch(loginSuccess({ accessToken: data.accessToken, refreshToken: data.refreshToken }));
-						const permissions = data.user.permissions[0] || [];
+						const permissions = data.user.permissions || [];
 						const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
 						const HAS_GV_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.GV);
 						const HAS_SV_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.SV);
-						let refreshTokenInterval = setInterval(async () => {
+						/**
+						 * Handler access token
+						 * let refreshTokenInterval = setInterval(async () => {
 							const auth = JSON.parse(window.localStorage.getItem("persist:root"));
 							const user = JSON.parse(auth?.user);
 							const authToken = JSON.parse(auth?.auth);
@@ -91,6 +94,7 @@ export default function SignInPage() {
 								}, 2000);
 							}
 						}, CONST.ACCESS_TOKEN_EXPIRED);
+						 */
 						if (HAS_ADMIN_PERMISSION) {
 							console.log("navigate admin");
 							navigate(routes.OVERVIEW);

@@ -16,6 +16,7 @@ import CreateTest from "./CreateTestComponent";
 import AssignTestComponent from "./AssignTestComponent";
 import TestDetailComponent from "./TestDetailComponent";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
+import { FeHelpers } from "../../utils/helpers";
 
 export default function TestComponent() {
 	const title = "Đề thi";
@@ -36,10 +37,12 @@ export default function TestComponent() {
 	const [openTestDetailDialog, setOpenTestDetailDialog] = useState(false);
 	const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 	const [testDeleteId, setTestDeleteId] = useState(false);
-	const permissions = currentUser.permissions[0] || [];
-	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
+	const permissions = FeHelpers.getUserPermission(currentUser);
+	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
+	const CURRENT_USER_ID = FeHelpers.getUserId(currentUser);
 	useEffect(() => {
 		const fetchData = async () => {
+			console.log(CURRENT_USER_ID);
 			await getTests();
 		};
 		fetchData();
@@ -150,7 +153,7 @@ export default function TestComponent() {
 								Thời gian làm bài: <span style={{ fontWeight: "bold" }}>{test.time} phút</span>
 							</Typography>
 							<CardActions className="card-action p-0 mt-3">
-								{HAS_ADMIN_PERMISSION ? (
+								{HAS_ADMIN_PERMISSION || CURRENT_USER_ID === test.user_id ? (
 									<Button
 										size="small"
 										color="primary"

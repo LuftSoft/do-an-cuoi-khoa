@@ -270,9 +270,14 @@ module.exports = {
       );
     }
   },
-  getTestClassByTestId: async (id) => {
+  getTestClassByTestId: async (id, userId) => {
     try {
-      let data = await testRepository.getTestClassByTestId(id);
+      let data;
+      if (authService.isAdmin(userId)) {
+        data = await testRepository.getTestClassByTestId(id);
+      } else {
+        data = await testRepository.getTestClassByTestId(id, userId);
+      }
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
         data,
@@ -473,7 +478,7 @@ module.exports = {
       const doc = new PDFKit({
         margins: { top: 20, left: 20, bottom: 20, right: 20 },
       });
-      doc.pipe(fs.createWriteStream("test_export.pdf"));
+      const writeStream = fs.createWriteStream("test_export.pdf");
 
       // Write content to the PDF
       //doc.setEncoding("ascii");
@@ -546,10 +551,18 @@ module.exports = {
       }
       doc.fontSize(12).text("--HẾT--", { align: "center" });
       // Finalize the PDF
+      const writeContent = new Promise((resolve, reject) => {
+        writeStream.on("finish", (err, data) => {
+          resolve(fs.readFileSync("test_export.pdf", { encoding: "base64" }));
+        });
+      });
+      doc.pipe(writeStream);
       doc.end();
+
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
-        fs.readFileSync("test_export.pdf", { encoding: "base64" }),
+        //fs.readFileSync("test_export.pdf", { encoding: "base64" }),
+        await writeContent,
         "export file success"
       );
     } catch (err) {

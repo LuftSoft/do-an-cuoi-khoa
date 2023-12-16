@@ -295,4 +295,17 @@ export const FeHelpers = {
 			return axios.delete(url, { headers: { Authorization: "Bearer " + token } });
 		},
 	},
+	/**
+	 * get permission of user in redux user
+	 * @param {*} user
+	 */
+	getUserPermission(user) {
+		return user.permissions || [];
+	},
+	isUserHasPermission(permissions, PERMISSION) {
+		return permissions.some((p) => p.name === PERMISSION);
+	},
+	getUserId(user) {
+		return user.id;
+	},
 };

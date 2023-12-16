@@ -14,6 +14,7 @@ const clusterRepository = require("../repository/cluster.repository");
 const userClusterSubjectRepository = require("../repository/user_cluster_subject.repository");
 const xlsx = require("xlsx");
 const fs = require("fs");
+const permissions = require("../database/models/permissions");
 module.exports = {
   create: async (user) => {
     const userByEmail = await userRepository.getByEmail(user.email);
@@ -37,9 +38,9 @@ module.exports = {
     if (!user) {
       throw new Error(CONFIG.ERROR_RESPONSE.USER.LOGIN);
     }
-    if (user.type === CONSTANTS.USER.TYPE.SV) {
-      throw new Error("Không có quyền đăng nhập");
-    }
+    // if (user.type === CONSTANTS.USER.TYPE.SV) {
+    //   throw new Error("Không có quyền đăng nhập");
+    // }
     const isPasswordCorrect = authService.comparePassword(
       password,
       user.passwordHash
@@ -51,7 +52,16 @@ module.exports = {
     if (user.roles) {
       let permissions = [];
       for (let r of user.roles) {
-        permissions.push(await userRepository.getPemissions(r.id));
+        permissions.push(...(await userRepository.getPemissions(r.id)));
+      }
+      if (
+        permissions.length === 0 ||
+        permissions?.filter(
+          (p) =>
+            p.name == CONFIG.PERMISSION.ADMIN || p.name == CONFIG.PERMISSION.GV
+        ).length === 0
+      ) {
+        throw new Error("Không có quyền đăng nhập");
       }
       user.permissions = permissions;
     }
@@ -442,7 +452,7 @@ module.exports = {
         for (let row of jsonData) {
           console.log("row bang: ", row);
           try {
-            await userRepository.create({
+            const userCreate = await userRepository.create({
               firstName: row.firstName,
               lastName: row.lastName,
               email: row.email,
@@ -456,6 +466,12 @@ module.exports = {
               code: row.email?.split("@")[0].toUpperCase(),
               dateOfBirth: row.dateOfBirth,
             });
+            if (userCreate.type === CONSTANTS.USER.TYPE.GV) {
+              const userCluster = await clusterRepository.create({
+                id: 0,
+                user_id: userCreate.dataValues.id,
+              });
+            }
             successQ++;
           } catch (err) {
             logger.error(err);

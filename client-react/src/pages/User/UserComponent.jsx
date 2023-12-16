@@ -112,6 +112,10 @@ export default function UserComponent() {
 	}
 	const columnDef = [
 		{
+			colName: "Mã người dùng",
+			colDef: "code",
+		},
+		{
 			colName: "Họ và tên",
 			colDef: "full_name",
 		},
@@ -130,10 +134,6 @@ export default function UserComponent() {
 		{
 			colName: "Giới tính",
 			colDef: "gender_translate",
-		},
-		{
-			colName: "Ngày sinh",
-			colDef: "dateOfBirth",
 		},
 	];
 

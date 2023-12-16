@@ -43,9 +43,9 @@ export default function CreditClassDetailComponent(props) {
 	const accessToken = useSelector(selectAccessToken);
 	async function getInitData() {
 		setLoading(true);
-		await getUsers();
-		await getCreditClasses();
 		await getClassAssign();
+		await getCreditClasses();
+		await getUsers();
 		initFormData();
 		setLoading(false);
 	}
@@ -79,6 +79,7 @@ export default function CreditClassDetailComponent(props) {
 	const getUsers = async () => {
 		const response = await UserService.getAllSV();
 		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+			console.log("sinh vien all", response.data?.data);
 			setUsers(response.data?.data);
 		}
 	};
@@ -99,6 +100,7 @@ export default function CreditClassDetailComponent(props) {
 				users?.forEach((user) => {
 					user.name = `${user.first_name} ${user.last_name}`;
 				});
+				console.log(response.data?.data);
 				setDataSource(users);
 			}
 		} catch (err) {}
@@ -268,7 +270,7 @@ export default function CreditClassDetailComponent(props) {
 				<Autocomplete
 					multiple
 					id="tags-outlined"
-					options={users}
+					options={users.filter((item) => !dataSource.map((i) => i.user_id).includes(item.id))}
 					filterSelectedOptions
 					getOptionLabel={(option) => `${option.code} - ${option.firstName} ${option.lastName}`}
 					onChange={handleAutocompleteChange}

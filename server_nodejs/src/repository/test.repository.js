@@ -82,48 +82,56 @@ module.exports = {
     return result;
   },
   getTestClasses: async () => {
-    const query = `SELECT tc.*, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, 
-    CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date
-      FROM test_credit_classes AS tc
-      INNER JOIN tests AS te ON tc.test_id = te.id
-      INNER JOIN credit_classes AS cc ON tc.credit_class_id = cc.id
-      INNER JOIN test_schedules AS ts ON tc.test_schedule_id = ts.id
-      INNER JOIN semesters AS sm ON ts.semester_id = sm.id`;
-    const test_class = await test_credit_classes.sequelize.query(query, {
-      type: QueryTypes.SELECT,
-    });
-    return test_class;
-  },
-  getTestClassByTestId: async (id) => {
-    const query = `SELECT tc.*, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, 
+    const query = `SELECT tc.*, CONCAT('Học kỳ ',sm.semester,', Năm học ',sm.year,' - ',sm.year + 1) as semester_name, 
     CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date
       FROM test_credit_classes AS tc
       INNER JOIN tests AS te ON tc.test_id = te.id
       INNER JOIN credit_classes AS cc ON tc.credit_class_id = cc.id
       INNER JOIN test_schedules AS ts ON tc.test_schedule_id = ts.id
       INNER JOIN semesters AS sm ON ts.semester_id = sm.id
-      WHERE tc.test_id = '${id}'`;
+      ORDER BY sm.year DESC, sm.semester DESC`;
+    const test_class = await test_credit_classes.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return test_class;
+  },
+  getTestClassByTestId: async (id, userId) => {
+    const query = `SELECT tc.*, CONCAT('Học kỳ ',sm.semester,', Năm học ',sm.year,' - ',sm.year + 1) as semester_name, 
+    CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date
+      FROM test_credit_classes AS tc
+      INNER JOIN tests AS te ON tc.test_id = te.id
+      ${
+        userId
+          ? `INNER JOIN assigns AS ass ON tc.credit_class_id = ass.credit_class_id AND ass.user_id='${userId}'`
+          : ""
+      }
+      INNER JOIN credit_classes AS cc ON tc.credit_class_id = cc.id
+      INNER JOIN test_schedules AS ts ON tc.test_schedule_id = ts.id
+      INNER JOIN semesters AS sm ON ts.semester_id = sm.id
+      WHERE tc.test_id = '${id}'
+      ORDER BY sm.year DESC, sm.semester DESC`;
     const test_class = await test_credit_classes.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
     return test_class;
   },
   getTestClassesById: async (id) => {
-    const query = `SELECT tc.*, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, 
+    const query = `SELECT tc.*, CONCAT('Học kỳ ',sm.semester,', Năm học ',sm.year,' - ',sm.year + 1) as semester_name, 
     CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date
       FROM test_credit_classes AS tc
       INNER JOIN tests AS te ON tc.test_id = te.id
       INNER JOIN credit_classes AS cc ON tc.credit_class_id = cc.id
       INNER JOIN test_schedules AS ts ON tc.test_schedule_id = ts.id
       INNER JOIN semesters AS sm ON ts.semester_id = sm.id
-      WHERE tc.id = '${id}'`;
+      WHERE tc.id = '${id}'
+      ORDER BY sm.year DESC, sm.semester DESC`;
     const test_class = await test_credit_classes.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
     return test_class;
   },
   getAllTestByUserId: async (id) => {
-    const query = `SELECT tc.*, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, 
+    const query = `SELECT tc.*, CONCAT('Học kỳ ',sm.semester,', Năm học ',sm.year,' - ',sm.year + 1) as semester_name, 
     CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date,  te.name as test_name,
     te.time as test_time
       FROM test_credit_classes AS tc
@@ -133,7 +141,8 @@ module.exports = {
       INNER JOIN semesters AS sm ON ts.semester_id = sm.id
       INNER JOIN credit_class_details as cd ON cc.id = cd.credit_class_id
       INNER JOIN users as us ON cd.user_id = us.id
-      WHERE us.id = '${id}';`;
+      WHERE us.id = '${id}'
+      ORDER BY sm.year DESC, sm.semester DESC;`;
     const test_class = await test_credit_classes.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });

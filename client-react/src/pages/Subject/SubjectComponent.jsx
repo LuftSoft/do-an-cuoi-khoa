@@ -13,6 +13,7 @@ import { CONST } from "../../utils/const";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import { TestService } from "../Test/TestService";
 import { selectAccessToken, selectUser } from "../../redux/selectors";
+import { FeHelpers } from "../../utils/helpers";
 
 export default function SubjectComponent() {
 	const title = "Danh sách môn học";
@@ -31,8 +32,9 @@ export default function SubjectComponent() {
 		type: "add",
 		id: null,
 	});
-	const permissions = useSelector(selectUser).permissions[0] || [];
-	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
+	const currentUser = useSelector(selectUser);
+	const permissions = FeHelpers.getUserPermission(currentUser);
+	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
 	function getSubjects() {
 		SubjectService.getSubjectDropdownByUserId(accessToken)
 			.then((response) => {

@@ -8,7 +8,7 @@ const resultDetailRepository = require("./result_detail.repository");
 
 module.exports = {
   getAll: async () => {
-    const query = `SELECT tc.*, sm.id as semester_id, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, sj.name as subject_name,
+    const query = `SELECT tc.*, sm.id as semester_id, CONCAT('Học kỳ ',sm.semester,', Năm học ',sm.year,' - ',sm.year + 1) as semester_name, sj.name as subject_name,
     CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date,  te.name as test_name,
     te.time as test_time, (SELECT count(*) FROM results as rs WHERE rs.test_credit_classes_id = tc.id) as result_count
       FROM test_credit_classes AS tc
@@ -23,7 +23,7 @@ module.exports = {
     });
   },
   getAllFilter: async (filterQuery) => {
-    let query = `SELECT tc.*, sm.id as semester_id, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, sj.name as subject_name,
+    let query = `SELECT tc.*, sm.id as semester_id, CONCAT('Học kỳ ',sm.semester,', Năm học ',sm.year,' - ',sm.year + 1) as semester_name, sj.name as subject_name,
     CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date,  te.name as test_name,
     te.time as test_time, (SELECT count(*) FROM results as rs WHERE rs.test_credit_classes_id = tc.id) as result_count
       FROM test_credit_classes AS tc
@@ -39,7 +39,7 @@ module.exports = {
     });
   },
   getAllFilterByUserId: async (filterQuery) => {
-    const query = `SELECT tc.*, sm.id as semester_id, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, sj.name as subject_name,
+    const query = `SELECT tc.*, sm.id as semester_id, CONCAT('Học kỳ ',sm.semester,', Năm học ',sm.year,' - ',sm.year + 1) as semester_name, sj.name as subject_name,
     CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date,  te.name as test_name,
     te.time as test_time, (SELECT count(*) FROM results as rs WHERE rs.test_credit_classes_id = tc.id) as result_count
       FROM test_credit_classes AS tc
@@ -56,7 +56,7 @@ module.exports = {
     });
   },
   getAllByUserId: async (id) => {
-    const query = `SELECT tc.*, sm.id as semester_id, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, sj.name as subject_name,
+    const query = `SELECT tc.*, sm.id as semester_id, CONCAT('Học kỳ ',sm.semester,', Năm học ',sm.year,' - ',sm.year + 1) as semester_name, sj.name as subject_name,
     CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date,  te.name as test_name,
     te.time as test_time, (SELECT count(*) FROM results as rs WHERE rs.test_credit_classes_id = tc.id) as result_count
       FROM test_credit_classes AS tc
@@ -82,18 +82,17 @@ module.exports = {
     return result;
   },
   getAllResultByUserId: async (id) => {
-    const query = `SELECT tc.*, rs.id as result_id,rs.user_id as user_id, CONCAT('Học kỳ ',sm.semester,' - Năm ',sm.year) as semester_name, 
+    const query = `SELECT tc.*, rs.id as result_id,rs.user_id as user_id, CONCAT('Học kỳ ',sm.semester,', Năm học ',sm.year,' - ',sm.year + 1) as semester_name, 
     CONCAT(cc.class_code,' - ',cc.name) AS credit_class_name, ts.date AS test_schedule_date,  te.name as test_name,
     te.time as test_time
       FROM test_credit_classes AS tc
-      INNER JOIN results AS rs ON rs.test_credit_classes_id = tc.id
+      INNER JOIN results AS rs ON rs.test_credit_classes_id = tc.id AND rs.user_id= '${id}'
       INNER JOIN tests AS te ON tc.test_id = te.id
       INNER JOIN credit_classes AS cc ON tc.credit_class_id = cc.id
       INNER JOIN test_schedules AS ts ON tc.test_schedule_id = ts.id
       INNER JOIN semesters AS sm ON ts.semester_id = sm.id
-      INNER JOIN credit_class_details as cd ON cc.id = cd.credit_class_id
-      INNER JOIN users as us ON cd.user_id = us.id
-      WHERE us.id = '${id}';`;
+      INNER JOIN credit_class_details as cd ON cc.id = cd.credit_class_id AND cd.user_id= '${id}'
+      ORDER BY sm.year DESC, sm.semester DESC;`;
     const test_class = await test_credit_classes.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });
@@ -105,6 +104,17 @@ module.exports = {
     INNER JOIN test_credit_classes as tc ON rs.test_credit_classes_id = tc.id
     INNER JOIN users as us on rs.user_id = us.id
     WHERE tc.id = ${id}`;
+    const data = await test_credit_classes.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return data;
+  },
+  getChartByTestCreditClassesId: async (id) => {
+    const query = `SELECT marks.mark AS mark, count(*) AS quantity FROM results AS rs
+    INNER JOIN (SELECT distinct mark from results) AS marks
+    WHERE rs.mark = marks.mark AND rs.test_credit_classes_id=${id}
+    GROUP BY marks.mark
+    ORDER BY marks.mark ASC;`;
     const data = await test_credit_classes.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });

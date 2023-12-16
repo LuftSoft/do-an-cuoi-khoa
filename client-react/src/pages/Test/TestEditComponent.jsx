@@ -34,7 +34,7 @@ export default function TestEditComponent({ id, handleSubmit }) {
 	const [openTestDetailDialog, setOpenTestDetailDialog] = useState(false);
 	const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 	const [openCreateQuestionDialog, setOpenCreateQuestionDialog] = useState(false);
-	const permissions = currentUser.permissions[0] || [];
+	const permissions = currentUser.permissions || [];
 	const chapterRef = useRef("");
 	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
 	const EASY_LEVEL = CONST.QUESTION.LEVEL[0];

@@ -36,6 +36,11 @@ router.get("/test-credit-classes/:id", async (req, res) => {
   res.send(await resultService.getByTestCreditClassesId(id));
 });
 
+router.get("/test-credit-classes/chart/:id", async (req, res) => {
+  const id = req.params.id;
+  res.send(await resultService.getChartByTestCreditClassesId(id));
+});
+
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
   console.log("get here");

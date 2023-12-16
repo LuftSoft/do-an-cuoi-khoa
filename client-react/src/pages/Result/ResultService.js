@@ -26,6 +26,9 @@ export const ResultService = {
 	getByCreditClassesId: async (id) => {
 		return await axios.get(`${RESULT_CREDIT_CLASSES_ROUTE}/${id}`);
 	},
+	getChartByCreditClassesId: async (id) => {
+		return await axios.get(`${RESULT_CREDIT_CLASSES_ROUTE}${CONST.ROUTES.CHART}/${id}`);
+	},
 	exportTranscript: async (id) => {
 		return await axios.post(`${RESULT_ROUTE}/export/${id}`);
 	},

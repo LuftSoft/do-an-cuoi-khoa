@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { TestScheduleService } from "../TestSchedule/TetsScheduleService";
 import { TestService } from "../Test/TestService";
 import { useLoadingService } from "../../contexts/loadingContext";
-import { CONST } from "../../utils/const";
+import { CONST, RESPONSE_MESSAGE } from "../../utils/const";
 import { toast } from "react-toastify";
 import { ResultService } from "./ResultService";
 import { FeHelpers } from "../../utils/helpers";
@@ -90,7 +90,7 @@ export default function ResultComponent() {
 		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 			setResults(response.data?.data);
 		} else {
-			toast.error("Get all result failed");
+			toast.error(RESPONSE_MESSAGE.RESULT.GET_RESULT_ERROR);
 			return [];
 		}
 	}
@@ -172,15 +172,14 @@ export default function ResultComponent() {
 	const handleFilter = async () => {
 		setLoading(true);
 		try {
-			console.log("handleFilter");
 			const response = await ResultService.filterResult(filterRef.current, accessToken);
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 				setResults(response.data?.data);
 			} else {
-				toast.error("Lọc kết quả thất bại");
+				toast.error(RESPONSE_MESSAGE.RESULT.FILTER_RESULT_ERROR);
 			}
 		} catch (err) {
-			toast.error("Lọc kết quả thất bại");
+			toast.error(RESPONSE_MESSAGE.RESULT.FILTER_RESULT_ERROR);
 			console.log("err when filter", err);
 		}
 		setLoading(false);

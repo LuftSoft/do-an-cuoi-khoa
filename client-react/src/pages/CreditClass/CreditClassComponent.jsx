@@ -8,12 +8,13 @@ import TitleButtonComponent from "../../components/Common/CommonHeader/CommonHea
 
 import { toast } from "react-toastify";
 import CreateCreditClass from "./CreateCreditClassComponent";
-import { CONST } from "../../utils/const";
+import { CONST, RESPONSE_MESSAGE } from "../../utils/const";
 import { QuestionService } from "../Question/QuestionService";
 import { CreditClassService } from "./CreditClassService";
 import ImportDialogComponent from "../Question/ImportComponent";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import { selectUser } from "../../redux/selectors";
+import { FeHelpers } from "../../utils/helpers";
 export default function CreditClassComponent() {
 	const title = "Danh sách lớp tín chỉ";
 	const buttons = [
@@ -29,27 +30,26 @@ export default function CreditClassComponent() {
 	const [openCreateCreditClassDialog, setOpenCreateCreditClassDialog] = useState(false);
 	const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 	const [dataSource, setDataSource] = useState([]);
-	const permissions = useSelector(selectUser).permissions[0] || [];
-	const HAS_ADMIN_PERMISSION = permissions.some((p) => p.name === CONST.PERMISSION.ADMIN);
-	function getCreditClasses() {
-		loadingService.setLoading(true);
-		CreditClassService.getAllCreditClass()
-			.then((response) => {
-				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-					setDataSource(response.data?.data);
-				} else {
-					toast.error("Không tìm thấy lớp tín chỉ.");
-				}
-			})
-			.catch((err) => {
-				console.log("get all credit class failed, error: ", err);
+	const [idToDelete, setIdToDelete] = useState(null);
+	const currentUser = useSelector(selectUser);
+	const permissions = FeHelpers.getUserPermission(currentUser);
+	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
+	async function getCreditClasses() {
+		try {
+			const response = await CreditClassService.getAllCreditClass();
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				setDataSource(response.data?.data);
+			} else {
 				toast.error("Không tìm thấy lớp tín chỉ.");
-			});
-		loadingService.setLoading(false);
+			}
+		} catch (err) {
+			console.log("get all credit class failed, error: ", err);
+			toast.error("Không tìm thấy lớp tín chỉ.");
+		}
 	}
-	function handleClose(data) {
+	async function handleClose(data) {
 		if (data?.code === CONST.API_RESPONSE.SUCCESS) {
-			getCreditClasses();
+			await getCreditClasses();
 			setOpenCreateCreditClassDialog(false);
 		} else {
 			setOpenCreateCreditClassDialog(true);
@@ -59,6 +59,10 @@ export default function CreditClassComponent() {
 		setOpenCreateCreditClassDialog(false);
 	}
 	const columnDef = [
+		{
+			colName: "Mã lớp tín chỉ",
+			colDef: "class_code",
+		},
 		{
 			colName: "Năm học",
 			colDef: "semester_year",
@@ -81,11 +85,20 @@ export default function CreditClassComponent() {
 		setOpenCreateCreditClassDialog(true);
 	}
 	async function handleDelete(row) {
+		setIdToDelete(row.id);
 		setOpenConfirmDialog(true);
 	}
 	//init data
+	const getInitData = async () => {
+		loadingService.setLoading(true);
+		await getCreditClasses();
+		loadingService.setLoading(false);
+	};
 	useEffect(() => {
-		getCreditClasses();
+		const fetchData = async () => {
+			await getInitData();
+		};
+		fetchData();
 	}, []);
 	function handleCloseConfirmQuestion() {
 		setOpenConfirmDialog(false);
@@ -93,15 +106,16 @@ export default function CreditClassComponent() {
 	async function handleConfirmDialog(data) {
 		if (data) {
 			try {
-				console.log(row);
-				const response = await CreditClassService.deleteCreditClass(row?.id);
+				const response = await CreditClassService.deleteCreditClass(idToDelete);
 				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-					toast.success("Xóa lớp tín thành công");
+					toast.success(RESPONSE_MESSAGE.CREDIT_CLASS.DELETE_SUCCESS);
+					await getCreditClasses();
 				} else {
-					toast.error("Lớp tín chỉ đã được sử dụng, không thể xóa");
+					toast.error(RESPONSE_MESSAGE.CREDIT_CLASS.DELETE_FAILED);
 				}
 			} catch (err) {
-				toast.error("Lớp tín chỉ đã được sử dụng, không thể xóa");
+				console.log(err);
+				toast.error(RESPONSE_MESSAGE.CREDIT_CLASS.DELETE_FAILED);
 			}
 		}
 		setOpenConfirmDialog(false);

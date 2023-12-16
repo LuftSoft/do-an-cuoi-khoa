@@ -1,6 +1,7 @@
 const { QueryTypes } = require("sequelize");
 const dbContext = require("../database/models/config/dbContext");
 const { Helpers } = require("../extension/helper");
+const results = require("../database/models/results");
 const credit_classes = dbContext.credit_classes;
 
 module.exports = {
@@ -34,13 +35,10 @@ module.exports = {
     return credit_class;
   },
   delete: async (id) => {
-    const result = await credit_classes.destroy({
-      where: {
-        id: id,
-      },
-      truncate: true,
+    const query = `DELETE FROM credit_classes as cc WHERE cc.id=${id}`;
+    return await credit_classes.sequelize.query(query, {
+      type: QueryTypes.DELETE,
     });
-    return result;
   },
   getById: async (id) => {
     const credit_class = await credit_classes.findByPk(id);
@@ -57,7 +55,7 @@ module.exports = {
     return listcredit_class;
   },
   getGVByCreditClassId: async (id) => {
-    const query = `SELECT us.* from credit_classes AS cc
+    const query = `SELECT DISTINCT us.* from credit_classes AS cc
     INNER JOIN user_cluster_subjects AS ucs ON ucs.subject_id = cc.subject_id
     INNER JOIN users AS us ON us.id = ucs.user_id
     INNER JOIN clusters AS cl ON cl.user_id = us.id

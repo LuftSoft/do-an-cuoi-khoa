@@ -252,7 +252,7 @@ export default function AssignUserRoleComponent() {
 						handleAdd={handleAddUserRole}
 						handleDelete={handleDeleteUserRole}
 						paramKey={"id"}
-						paramValue={"user_name"}
+						paramValue={"user_email"}
 						data={userRoles}
 						handleChange={handleUserRoleChange}
 						title={"Người dùng"}></CommonListComponent>
