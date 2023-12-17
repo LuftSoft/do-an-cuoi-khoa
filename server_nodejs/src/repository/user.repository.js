@@ -96,6 +96,12 @@ module.exports = {
     const listUser = await users.findAll();
     return listUser;
   },
+  getAllFilter: async (inputQuery) => {
+    let query = `SELECT * FROM users as us 
+    ${inputQuery};`;
+    console.log("repo query", query);
+    return await users.sequelize.query(query, { type: QueryTypes.SELECT });
+  },
   getByType: async (type) => {
     const listUser = await users.findAll({
       where: { type: type.toUpperCase() },

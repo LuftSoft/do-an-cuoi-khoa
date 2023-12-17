@@ -21,8 +21,8 @@ type Props = {
 const initValues: LoginModel = {
   // email: 'sv@student.ptithcm.edu.vn',
   // password: 'Ptithcm2023',
-  email: '',
-  password: '',
+  email: 'luffschloss@gmail.com',
+  password: 'Ptithcm2023',
 };
 const LoginComponent: React.FC<Props> = ({navigation}) => {
   const [email, setEmail] = useState('');

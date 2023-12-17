@@ -8,6 +8,11 @@ module.exports = {
     return test_scheduleCreate;
   },
   update: async (test_schedule) => {
+    const query = `SELECT count(*) as quantity FROM test_credit_classes as tc WHERE tc.test_schedule_id=${test_schedule.id};`;
+    const canUpdate = await test_schedules.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    if (canUpdate[0]?.quantity > 0) throw new Error("can not update");
     await test_schedule.save();
     return test_schedule;
   },

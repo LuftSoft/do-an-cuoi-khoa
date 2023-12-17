@@ -4,12 +4,27 @@ import { axiosJWT } from "../../utils/httpRequest";
 import { FeHelpers } from "../../utils/helpers";
 
 const USER_ROUTE = CONST.BASE_URL + CONST.ROUTES.USER;
+const USER_FILTER_ROUTE = CONST.BASE_URL + CONST.ROUTES.USER + CONST.ROUTES.FILTER;
 const GV_ROUTE = USER_ROUTE + "/type/gv";
 const SV_ROUTE = USER_ROUTE + "/type/sv";
 const COMMON_ROUTE = CONST.BASE_URL + CONST.ROUTES.COMMON;
+const ALL = "ALL";
 export const UserService = {
 	getAllUser: async () => {
 		return await axios.get(USER_ROUTE);
+	},
+	getAllUserFilter: async (filterData) => {
+		let url = USER_FILTER_ROUTE;
+		var isFirstParam = false;
+		for (let i of Object.keys(filterData)) {
+			if (!isFirstParam && filterData[i] !== ALL) {
+				url += `?${i}=${filterData[i]}`;
+				isFirstParam = !isFirstParam;
+			} else if (filterData[i] !== ALL) {
+				url += `&${i}=${filterData[i]}`;
+			}
+		}
+		return await axios.get(url);
 	},
 	getAllSV: async () => {
 		return await axios.get(SV_ROUTE);

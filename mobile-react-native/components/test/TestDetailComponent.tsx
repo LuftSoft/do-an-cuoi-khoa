@@ -12,7 +12,7 @@ import {Portal, RadioButton} from 'react-native-paper';
 import {CONFIG} from '../../utils/config';
 import CustomRadioButton from '../common/radio.button';
 import {RootStackParamList} from '../overview/OverviewComponent';
-import {QuestionModel, TestModel} from './TestModel';
+import {QuestionModel, QuestionResultModel, TestModel} from './TestModel';
 import {TestService} from './TestService';
 import Toast from 'react-native-toast-message';
 import {ToastUtil} from '../../utils/toast.util';
@@ -40,6 +40,9 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
   const isSubmit = useRef(false);
   const [timer, setTimer] = useState(Number.MAX_VALUE);
   const [questions, setQuestions] = useState([] as QuestionModel[]);
+  const [questionResults, setQuestionResults] = useState(
+    [] as QuestionResultModel[],
+  );
   const [answers, setAnswers] = useState([]);
   const [confirmDialogData, setConfirmDialogData] = useState(
     {} as ConfirmDialogDataModel,
@@ -50,6 +53,7 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
   } as TestResultDialogDataModel);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [openTestResultDialog, setOpenTestResultDialog] = useState(false);
+  const flatListRef = useRef<FlatList<any>>(null);
   const data = navigation
     .getState()
     .routes.filter(item => item.name === 'TestDetail')[0];
@@ -97,6 +101,13 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
         var testResponse = response.data?.data as TestModel;
         setTest(testResponse);
         setQuestions(testResponse.questions);
+        // setQuestionResults(
+        //   testResponse.questions.map(item => ({
+        //     id: item.id,
+        //     answer: item.answer,
+        //     correct_answer: item.correct_answer,
+        //   })),
+        // );
         if (Number.parseInt(testResponse.time) > 0) {
           const testTime = Number.parseInt(testResponse.time) * 60;
           const join_time = Math.floor(new Date().getTime() / 1000);
@@ -234,6 +245,11 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
     }
     setOpenConfirmDialog(false);
   };
+  const scrollToQuestion = (index: number) => {
+    console.log('index', index);
+    setOpenTestResultDialog(false);
+    flatListRef.current?.scrollToIndex({animated: true, index: index});
+  };
   return (
     <View style={styles.container}>
       {/* Information Bar */}
@@ -255,7 +271,9 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
 
       {/* List of Questions */}
       <FlatList
+        ref={flatListRef}
         data={questions || []}
+        initialScrollIndex={0}
         keyExtractor={item => item?.id.toString()}
         renderItem={({item, index}) => (
           // Render each question here
@@ -265,6 +283,7 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
               {item.question}
             </Text>
             <RadioButton.Group
+              key={`radio_group_${index + 1}`}
               onValueChange={value => (item.answer = value)}
               value={item.answer}>
               <View style={styles.flexView} key={`answer_a_${index + 1}`}>
@@ -334,6 +353,7 @@ const TestDetailComponent: React.FC<Props> = ({navigation}) => {
       <TestResultDialogComponent
         open={openTestResultDialog}
         data={testResultDialogData}
+        handleScrollIndex={scrollToQuestion}
         hideDialog={handleCloseProcessDialog}></TestResultDialogComponent>
     </View>
   );

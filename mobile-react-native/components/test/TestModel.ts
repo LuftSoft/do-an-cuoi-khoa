@@ -37,3 +37,9 @@ export interface QuestionModel {
     chapter_id: number,
     answer: string,
 }
+
+export interface QuestionResultModel {
+    id: number,
+    correct_answer: string,
+    answer: string,
+}

@@ -15,6 +15,8 @@ const userClusterSubjectRepository = require("../repository/user_cluster_subject
 const xlsx = require("xlsx");
 const fs = require("fs");
 const permissions = require("../database/models/permissions");
+const { log } = require("console");
+const { FILTER_CONST } = require("../shared/filter.constant");
 module.exports = {
   create: async (user) => {
     const userByEmail = await userRepository.getByEmail(user.email);
@@ -160,6 +162,50 @@ module.exports = {
       user.avatar = user.avatar ? user.avatar.toString("base64") : user.avatar;
     });
     return users;
+  },
+  getAllFilter: async (filterData) => {
+    try {
+      let queryArr = [];
+      for (let item of Object.keys(filterData)) {
+        if (filterData[item] && filterData[item].length > 0) {
+          switch (item) {
+            case FILTER_CONST.SEARCH:
+              queryArr.push(
+                `(us.firstName LIKE '%${filterData[item]}%' OR us.lastName LIKE '%${filterData[item]}%' OR us.email LIKE '%${filterData[item]}%' OR us.code LIKE '%${filterData[item]}%')`
+              );
+              break;
+            case FILTER_CONST.GENDER:
+              queryArr.push(`us.gender='${filterData[item]}'`);
+              break;
+            case FILTER_CONST.TYPE:
+              queryArr.push(`us.type='${filterData[item]}'`);
+              break;
+            default:
+              break;
+          }
+        }
+      }
+      const query =
+        queryArr.length > 0 ? ` WHERE ${queryArr.join(" AND ")}` : "";
+      const users = await userRepository.getAllFilter(query);
+      users.forEach((user) => {
+        user.avatar = user.avatar
+          ? user.avatar.toString("base64")
+          : user.avatar;
+      });
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        users,
+        CONFIG.RESPONSE_MESSAGE.SUCCESS
+      );
+    } catch (err) {
+      logger.error(`get user filter error: ${err.message}`);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        CONFIG.RESPONSE_MESSAGE.ERROR
+      );
+    }
   },
   getAllByType: async (type) => {
     try {

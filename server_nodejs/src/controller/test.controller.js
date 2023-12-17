@@ -75,6 +75,14 @@ router.get("/", authorize([]), async (req, res) => {
   }
 });
 
+router.get("/filter", authorize([]), async (req, res) => {
+  const accessToken = req.accessToken;
+  const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
+  if (userId) {
+    res.send(await testService.getAllFilter(userId, req.query));
+  }
+});
+
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
   res.send(await testService.getOne(id));

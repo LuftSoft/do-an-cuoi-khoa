@@ -7,11 +7,14 @@ export const TestScheduleService = {
 	getAllTestSchedule: async () => {
 		return await axios.get(TEST_SCHEDULE_ROUTE);
 	},
+	getOneTestSchedule: async (id) => {
+		return await axios.get(`${TEST_SCHEDULE_ROUTE}/${id}`);
+	},
 	createTestSchedule: async (data) => {
 		return await axios.post(TEST_SCHEDULE_ROUTE, data);
 	},
-	updateTestSchedule: async () => {
-		return await axios.post(TEST_SCHEDULE_ROUTE, {});
+	updateTestSchedule: async (data) => {
+		return await axios.put(TEST_SCHEDULE_ROUTE, data);
 	},
 	deleteTestSchedule: async (id) => {
 		return await axios.delete(`${TEST_SCHEDULE_ROUTE}/${id}`);

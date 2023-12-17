@@ -38,4 +38,8 @@ module.exports.CONFIG = {
     GV: "gv",
     SV: "sv",
   },
+  RESPONSE_MESSAGE: {
+    SUCCESS: "Thành công",
+    ERROR: "Thất bại",
+  },
 };

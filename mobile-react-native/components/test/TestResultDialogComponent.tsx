@@ -10,10 +10,13 @@ import {
 } from 'react-native-paper';
 
 export const TestResultDialogComponent = (props: any) => {
-  const {open, hideDialog, data} = props;
+  const {open, hideDialog, data, handleScrollIndex} = props;
   useEffect(() => {
     console.log(data);
   }, [data]);
+  const handleClick = (index: number) => {
+    handleScrollIndex(index);
+  };
   return (
     <Portal>
       <Dialog visible={open} onDismiss={hideDialog}>
@@ -23,6 +26,7 @@ export const TestResultDialogComponent = (props: any) => {
         <Dialog.Content style={styles.content_container}>
           {data.options.map((item: any) => (
             <Text
+              onPress={() => handleClick(item?.position - 1)}
               variant="bodyMedium"
               style={[
                 styles.content_item,

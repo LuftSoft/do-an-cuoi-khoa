@@ -16,10 +16,9 @@ const userRepository = require("../repository/user.repository");
 module.exports = {
   getAll: async () => {
     try {
-      var data = await subjectRepository.getAll();
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
-        data,
+        await subjectRepository.getAll(),
         null
       );
     } catch (err) {

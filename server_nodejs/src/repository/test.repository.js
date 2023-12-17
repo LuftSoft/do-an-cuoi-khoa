@@ -35,6 +35,34 @@ module.exports = {
     });
     return res;
   },
+  getAllFilter: async (inputQuery) => {
+    const query = `SELECT t.*,(SELECT count(*) from test_details as td where td.test_id=t.id) as total_questions,
+       sj.name as subject_name, sm.semester as semester_semester, CONCAT(sm.year,' - ',sm.year+1) as semester_year, sm.id AS semester_id
+        FROM tests as t 
+        INNER JOIN semesters as sm ON t.semester_id = sm.id
+        INNER JOIN subjects as sj ON t.subject_id = sj.id 
+        ${inputQuery}
+        ORDER BY sm.id DESC`;
+    const res = await tests.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return res;
+  },
+  getAllByUserIdFilter: async (id, inputQuery) => {
+    const query = `SELECT DISTINCT t.*,ass.user_id AS ass_user_id, (SELECT count(*) from test_details AS td where td.test_id=t.id) AS total_questions,
+        sj.name AS subject_name, sm.semester AS semester_semester, CONCAT(sm.year,' - ',sm.year+1) AS semester_year, sm.id AS semester_id
+        FROM tests AS t 
+        LEFT JOIN test_credit_classes AS tcc ON t.id = tcc.test_id
+        LEFT JOIN assigns AS ass ON ass.credit_class_id = tcc.credit_class_id
+        INNER JOIN semesters as sm ON t.semester_id = sm.id
+        INNER JOIN subjects as sj ON t.subject_id = sj.id
+        WHERE (t.user_id = '${id}' OR ass.user_id='${id}') ${inputQuery} 
+        ORDER BY sm.id DESC;`;
+    const res = await tests.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return res;
+  },
   getById: async (id) => {
     var test = await tests.findByPk(id, {});
     var testDetails = await test_details.findAll({

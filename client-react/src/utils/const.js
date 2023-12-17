@@ -48,6 +48,8 @@ const CONST = {
 			SV: "SV",
 			GV: "GV",
 		},
+		DEFAULT_USER_PASSWORD: "Ptithcm2023",
+		MIN_DATE_OF_BIRTH: "1890-5-19",
 	},
 	SIDEBAR: [
 		{
@@ -168,6 +170,7 @@ const CONST = {
 		COMMON: "/common",
 		DEPARTMENT: "/department",
 		CHART: "/chart",
+		FILTER: "/filter",
 	},
 	PERMISSION: {
 		ADMIN: "admin",
@@ -192,5 +195,23 @@ const RESPONSE_MESSAGE = {
 		DELETE_SUCCESS: "Xóa lớp tín thành công",
 		DELETE_FAILED: "Lớp tín chỉ đã được sử dụng, không thể xóa",
 	},
+	TEST: {
+		GET_TEST_SUCCESS: "Tải danh sách đề thi thành công",
+		GET_TEST_FAILED: "Tải danh sách đề thi thất bại",
+	},
+	TEST_SCHEDULE: {
+		UPDATE_SUCCESS: "Cập nhật ca thi thành công",
+		UPDATE_FAILED: "Ca thi đã được sử dụng, không thể cập nhật",
+		DELETE_FAILED: "Ca thi đã được sử dụng, không thể xóa",
+		DELETE_SUCCESS: "Xóa ca thi thành công",
+	},
 };
-export { CONST, RESPONSE_MESSAGE };
+const FILTER_DATA = {
+	TYPE: "type",
+	GENDER: "gender",
+	SUBJECT_ID: "subject_id",
+	YEAR: "year",
+	SEMESTER: "semester",
+	ALL: "ALL",
+};
+export { CONST, RESPONSE_MESSAGE, FILTER_DATA };

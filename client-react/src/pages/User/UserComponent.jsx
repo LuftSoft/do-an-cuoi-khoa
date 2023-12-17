@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CommonDialogComponent, CommonTableComponent } from "../../components/Common";
 import { useLoadingService } from "../../contexts/loadingContext";
@@ -15,6 +15,7 @@ import { UserService } from "./UserService";
 import { FeHelpers } from "../../utils/helpers";
 import { QuestionService } from "../Question/QuestionService";
 import ImportDialogComponent from "../Question/ImportComponent";
+import CommonFilterComponent from "../../components/Common/CommonFilter/CommonFilterComponent";
 export default function UserComponent() {
 	const title = "Danh sách tài khoản";
 	const buttons = [
@@ -55,7 +56,95 @@ export default function UserComponent() {
 		type: CONST.DIALOG.TYPE.ADD,
 		id: null,
 	});
+	const filterRef = useRef({
+		search: "",
+		gender: "",
+		type: "",
+	});
+	const TYPE = "TYPE";
+	const GENDER = "GENDER";
 	const accessToken = useSelector(selectAccessToken);
+	const [commonFilter, setCommonFilter] = useState({
+		search: {
+			title: "Tìm kiếm...",
+			handleChange: handleSearchChange,
+		},
+		dropdowns: {
+			genderFilter: {
+				placeholder: "Giới tính",
+				value: "",
+				key: GENDER,
+				options: [
+					{ key: "Tất cả", value: "ALL" },
+					{ key: "Nam", value: "male" },
+					{ key: "Nữ", value: "female" },
+				],
+				handleChange: handleFilterChange,
+			},
+			typeFilter: {
+				placeholder: "Loại",
+				value: "",
+				key: TYPE,
+				options: [
+					{ key: "Tất cả", value: "ALL" },
+					{ key: "Sinh viên", value: "SV" },
+					{ key: "Giảng viên", value: "GV" },
+				],
+				handleChange: handleFilterChange,
+			},
+		},
+	});
+	//filter
+	async function handleFilterChange(data, type) {
+		switch (type) {
+			case TYPE:
+				filterRef.current = { ...filterRef.current, type: data };
+				break;
+			case GENDER:
+				filterRef.current = { ...filterRef.current, gender: data };
+				break;
+			default:
+				break;
+		}
+		await handleFilter();
+	}
+	//search
+	async function handleSearchChange(data) {
+		filterRef.current = { ...filterRef.current, search: data };
+		await handleFilter();
+	}
+	//submit data
+	async function handleFilter() {
+		try {
+			const response = await UserService.getAllUserFilter(filterRef.current);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				response.data?.data.forEach((user) => {
+					user.full_name = `${user?.firstName} ${user?.lastName}`;
+					user.dateOfBirth = FeHelpers.convertDate(user?.dateOfBirth);
+					user.gender_translate = FeHelpers.translateGender(user?.gender);
+					user.type_translate = FeHelpers.translateUserType(user?.type);
+					user.className = {};
+					switch (user?.type) {
+						case CONST.USER.TYPE.SV:
+							user.className.type_translate = "bg-easy";
+							break;
+						case CONST.USER.TYPE.GV:
+							user.className.type_translate = "bg-medium";
+							break;
+						default:
+							break;
+					}
+					user.avatar = `<img class="avatar-small" src="data:image/png;base64,${user.avatar}" alt="avatar" />`;
+				});
+				setDataSource(response.data?.data);
+			} else {
+				toast.error("Tải danh sách tài khoản thất bại");
+			}
+		} catch (err) {
+			console.log(err);
+			toast.error("Tải danh sách tài khoản thất bại");
+		}
+	}
 	async function getUsers() {
 		try {
 			const response = await UserService.getAllUser();
@@ -273,6 +362,7 @@ export default function UserComponent() {
 		<Box>
 			<div>
 				<TitleButtonComponent title={title} buttons={buttons} />
+				<CommonFilterComponent search={commonFilter.search} dropdowns={commonFilter.dropdowns}></CommonFilterComponent>
 			</div>
 			<CommonTableComponent
 				columnDef={columnDef}

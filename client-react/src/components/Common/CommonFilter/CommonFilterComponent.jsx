@@ -22,7 +22,7 @@ export default function CommonFilterComponent({ search, dropdowns }) {
 		const tmp = JSON.parse(JSON.stringify(dropdowns$));
 		tmp[item].value = e.target.value;
 		setDropdowns$(tmp);
-		dropdowns[item].handleChange(e.target.value);
+		dropdowns[item].handleChange(e.target.value, dropdowns[item].key);
 	}
 	function handleSearchChange(e) {
 		setSearchValue(e.target.value);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { Container, MenuItem, Avatar } from "@mui/material";
+import { Container, MenuItem, Avatar, FormControlLabel, Checkbox } from "@mui/material";
 import { toast } from "react-toastify";
 import { useLoadingService } from "../../contexts/loadingContext";
 import { FeHelpers } from "../../utils/helpers";
@@ -30,6 +30,7 @@ const CreateUserComponent = ({ onSubmit, data }) => {
 	const loadingService = useLoadingService();
 	const [previewAvatar, setPreviewAvatar] = useState("");
 	const [user, setUser] = useState({});
+	const [defaultPasswordChecked, setDefaultPasswordChecked] = useState(true);
 	const GENDER = CONST.USER.GENDER;
 	const TYPE = CONST.USER.TYPE;
 
@@ -82,9 +83,14 @@ const CreateUserComponent = ({ onSubmit, data }) => {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		const errors = {};
-		Object.keys(errors).forEach((item) => {
-			if (FeHelpers.isStringEmpty(errors[item])) {
+		Object.keys(formData).forEach((item) => {
+			if (item === "id" || item === "avatar") return;
+			if (item === "password" && data.type !== CONST.DIALOG.TYPE.ADD) return;
+			if (FeHelpers.isStringEmpty(formData[item])) {
 				errors[item] = `Vui lòng nhập dữ liệu cho ${item}.`;
+			}
+			if (data.type === CONST.DIALOG.TYPE.ADD && !FeHelpers.checkPassword(formData.password)) {
+				errors.password = `Mật khẩu phải gồm chữ thường, chữ hoa và số.`;
 			}
 		});
 
@@ -96,7 +102,7 @@ const CreateUserComponent = ({ onSubmit, data }) => {
 		if (formData.avatar.type === "Buffer") {
 			formData.avatar = null;
 		}
-		console.log(formData);
+		console.log("formData", formData);
 		switch (data.type) {
 			case CONST.DIALOG.TYPE.EDIT:
 				UserService.updateUser(formData, accessToken)
@@ -141,6 +147,17 @@ const CreateUserComponent = ({ onSubmit, data }) => {
 			return `data:image/png;base64,${previewAvatar}`;
 		}
 	};
+	const genHelperText = (content) => {
+		return `Vui lòng nhập dữ liệu cho ${content}`;
+	};
+	const handleDefaultPasswordChange = (e) => {
+		if (!defaultPasswordChecked) {
+			setFormData({ ...formData, password: CONST.USER.DEFAULT_USER_PASSWORD });
+		} else {
+			setFormData({ ...formData, password: "" });
+		}
+		setDefaultPasswordChecked(!defaultPasswordChecked);
+	};
 	return (
 		<Container style={{ padding: "0 24px 24px 24px" }}>
 			<form onSubmit={handleSubmit} encType="multipart/form-data">
@@ -156,7 +173,8 @@ const CreateUserComponent = ({ onSubmit, data }) => {
 					value={formData.firstName}
 					onChange={handleChange}
 					fullWidth
-					error={errors.firstName}
+					error={Boolean(errors.firstName)}
+					helperText={genHelperText("Họ")}
 					margin="normal"
 				/>
 				<TextField
@@ -164,7 +182,8 @@ const CreateUserComponent = ({ onSubmit, data }) => {
 					variant="outlined"
 					name="lastName"
 					value={formData.lastName}
-					error={errors.lastName}
+					error={Boolean(errors.lastName)}
+					helperText={genHelperText("Tên")}
 					onChange={handleChange}
 					fullWidth
 					margin="normal"
@@ -175,23 +194,33 @@ const CreateUserComponent = ({ onSubmit, data }) => {
 					name="email"
 					type="email"
 					value={formData.email}
-					error={errors.email}
+					error={Boolean(errors.email)}
+					helperText={errors.email}
 					onChange={handleChange}
 					fullWidth
 					margin="normal"
 				/>
-				<TextField
-					label="Mật khẩu"
-					type="password"
-					variant="outlined"
-					name="password"
-					value={formData.password}
-					error={errors.password}
-					autoComplete="current-password"
-					onChange={handleChange}
-					fullWidth
-					margin="normal"
-				/>
+				{data.type === CONST.DIALOG.TYPE.ADD ? (
+					<TextField
+						label="Mật khẩu"
+						type="password"
+						variant="outlined"
+						name="password"
+						value={formData.password}
+						error={Boolean(errors.password)}
+						helperText={errors.password}
+						autoComplete="current-password"
+						onChange={handleChange}
+						fullWidth
+						margin="normal"
+					/>
+				) : null}
+				{data.type === CONST.DIALOG.TYPE.ADD ? (
+					<FormControlLabel
+						control={<Checkbox checked={defaultPasswordChecked} onChange={handleDefaultPasswordChange} />}
+						label="Sử dụng mật khẩu mặc định"
+					/>
+				) : null}
 				<TextField
 					select
 					fullWidth
@@ -199,7 +228,8 @@ const CreateUserComponent = ({ onSubmit, data }) => {
 					label="Giới tính"
 					variant="outlined"
 					value={formData.gender}
-					error={errors.gender}
+					helperText={genHelperText("Giới tính")}
+					error={Boolean(errors.gender)}
 					onChange={handleChange}
 					margin="normal">
 					{Object.keys(GENDER).map((gender, index) => (
@@ -215,7 +245,8 @@ const CreateUserComponent = ({ onSubmit, data }) => {
 					label="Loại"
 					variant="outlined"
 					value={formData.type}
-					error={errors.type}
+					error={Boolean(errors.type)}
+					helperText={genHelperText("Loại")}
 					onChange={handleChange}
 					margin="normal">
 					{Object.keys(TYPE).map((type, index) => (
@@ -229,9 +260,16 @@ const CreateUserComponent = ({ onSubmit, data }) => {
 					variant="outlined"
 					name="dateOfBirth"
 					value={dayjs(formData.dateOfBirth).format("YYYY-MM-DD")}
-					error={errors.dateOfBirth}
+					error={Boolean(errors.dateOfBirth)}
 					onChange={handleChange}
+					InputProps={{
+						inputProps: {
+							max: FeHelpers.getMaxDateOfBirth(),
+							min: CONST.USER.MIN_DATE_OF_BIRTH,
+						},
+					}}
 					fullWidth
+					helperText={genHelperText("Ngày sinh")}
 					type="date"
 					margin="normal"
 					InputLabelProps={{ shrink: true }}

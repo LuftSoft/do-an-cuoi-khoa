@@ -134,6 +134,14 @@ router.get("/", async (req, res) => {
     )
   );
 });
+/**
+ * filter data model
+ * @{gender:"MALE",type:"SV", search:"search something"}
+ */
+router.get("/filter", async (req, res) => {
+  console.log("req.query", req.query);
+  res.send(await userService.getAllFilter(req.query));
+});
 //authorize([]),
 router.get("/:id", async (req, res) => {
   try {

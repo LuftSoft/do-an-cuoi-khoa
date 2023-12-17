@@ -7,12 +7,13 @@ import TitleButtonComponent from "../../components/Common/CommonHeader/CommonHea
 
 import { toast } from "react-toastify";
 import { CreateTestScheduleComponent } from ".";
-import { CONST } from "../../utils/const";
+import { CONST, RESPONSE_MESSAGE } from "../../utils/const";
 import { QuestionService } from "../Question/QuestionService";
 import "./TestSchedule.css";
 import { TestScheduleService } from "./TetsScheduleService";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import dayjs from "dayjs";
+import EditTestScheduleComponent from "./EditTestScheduleComponent";
 export default function TestScheduleComponent() {
 	const title = "Lịch thi ";
 	const buttons = [
@@ -25,6 +26,8 @@ export default function TestScheduleComponent() {
 	const loadingService = useLoadingService();
 	const [openCreateTestScheduleDialog, setOpenCreateTestScheduleDialog] = useState(false);
 	const [dataSource, setDataSource] = useState([]);
+	const [openEditTestScheduleDialog, setOpenEditTestScheduleDialog] = useState(false);
+	const [editTestScheduleData, setEditTestScheduleData] = useState(null);
 	const [confirmDialog, setConfirmDialog] = useState(false);
 	const [deleteTestScheduleId, setDeleteTestScheduleId] = useState(null);
 	async function getTestSchedules() {
@@ -45,6 +48,15 @@ export default function TestScheduleComponent() {
 	async function handleClose(data) {
 		if (data?.code === CONST.API_RESPONSE.SUCCESS) {
 			await getTestSchedules();
+			setOpenEditTestScheduleDialog(false);
+		} else {
+			setOpenEditTestScheduleDialog(true);
+		}
+	}
+
+	async function handleCreateClose(data) {
+		if (data?.code === CONST.API_RESPONSE.SUCCESS) {
+			await getTestSchedules();
 			setOpenCreateTestScheduleDialog(false);
 		} else {
 			setOpenCreateTestScheduleDialog(true);
@@ -52,6 +64,8 @@ export default function TestScheduleComponent() {
 	}
 	function onCloseCreateSubjectForm() {
 		setOpenCreateTestScheduleDialog(false);
+		setOpenEditTestScheduleDialog(false);
+		setConfirmDialog(false);
 	}
 	const columnDef = [
 		{
@@ -93,21 +107,37 @@ export default function TestScheduleComponent() {
 		fetchData();
 	}, []);
 	function handleDelete(row) {
+		if (row.quantity > 0) {
+			toast.error(RESPONSE_MESSAGE.TEST_SCHEDULE.UPDATE_FAILED);
+			return;
+		}
 		setDeleteTestScheduleId(row?.id);
 		setConfirmDialog(true);
 	}
 	async function handleConfirmDialog(value) {
 		if (value) {
-			const response = await TestScheduleService.deleteTestSchedule(deleteTestScheduleId);
-			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-				toast.success("Xóa ca thi thành công!");
-				await getInitData();
-			} else {
-				toast.error("Xóa ca thi thất bại, ca thi đã được đăng ký");
+			try {
+				const response = await TestScheduleService.deleteTestSchedule(deleteTestScheduleId);
+				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+					toast.success(RESPONSE_MESSAGE.TEST_SCHEDULE.DELETE_SUCCESS);
+					await getInitData();
+				} else {
+					toast.error(RESPONSE_MESSAGE.TEST_SCHEDULE.DELETE_FAILED);
+				}
+			} catch (err) {
+				toast.error(RESPONSE_MESSAGE.TEST_SCHEDULE.DELETE_FAILED);
 			}
 		}
 		setConfirmDialog(false);
 	}
+	const handleEdit = (row) => {
+		if (row.quantity > 0) {
+			toast.error(RESPONSE_MESSAGE.TEST_SCHEDULE.UPDATE_FAILED);
+			return;
+		}
+		setEditTestScheduleData(row);
+		setOpenEditTestScheduleDialog(true);
+	};
 	return (
 		<Box>
 			<div>
@@ -116,7 +146,8 @@ export default function TestScheduleComponent() {
 			<CommonTableComponent
 				columnDef={columnDef}
 				dataSource={dataSource}
-				onDelete={handleDelete}></CommonTableComponent>
+				onDelete={handleDelete}
+				onEdit={handleEdit}></CommonTableComponent>
 			<CommonDialogComponent
 				open={openCreateTestScheduleDialog}
 				title={createTitle}
@@ -124,7 +155,16 @@ export default function TestScheduleComponent() {
 				width="45vw"
 				height="50vh"
 				onClose={onCloseCreateSubjectForm}>
-				<CreateTestScheduleComponent onSubmit={handleClose} />
+				<CreateTestScheduleComponent onSubmit={handleCreateClose} />
+			</CommonDialogComponent>
+			<CommonDialogComponent
+				open={openEditTestScheduleDialog}
+				title="Chỉnh sửa lịch thi"
+				icon="fa-solid fa-circle-plus"
+				width="45vw"
+				height="50vh"
+				onClose={onCloseCreateSubjectForm}>
+				<EditTestScheduleComponent data={editTestScheduleData} onSubmit={handleClose} />
 			</CommonDialogComponent>
 			<CommonDialogComponent
 				open={confirmDialog}

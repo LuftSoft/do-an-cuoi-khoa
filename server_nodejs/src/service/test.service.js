@@ -15,6 +15,7 @@ const PDFKit = require("pdfkit");
 const path = require("path");
 const subjectRepository = require("../repository/subject.repository");
 const authService = require("./auth.service");
+const { FILTER_CONST } = require("../shared/filter.constant");
 module.exports = {
   getAll: async (id) => {
     try {
@@ -30,6 +31,62 @@ module.exports = {
         return new BaseAPIResponse(
           CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
           await testRepository.getAllByUserId(id),
+          null
+        );
+      }
+    } catch (err) {
+      logger.error("get all test failed!");
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+  getAllFilter: async (id, filterData) => {
+    try {
+      let queryArr = [];
+      for (let item of Object.keys(filterData)) {
+        if (filterData[item] && filterData[item].length > 0) {
+          switch (item) {
+            case FILTER_CONST.SEARCH:
+              queryArr.push(
+                `(sj.name LIKE '%${filterData[item]}%' OR t.name LIKE '%${filterData[item]}%')`
+              );
+              break;
+            case FILTER_CONST.SUBJECT_ID:
+              queryArr.push(`t.subject_id='${filterData[item]}'`);
+              break;
+            case FILTER_CONST.SEMESTER:
+              queryArr.push(`sm.semester=${filterData[item]}`);
+              break;
+            case FILTER_CONST.YEAR:
+              queryArr.push(`sm.year=${filterData[item]}`);
+              break;
+            default:
+              break;
+          }
+        }
+      }
+      const query = queryArr.length > 0 ? `${queryArr.join(" AND ")}` : "";
+      const isAdmin = await authService.isAdmin(id);
+      if (isAdmin) {
+        var data = await testRepository.getAll();
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await testRepository.getAllFilter(
+            query.length > 0 ? ` WHERE ${query}` : ``
+          ),
+          null
+        );
+      } else {
+        return new BaseAPIResponse(
+          CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+          await testRepository.getAllByUserIdFilter(
+            id,
+            query.length > 0 ? ` AND ${query}` : ``
+          ),
           null
         );
       }

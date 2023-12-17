@@ -4,7 +4,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import { Container } from "@mui/material";
 import { SubjectService } from "../Subject/SubjectService";
-import { CONST } from "../../utils/const";
+import { CONST, RESPONSE_MESSAGE } from "../../utils/const";
 import { toast } from "react-toastify";
 import { useLoadingService } from "../../contexts/loadingContext";
 import { FeHelpers } from "../../utils/helpers";
@@ -14,6 +14,7 @@ import { TestScheduleService } from "./TetsScheduleService";
 import dayjs from "dayjs";
 
 const initialValues = {
+	id: "",
 	name: "",
 	semester_year: "",
 	semester_id: "",
@@ -22,11 +23,8 @@ const initialValues = {
 
 const levels = CONST.QUESTION.LEVEL_OBJ;
 const correctAnswers = CONST.QUESTION.CORRECT_ANSWER_OBJ;
-function formatCurrentDate() {
-	return dayjs(new Date()).format("YYYY-MM-DD hh:mm:ss");
-}
 
-const CreateTestSchedule = ({ onSubmit }) => {
+const EditTestScheduleComponent = ({ data, onSubmit }) => {
 	const [years, setYears] = useState([]);
 	const [semesters, setSemesters] = useState([]);
 	const [semestersFilter, setSemestersFilter] = useState([]);
@@ -46,10 +44,26 @@ const CreateTestSchedule = ({ onSubmit }) => {
 		setSemesters(semester.data?.data || []);
 		var year = getAllYear(semester.data?.data);
 		setYears(year);
+		try {
+			const response = await TestScheduleService.getOneTestSchedule(data.id);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				let resData = response.data?.data;
+				resData.semester_year = semester.data?.data?.filter((item) => item.id === resData.semester_id)[0]?.year;
+				resData.date = dayjs(resData.date).format("YYYY-MM-DD hh:mm:ss");
+				const filter = semester.data?.data?.filter((item) => {
+					return item.year == resData.semester_year;
+				});
+				setSemestersFilter(filter);
+				setFormData(resData);
+			} else {
+				toast.error(`Tạo ca thi thất bại. Lỗi: ${response.data.message ? response.data.message : "Không xác định!"}`);
+			}
+		} catch (err) {
+			console.log("Error when create question: ", err);
+		}
 		loadingService.setLoading(false);
 	}
 	useEffect(() => {
-		initialValues.date = formatCurrentDate();
 		async function fetchData() {
 			await getInitData();
 		}
@@ -74,7 +88,7 @@ const CreateTestSchedule = ({ onSubmit }) => {
 			setSemestersFilter(filter);
 		}
 	};
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		const errors = {};
 		Object.keys(formData).forEach((item) => {
@@ -88,16 +102,18 @@ const CreateTestSchedule = ({ onSubmit }) => {
 			setErrors(errors);
 			return;
 		}
-		TestScheduleService.createTestSchedule(formData)
-			.then((response) => {
-				if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-					toast.success("Tạo ca thi thành công!");
-					onSubmit(response.data);
-				} else {
-					toast.error(`Tạo ca thi thất bại. Lỗi: ${response.data.message ? response.data.message : "Không xác định!"}`);
-				}
-			})
-			.catch((err) => console.log("Error when create question: ", err));
+		try {
+			const response = await TestScheduleService.updateTestSchedule(formData);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				toast.success(RESPONSE_MESSAGE.TEST_SCHEDULE.UPDATE_SUCCESS);
+				onSubmit(response.data);
+			} else {
+				toast.error(RESPONSE_MESSAGE.TEST_SCHEDULE.UPDATE_FAILED);
+			}
+		} catch (err) {
+			toast.error(RESPONSE_MESSAGE.TEST_SCHEDULE.UPDATE_FAILED);
+			console.log("Error when create question: ", err);
+		}
 	};
 
 	return (
@@ -168,4 +184,4 @@ const CreateTestSchedule = ({ onSubmit }) => {
 	);
 };
 
-export default CreateTestSchedule;
+export default EditTestScheduleComponent;

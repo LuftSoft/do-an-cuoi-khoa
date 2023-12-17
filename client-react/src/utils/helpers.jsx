@@ -295,6 +295,10 @@ export const FeHelpers = {
 			return axios.delete(url, { headers: { Authorization: "Bearer " + token } });
 		},
 	},
+	getMaxDateOfBirth: () => {
+		const now = new Date();
+		return `${now.getFullYear() - 17}-${now.getMonth() + 1}-${now.getDate()}`;
+	},
 	/**
 	 * get permission of user in redux user
 	 * @param {*} user

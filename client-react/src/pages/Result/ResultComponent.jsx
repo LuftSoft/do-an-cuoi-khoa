@@ -38,12 +38,12 @@ export default function ResultComponent() {
 	const [openResultDetailDialog, setOpenResultDetailDialog] = useState(false);
 	const accessToken = useSelector(selectAccessToken);
 	const resultDetailDataRef = useRef(undefined);
+	const buttons = [];
 	const filterRef = useRef({
 		subject_id: "",
 		year: "",
 		semester: "",
 	});
-	const buttons = [];
 	const [commonFilter, setCommonFilter] = useState({
 		dropdowns: {
 			subjectFilter: {

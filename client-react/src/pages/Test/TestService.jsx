@@ -1,12 +1,26 @@
 import axios from "axios";
-import { CONST } from "../../utils/const";
+import { CONST, FILTER_DATA } from "../../utils/const";
 import { FeHelpers } from "../../utils/helpers";
 
 const TEST_ROUTE = CONST.BASE_URL + CONST.ROUTES.TEST;
+const TEST_FILTER_ROUTE = CONST.BASE_URL + CONST.ROUTES.TEST + CONST.ROUTES.FILTER;
 const TEST_CLASS_ROUTE = CONST.BASE_URL + CONST.ROUTES.TEST + CONST.ROUTES.CREDIT_CLASS;
 export const TestService = {
 	getAllTest: async (token) => {
 		return await FeHelpers.axiosWithJwt.GET(TEST_ROUTE, token);
+	},
+	getAllTestFilter: async (filterData, token) => {
+		let url = TEST_FILTER_ROUTE;
+		var isFirstParam = false;
+		for (let i of Object.keys(filterData)) {
+			if (!isFirstParam && filterData[i] !== FILTER_DATA.ALL) {
+				url += `?${i}=${filterData[i]}`;
+				isFirstParam = !isFirstParam;
+			} else if (filterData[i] !== FILTER_DATA.ALL) {
+				url += `&${i}=${filterData[i]}`;
+			}
+		}
+		return FeHelpers.axiosWithJwt.GET(url, token);
 	},
 	getOneTest: async (id) => {
 		return await axios.get(`${TEST_ROUTE}/${id}`);

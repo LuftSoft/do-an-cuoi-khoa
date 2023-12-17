@@ -7,8 +7,8 @@ import { Box, Button, CardActionArea, CardActions, Container } from "@mui/materi
 import { TestService } from "./TestService";
 import { useSelector } from "react-redux";
 import { selectAccessToken, selectUser } from "../../redux/selectors";
-import { useEffect, useState } from "react";
-import { CONST } from "../../utils/const";
+import { useEffect, useRef, useState } from "react";
+import { CONST, FILTER_DATA, RESPONSE_MESSAGE } from "../../utils/const";
 import { toast } from "react-toastify";
 import TitleButtonComponent from "../../components/Common/CommonHeader/CommonHeaderComponent";
 import { CommonDialogComponent } from "../../components/Common";
@@ -17,6 +17,11 @@ import AssignTestComponent from "./AssignTestComponent";
 import TestDetailComponent from "./TestDetailComponent";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import { FeHelpers } from "../../utils/helpers";
+import CommonFilterComponent from "../../components/Common/CommonFilter/CommonFilterComponent";
+import { UserService } from "../User/UserService";
+import { ResultService } from "../Result/ResultService";
+import { useLoadingService } from "../../contexts/loadingContext";
+import { SubjectService } from "../Subject/SubjectService";
 
 export default function TestComponent() {
 	const title = "Đề thi";
@@ -40,10 +45,139 @@ export default function TestComponent() {
 	const permissions = FeHelpers.getUserPermission(currentUser);
 	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
 	const CURRENT_USER_ID = FeHelpers.getUserId(currentUser);
+	const { loading, setLoading } = useLoadingService();
+	CONST.ACCESS_TOKEN_EXPIRED;
+	const filterRef = useRef({
+		search: "",
+		subject_id: "",
+		year: "",
+		semester: "",
+	});
+	const [commonFilter, setCommonFilter] = useState({
+		search: {
+			title: "Tìm kiếm...",
+			handleChange: handleSearchChange,
+		},
+		dropdowns: {
+			subjectFilter: {
+				placeholder: "Môn học",
+				value: "",
+				key: FILTER_DATA.SUBJECT_ID,
+				options: [{ key: "Tất cả", value: "ALL" }],
+				handleChange: handleFilterChange,
+			},
+			yearFilter: {
+				placeholder: "Năm học",
+				value: "",
+				key: FILTER_DATA.YEAR,
+				options: [{ key: "Tất cả", value: "ALL" }],
+				handleChange: handleFilterChange,
+			},
+			semesterFilter: {
+				placeholder: "Học kỳ",
+				value: "",
+				key: FILTER_DATA.SEMESTER,
+				options: [{ key: "Tất cả", value: "ALL" }],
+				handleChange: handleFilterChange,
+			},
+		},
+	});
+	async function handleFilterChange(data, type) {
+		switch (type) {
+			case FILTER_DATA.SUBJECT_ID:
+				filterRef.current = { ...filterRef.current, subject_id: data };
+				break;
+			case FILTER_DATA.SEMESTER:
+				filterRef.current = { ...filterRef.current, semester: data };
+				break;
+			case FILTER_DATA.YEAR:
+				filterRef.current = { ...filterRef.current, year: data };
+				break;
+			default:
+				break;
+		}
+		await handleFilter();
+	}
+	//search
+	async function handleSearchChange(data) {
+		filterRef.current = { ...filterRef.current, search: data };
+		await handleFilter();
+	}
+	//submit data
+	async function handleFilter() {
+		try {
+			const response = await TestService.getAllTestFilter(filterRef.current, accessToken);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				setTests(response.data?.data);
+				console.log(response.data?.data);
+			} else {
+				toast.error(RESPONSE_MESSAGE.TEST.GET_TEST_FAILED);
+			}
+		} catch (err) {
+			toast.error(RESPONSE_MESSAGE.TEST.GET_TEST_FAILED);
+			console.log("get all tests error: ", err);
+		}
+	}
+	async function getSubjects(token) {
+		try {
+			const response = await SubjectService.getSubjectDropdownByUserId(token);
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				let opts = commonFilter.dropdowns;
+				let sjOpts = opts?.subjectFilter?.options;
+				sjOpts = sjOpts.length >= 1 ? sjOpts.slice(0, 1) : sjOpts;
+				response.data?.data?.forEach((item) => {
+					sjOpts.push({ key: item.name, value: item.id });
+				});
+				opts.subjectFilter.options = sjOpts;
+				setCommonFilter({ ...commonFilter, dropdowns: opts });
+			}
+		} catch (err) {
+			console.log("err", err);
+		}
+	}
+	async function getYears() {
+		try {
+			const response = await ResultService.getAllSemesterYear();
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				let opts = commonFilter.dropdowns;
+				let sjOpts = opts?.yearFilter?.options;
+				sjOpts = sjOpts.length >= 1 ? sjOpts.slice(0, 1) : sjOpts;
+				response.data?.data?.forEach((item) => {
+					sjOpts.push({ key: `${item.year}-${item.year + 1}`, value: item.year });
+				});
+				opts.yearFilter.options = sjOpts;
+				setCommonFilter({ ...commonFilter, dropdowns: opts });
+			}
+		} catch (err) {
+			console.log("err", err);
+		}
+	}
+	async function getSemesters() {
+		try {
+			const response = await ResultService.getAllSemesters();
+			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
+				let opts = commonFilter.dropdowns;
+				let sjOpts = opts?.semesterFilter?.options;
+				sjOpts = sjOpts.length >= 1 ? sjOpts.slice(0, 1) : sjOpts;
+				response.data?.data?.forEach((item) => {
+					sjOpts.push({ key: `Học kỳ ${item.semester}`, value: item.semester });
+				});
+				opts.semesterFilter.options = sjOpts;
+				setCommonFilter({ ...commonFilter, dropdowns: opts });
+			}
+		} catch (err) {
+			console.log("err", err);
+		}
+	}
+	//
 	useEffect(() => {
 		const fetchData = async () => {
-			console.log(CURRENT_USER_ID);
+			setLoading(true);
 			await getTests();
+			await getSubjects(accessToken);
+			await getYears();
+			await getSemesters();
+			setLoading(false);
 		};
 		fetchData();
 	}, []);
@@ -54,10 +188,10 @@ export default function TestComponent() {
 				setTests(response.data?.data);
 				console.log(response.data?.data);
 			} else {
-				toast.error("Tải danh sách đề thi thất bại");
+				toast.error(RESPONSE_MESSAGE.TEST.GET_TEST_FAILED);
 			}
 		} catch (err) {
-			toast.error("Tải danh sách đề thi thất bại");
+			toast.error(RESPONSE_MESSAGE.TEST.GET_TEST_FAILED);
 			console.log("get all tests error: ", err);
 		}
 	}
@@ -125,6 +259,7 @@ export default function TestComponent() {
 		<Box>
 			<div>
 				<TitleButtonComponent title={title} buttons={buttons} />
+				<CommonFilterComponent search={commonFilter.search} dropdowns={commonFilter.dropdowns}></CommonFilterComponent>
 			</div>
 			<div className="test-container my-3">
 				{tests.map((test, index) => (

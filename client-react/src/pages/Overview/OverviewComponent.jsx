@@ -51,7 +51,7 @@ export default function OverviewComponent() {
 	const buttons = [];
 	const colors = ["#D6A2E8", "#FEA47F", "#3B3B98", "#f78fb3"];
 	const chartData = {
-		labels: barChartData.map((i) => `HK${i.semester} ${i.year}`).reverse(),
+		labels: barChartData.map((i) => `HK${i.semester} ${i.year}-${i.year + 1}`).reverse(),
 		datasets: [
 			{
 				label: "Số bài thi",
