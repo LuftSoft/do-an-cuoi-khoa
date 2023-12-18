@@ -39,9 +39,9 @@ module.exports = {
     const query =
       "INSERT INTO chapters(`name`,`index`,`subject_id`) VALUES('" +
       chapter.name +
-      "', (SELECT(SELECT id FROM chapters AS ch WHERE ch.subject_id = '" +
+      "', (SELECT(SELECT ch.index FROM chapters AS ch WHERE ch.subject_id = '" +
       chapter.subject_id +
-      "' ORDER BY ch.index LIMIT 1) + 1), '" +
+      "' ORDER BY ch.index DESC LIMIT 1) + 1), '" +
       chapter.subject_id +
       "')";
     const chapterCreate = await chapters.sequelize.query(query, {

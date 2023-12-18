@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import { CreateQuestionComponent } from ".";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import CommonFilterComponent from "../../components/Common/CommonFilter/CommonFilterComponent";
-import { selectAccessToken } from "../../redux/selectors";
+import { selectAccessToken, selectUser } from "../../redux/selectors";
 import { CONST } from "../../utils/const";
 import { FeHelpers } from "../../utils/helpers";
 import ImportDialogComponent from "./ImportComponent";
@@ -31,17 +31,25 @@ export default function QuestionComponent() {
 			color: CONST.BUTTON.COLOR.SUCCESS,
 			onClick: handleOpenImportQuestionDialog,
 		},
-		{
-			name: "Export",
-			icon: "fa-solid fa-file-export",
-			color: CONST.BUTTON.COLOR.SUCCESS,
-			onClick: handleExportQuestion,
-		},
+		// {
+		// 	name: "Export",
+		// 	icon: "fa-solid fa-file-export",
+		// 	color: CONST.BUTTON.COLOR.SUCCESS,
+		// 	onClick: handleExportQuestion,
+		// },
 		{
 			name: "Template",
 			icon: "fa-solid fa-download",
 			onClick: handleDownLoadTemplate,
 			color: CONST.BUTTON.COLOR.WARNING,
+		},
+	];
+	const gvButtons = [
+		{
+			name: "Tạo câu hỏi",
+			icon: "fa-solid fa-plus",
+			onClick: handleButtonClick,
+			color: CONST.BUTTON.COLOR.PRIMARY,
 		},
 	];
 	const loadingService = useLoadingService();
@@ -56,6 +64,10 @@ export default function QuestionComponent() {
 	const [deleteId, setDeleteId] = useState("");
 	const [question, setQuestion] = useState({});
 	const DEFAULT_OPTION = "ALL";
+	const currentUser = useSelector(selectUser);
+	const permissions = FeHelpers.getUserPermission(currentUser);
+	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
+	const CURRENT_USER_ID = FeHelpers.getUserId(currentUser);
 	const [commonFilter, setCommonFilter] = useState({
 		search: {
 			title: "Tìm kiếm câu hỏi",
@@ -188,11 +200,20 @@ export default function QuestionComponent() {
 		setOpenCreateQuestionDialog(true);
 	}
 	function handleEdit(question) {
+		if (question.user_id !== CURRENT_USER_ID) {
+			toast.error("Bạn không thể chỉnh sửa câu hỏi của người khác");
+			return;
+		}
 		setQuestion(question);
 		setType(CONST.DIALOG.TYPE.EDIT);
 		setOpenCreateQuestionDialog(true);
 	}
 	function handleDelete(question) {
+		console.log("delete question", question);
+		if (question.user_id !== CURRENT_USER_ID) {
+			toast.error("Bạn không thể chỉnh sửa câu hỏi của người khác");
+			return;
+		}
 		setDeleteId(question.id);
 		setConfirmDialog(true);
 	}
@@ -407,7 +428,7 @@ export default function QuestionComponent() {
 	return (
 		<Box>
 			<div>
-				<TitleButtonComponent title={title} buttons={buttons} />
+				<TitleButtonComponent title={title} buttons={HAS_ADMIN_PERMISSION ? buttons : gvButtons} />
 				<CommonFilterComponent search={commonFilter.search} dropdowns={commonFilter.dropdowns}></CommonFilterComponent>
 			</div>
 			<CommonTableComponent

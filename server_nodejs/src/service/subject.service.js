@@ -127,7 +127,7 @@ module.exports = {
   },
   update: async (subject) => {
     try {
-      let subjectModel = await subjectRepository.getById(subject.id);
+      let subjectModel = await subjectRepository.getEntityById(subject.id);
       if (!subjectModel) {
         throw new Error("Môn học không tồn tại");
       }

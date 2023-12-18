@@ -18,7 +18,7 @@ module.exports = {
       );
       let tmp = newest_class_code[0].class_code;
       let new_class_code =
-        tmp.substring(0, 4) + (Number.parseInt(tmp.slice(4)) + 1).toString();
+        tmp.substring(0, 3) + (Number.parseInt(tmp.slice(3)) + 1).toString();
       credit_classCreate = await credit_classes.sequelize.query(
         `INSERT INTO credit_classes(class_code, semester_id, subject_id, name, quantity) values('${new_class_code}',${credit_class.semester_id},'${credit_class.subject_id}', '${credit_class.name}', ${credit_class.quantity})`,
         { type: QueryTypes.INSERT }
@@ -54,11 +54,22 @@ module.exports = {
     });
     return listcredit_class;
   },
+  getAllByUserId: async (id) => {
+    const query = ` SELECT cc.*, sj.name as subject_name, sm.semester as semester_semester, CONCAT(sm.year,' - ', sm.year+1) as semester_year
+    FROM credit_classes as cc
+    INNER JOIN subjects as sj ON cc.subject_id = sj.id
+    INNER JOIN semesters as sm ON cc.semester_id = sm.id
+    INNER JOIN assigns AS ass on ass.credit_class_id = cc.id AND ass.user_id='${id}'
+    ORDER BY sm.id DESC;`;
+    return await credit_classes.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+  },
   getGVByCreditClassId: async (id) => {
     const query = `SELECT DISTINCT us.* from credit_classes AS cc
     INNER JOIN user_cluster_subjects AS ucs ON ucs.subject_id = cc.subject_id
     INNER JOIN users AS us ON us.id = ucs.user_id
-    INNER JOIN clusters AS cl ON cl.user_id = us.id
+    INNER JOIN clusters AS cl ON cl.user_id = us.id AND ucs.cluster_id = cl.id
     WHERE  cc.id = ${id};`;
     return await credit_classes.sequelize.query(query, {
       type: QueryTypes.SELECT,

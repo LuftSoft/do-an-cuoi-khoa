@@ -280,7 +280,8 @@ export default function TestDetailComponent(props) {
 			<CommonTableComponent
 				columnDef={columnDef}
 				dataSource={testDetails.questions || []}
-				onDelete={handleDelete}></CommonTableComponent>
+				// onDelete={handleDelete}
+			></CommonTableComponent>
 			<CommonDialogComponent
 				open={confirmRemoveUserDialog}
 				title="Xác nhận"

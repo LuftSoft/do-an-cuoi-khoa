@@ -30,12 +30,12 @@ export default function UserComponent() {
 			color: CONST.BUTTON.COLOR.SUCCESS,
 			onClick: handleOpenImportQuestionDialog,
 		},
-		{
-			name: "Export",
-			icon: "fa-solid fa-file-export",
-			color: CONST.BUTTON.COLOR.SUCCESS,
-			onClick: handleExportQuestion,
-		},
+		// {
+		// 	name: "Export",
+		// 	icon: "fa-solid fa-file-export",
+		// 	color: CONST.BUTTON.COLOR.SUCCESS,
+		// 	onClick: handleExportQuestion,
+		// },
 		{
 			name: "Template",
 			icon: "fa-solid fa-download",

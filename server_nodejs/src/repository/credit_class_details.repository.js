@@ -7,7 +7,7 @@ const credit_class_details = dbContext.credit_class_details;
 module.exports = {
   /**/
   getUserClass: async (id) => {
-    const query = `SELECT cc.*, users.firstName as first_name, users.lastName as last_name, users.code as user_code 
+    const query = `SELECT cc.*, users.firstName as first_name, users.lastName as last_name, users.code as user_code, users.email as user_email 
     FROM credit_class_details AS cc 
     INNER JOIN users ON cc.user_id = users.id
     WHERE cc.credit_class_id = ${id}`;

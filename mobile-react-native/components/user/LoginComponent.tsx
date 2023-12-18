@@ -19,10 +19,10 @@ type Props = {
   navigation: LoginScreenNavigationProp;
 };
 const initValues: LoginModel = {
-  // email: 'sv@student.ptithcm.edu.vn',
+  // email: 'luffschloss@gmail.com',
   // password: 'Ptithcm2023',
-  email: 'luffschloss@gmail.com',
-  password: 'Ptithcm2023',
+  email: '',
+  password: '',
 };
 const LoginComponent: React.FC<Props> = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -92,7 +92,7 @@ const LoginComponent: React.FC<Props> = ({navigation}) => {
       <Button mode="contained" onPress={handleLogin} style={styles.button}>
         Đăng nhập
       </Button>
-      <Text style={styles.forgotPassword}>Quên mật khẩu?</Text>
+      {/* <Text style={styles.forgotPassword}>Quên mật khẩu?</Text> */}
     </View>
   );
 };

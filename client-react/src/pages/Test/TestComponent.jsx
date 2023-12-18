@@ -264,7 +264,7 @@ export default function TestComponent() {
 			<div className="test-container my-3">
 				{tests.map((test, index) => (
 					<Card className="custom-card" label="Delete">
-						{HAS_ADMIN_PERMISSION ? (
+						{HAS_ADMIN_PERMISSION || CURRENT_USER_ID === test.user_id ? (
 							<i className="fa-solid fa-trash delete_test" onClick={() => handleDeleteTest(test.id)}></i>
 						) : null}
 						<CardMedia component="img" height="100" className="bg-radient" />

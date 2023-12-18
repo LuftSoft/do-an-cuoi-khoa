@@ -14,6 +14,9 @@ import { TestScheduleService } from "./TetsScheduleService";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import dayjs from "dayjs";
 import EditTestScheduleComponent from "./EditTestScheduleComponent";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../redux/selectors";
+import { FeHelpers } from "../../utils/helpers";
 export default function TestScheduleComponent() {
 	const title = "Lịch thi ";
 	const buttons = [
@@ -30,6 +33,9 @@ export default function TestScheduleComponent() {
 	const [editTestScheduleData, setEditTestScheduleData] = useState(null);
 	const [confirmDialog, setConfirmDialog] = useState(false);
 	const [deleteTestScheduleId, setDeleteTestScheduleId] = useState(null);
+	const currentUser = useSelector(selectUser);
+	const permissions = FeHelpers.getUserPermission(currentUser);
+	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
 	async function getTestSchedules() {
 		try {
 			const response = await TestScheduleService.getAllTestSchedule();
@@ -146,8 +152,8 @@ export default function TestScheduleComponent() {
 			<CommonTableComponent
 				columnDef={columnDef}
 				dataSource={dataSource}
-				onDelete={handleDelete}
-				onEdit={handleEdit}></CommonTableComponent>
+				onDelete={HAS_ADMIN_PERMISSION ? handleDelete : null}
+				onEdit={HAS_ADMIN_PERMISSION ? handleEdit : null}></CommonTableComponent>
 			<CommonDialogComponent
 				open={openCreateTestScheduleDialog}
 				title={createTitle}

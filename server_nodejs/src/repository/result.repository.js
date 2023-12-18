@@ -5,6 +5,7 @@ const results = dbContext.results;
 const result_details = dbContext.result_details;
 const test_credit_classes = dbContext.test_credit_classes;
 const resultDetailRepository = require("./result_detail.repository");
+const { CONSTANTS } = require("../shared/constant");
 
 module.exports = {
   getAll: async () => {
@@ -115,6 +116,20 @@ module.exports = {
     WHERE rs.mark = marks.mark AND rs.test_credit_classes_id=${id}
     GROUP BY marks.mark
     ORDER BY marks.mark ASC;`;
+    const data = await test_credit_classes.sequelize.query(query, {
+      type: QueryTypes.SELECT,
+    });
+    return data;
+  },
+  getStatisticalByTestCreditClassesId: async (id) => {
+    const query = `SELECT COUNT(*) AS total_test, 
+    (SELECT COUNT(*) from results as rs
+    INNER JOIN test_credit_classes as tc ON rs.test_credit_classes_id=tc.id
+    INNER JOIN tests as t ON t.id = tc.test_id
+    WHERE rs.test_credit_classes_id=${id} AND rs.mark > t.total_mark*0.4) AS above_avg_mark
+    ,MAX(rs.mark) AS max_mark, MIN(rs.mark) AS min_mark, AVG(rs.mark) AS avg_mark
+    FROM results AS rs
+    WHERE rs.test_credit_classes_id=${id};`;
     const data = await test_credit_classes.sequelize.query(query, {
       type: QueryTypes.SELECT,
     });

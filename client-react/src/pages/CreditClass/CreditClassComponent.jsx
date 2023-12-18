@@ -13,7 +13,7 @@ import { QuestionService } from "../Question/QuestionService";
 import { CreditClassService } from "./CreditClassService";
 import ImportDialogComponent from "../Question/ImportComponent";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
-import { selectUser } from "../../redux/selectors";
+import { selectAccessToken, selectUser } from "../../redux/selectors";
 import { FeHelpers } from "../../utils/helpers";
 export default function CreditClassComponent() {
 	const title = "Danh sách lớp tín chỉ";
@@ -31,12 +31,13 @@ export default function CreditClassComponent() {
 	const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 	const [dataSource, setDataSource] = useState([]);
 	const [idToDelete, setIdToDelete] = useState(null);
+	const accessToken = useSelector(selectAccessToken);
 	const currentUser = useSelector(selectUser);
 	const permissions = FeHelpers.getUserPermission(currentUser);
 	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
 	async function getCreditClasses() {
 		try {
-			const response = await CreditClassService.getAllCreditClass();
+			const response = await CreditClassService.getAllCreditClassByUserId(accessToken);
 			if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 				setDataSource(response.data?.data);
 			} else {
@@ -62,6 +63,10 @@ export default function CreditClassComponent() {
 		{
 			colName: "Mã lớp tín chỉ",
 			colDef: "class_code",
+		},
+		{
+			colName: "Lớp tín chỉ",
+			colDef: "name",
 		},
 		{
 			colName: "Năm học",

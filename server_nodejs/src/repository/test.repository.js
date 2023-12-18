@@ -28,7 +28,7 @@ module.exports = {
         LEFT JOIN assigns AS ass ON ass.credit_class_id = tcc.credit_class_id
         INNER JOIN semesters as sm ON t.semester_id = sm.id
         INNER JOIN subjects as sj ON t.subject_id = sj.id
-        WHERE t.user_id = '${id}' OR ass.user_id='${id}'
+        WHERE ass.user_id='${id}'
         ORDER BY sm.id DESC;`;
     const res = await tests.sequelize.query(query, {
       type: QueryTypes.SELECT,

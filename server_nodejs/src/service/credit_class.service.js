@@ -7,14 +7,38 @@ const assignService = require("./assign.service");
 const xlsx = require("xlsx");
 const creditClassDetailService = require("../repository/credit_class_details.repository");
 const fs = require("fs");
-const userService = require("./user.service");
 const userRepository = require("../repository/user.repository");
 const { CONSTANTS } = require("../shared/constant");
+const authService = require("./auth.service");
 
 module.exports = {
   getAll: async () => {
     try {
       var data = await credit_classRepository.getAll();
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
+        data,
+        null
+      );
+    } catch (err) {
+      logger.error("get all credit class failed!");
+      console.log(err);
+      return new BaseAPIResponse(
+        CONFIG.RESPONSE_STATUS_CODE.ERROR,
+        null,
+        err.message
+      );
+    }
+  },
+  getAllByUserId: async (id) => {
+    try {
+      const isAdmin = await authService.isAdmin(id);
+      var data;
+      if (isAdmin) {
+        data = await credit_classRepository.getAll();
+      } else {
+        data = await credit_classRepository.getAllByUserId(id);
+      }
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
         data,

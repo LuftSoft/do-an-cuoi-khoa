@@ -1,11 +1,15 @@
 import axios from "axios";
 import { CONST } from "../../utils/const";
+import { FeHelpers } from "../../utils/helpers";
 
 const CREDIT_CLASS_ROUTE = CONST.BASE_URL + CONST.ROUTES.CREDIT_CLASS;
 const ASSIGN_ROUTE = CONST.BASE_URL + CONST.ROUTES.ASSIGN;
 export const CreditClassService = {
 	getAllCreditClass: async () => {
 		return await axios.get(CREDIT_CLASS_ROUTE);
+	},
+	getAllCreditClassByUserId: async (token) => {
+		return await FeHelpers.axiosWithJwt.GET(`${CREDIT_CLASS_ROUTE}/user`, token);
 	},
 	getAllGVForCreditClassId: async (id) => {
 		return await axios.get(`${CREDIT_CLASS_ROUTE}/gv/${id}`);

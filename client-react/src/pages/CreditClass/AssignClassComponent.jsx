@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CommonDialogComponent, CommonTableComponent } from "../../components/Common";
 import { useLoadingService } from "../../contexts/loadingContext";
 
@@ -13,6 +13,8 @@ import { QuestionService } from "../Question/QuestionService";
 import { CreditClassService } from "./CreditClassService";
 import CreateAssignComponent from "./CreateAssignComponent";
 import CreditClassDetailComponent from "./CreditClassDetailComponent";
+import { selectUser } from "../../redux/selectors";
+import { FeHelpers } from "../../utils/helpers";
 export default function AssignClassComponent() {
 	const title = "Phân công giảng viên";
 	const buttons = [
@@ -34,6 +36,13 @@ export default function AssignClassComponent() {
 			onClick: handleClassDetail,
 		},
 	];
+	const actionGV = [
+		{
+			name: "Danh sách lớp",
+			variant: "contained",
+			onClick: handleClassDetail,
+		},
+	];
 	const createTitle = "Phân công giảng viên";
 	const { loading, setLoading } = useLoadingService();
 	const [openAssignCreditClassDialog, setopenAssignCreditClassDialog] = useState(false);
@@ -41,6 +50,9 @@ export default function AssignClassComponent() {
 	const [openCreateCreditClassDialog, setOpenCreateCreditClassDialog] = useState(false);
 	const [dataSource, setDataSource] = useState([]);
 	const [creditClass, setCreditClass] = useState({});
+	const currentUser = useSelector(selectUser);
+	const permissions = FeHelpers.getUserPermission(currentUser);
+	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
 	function getCreditClasses() {
 		setLoading(true);
 		CreditClassService.getAllCreditClass()
@@ -117,9 +129,12 @@ export default function AssignClassComponent() {
 	return (
 		<Box>
 			<div>
-				<TitleButtonComponent title={title} buttons={buttons} />
+				<TitleButtonComponent title={title} buttons={HAS_ADMIN_PERMISSION ? buttons : []} />
 			</div>
-			<CommonTableComponent columnDef={columnDef} dataSource={dataSource} actions={actions}></CommonTableComponent>
+			<CommonTableComponent
+				columnDef={columnDef}
+				dataSource={dataSource}
+				actions={HAS_ADMIN_PERMISSION ? actions : actionGV}></CommonTableComponent>
 			<CommonDialogComponent
 				open={openAssignCreditClassDialog}
 				title={createTitle}

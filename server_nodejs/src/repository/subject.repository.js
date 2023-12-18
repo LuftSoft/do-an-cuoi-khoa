@@ -11,8 +11,7 @@ module.exports = {
     return subjectCreate;
   },
   update: async (subject) => {
-    await subject.save();
-    return subject;
+    return await subject.save();
   },
   delete: async (id) => {
     const query = `DELETE FROM subjects WHERE id = '${id}'`;
@@ -31,6 +30,9 @@ module.exports = {
       type: QueryTypes.SELECT,
     });
     return subject[0];
+  },
+  getEntityById: async (id) => {
+    return await subjects.findByPk(id);
   },
   getAll: async () => {
     const query = `SELECT sj.*, dp.name as department_name FROM subjects as sj

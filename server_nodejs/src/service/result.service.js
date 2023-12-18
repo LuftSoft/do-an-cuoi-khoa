@@ -158,6 +158,8 @@ module.exports = {
   getChartByTestCreditClassesId: async (id) => {
     try {
       var data = await resultRepository.getChartByTestCreditClassesId(id);
+      var statisticalData =
+        await resultRepository.getStatisticalByTestCreditClassesId(id);
       if (!data) {
         return new BaseAPIResponse(
           CONFIG.RESPONSE_STATUS_CODE.ERROR,
@@ -167,7 +169,10 @@ module.exports = {
       }
       return new BaseAPIResponse(
         CONFIG.RESPONSE_STATUS_CODE.SUCCESS,
-        data,
+        {
+          barChartData: data,
+          statisticalData: statisticalData[0],
+        },
         null
       );
     } catch (err) {

@@ -482,7 +482,7 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 							onChange={(e) => handleSwitchChange("auto_generate_question", !formData.auto_generate_question)}
 						/>
 					</div>
-					<div className="w-3">
+					{/* <div className="w-3">
 						<FormControlLabel
 							control={<IOSSwitch sx={{ m: 1 }} defaultChecked />}
 							label="Xem điểm sau khi thi"
@@ -504,9 +504,9 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 							}
 							label="Đảo đáp án"
 						/>
-					</div>
+					</div> */}
 				</div>
-				<div className="row-flex">
+				{/* <div className="row-flex">
 					<div className="w-3">
 						<FormControlLabel
 							control={
@@ -539,7 +539,7 @@ const CreateTest = ({ onSubmit, data, type, btnTitle }) => {
 							onChange={(e) => handleSwitchChange("submit_when_switch_tab", !formData.submit_when_switch_tab)}
 						/>
 					</div>
-				</div>
+				</div> */}
 				{isView() ? null : (
 					<div className="form-footer">
 						<Button type="submit" variant="contained" color="primary" className="mt-3 px-4">

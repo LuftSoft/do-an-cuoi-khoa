@@ -136,7 +136,7 @@ export default function SignInPage() {
 					// }
 				} catch (error) {
 					console.log(error);
-					toast.error("Tài khoản hoặc mật khẩu không đúng");
+					toast.error("Đăng nhập thất bại.");
 				}
 				loadingService.setLoading(false);
 			};

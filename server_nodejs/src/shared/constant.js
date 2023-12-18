@@ -23,4 +23,5 @@ module.exports.CONSTANTS = {
     },
     DEFAULT_PASSWORD: "Ptithcm2023",
   },
+  AVG_PERCENT: 0.4,
 };

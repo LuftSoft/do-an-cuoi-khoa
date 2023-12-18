@@ -85,7 +85,7 @@ export default function AssignTestComponent(props) {
 	};
 
 	const getCreditClasses = async () => {
-		const response = await CreditClassService.getAllCreditClass();
+		const response = await CreditClassService.getAllCreditClassByUserId(accessToken);
 		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
 			let creditClasses = response.data?.data;
 			creditClasses = creditClasses.filter((creditClass) => creditClass.subject_id === test.subject_id);

@@ -10,6 +10,14 @@ router.get("/", async (req, res) => {
   res.send(await creditClassService.getAll());
 });
 
+router.get("/user", authorize([]), async (req, res) => {
+  const accessToken = req.accessToken;
+  const userId = commonService.CHECK_USER_TOKEN(accessToken, res);
+  if (userId) {
+    res.send(await creditClassService.getAllByUserId(userId));
+  }
+});
+
 router.get("/assign/:id", async (req, res) => {
   const id = req.params.id;
   res.send(await creditClassService.getAllAssign(id));

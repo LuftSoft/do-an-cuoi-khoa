@@ -34,6 +34,7 @@ export default function ResultDetailComponent(props) {
 	const [openTestTakeDialog, setOpenTestTakeDialog] = useState(false);
 	const [resultDialogData, setResultDialogData] = useState(null);
 	const [barChartData, setBarChartData] = useState([]);
+	const [statisticalData, setStatisticalData] = useState({});
 	const chartData = {
 		labels: barChartData.map((i) => `${i.mark}`),
 		datasets: [
@@ -78,7 +79,8 @@ export default function ResultDetailComponent(props) {
 	async function getResultChartDetail(id) {
 		const response = await ResultService.getChartByCreditClassesId(id);
 		if (response.data?.code === CONST.API_RESPONSE.SUCCESS) {
-			setBarChartData(response.data?.data);
+			setBarChartData(response.data?.data?.barChartData || []);
+			setStatisticalData(response.data?.data?.statisticalData || {});
 		} else {
 			toast.error("Get all result failed");
 			return [];
@@ -120,9 +122,9 @@ export default function ResultDetailComponent(props) {
 	return (
 		<div style={{ marginLeft: 24, marginRight: 24 }}>
 			<div className="my-2 mx-4 d-flex justify-content-end">
-				<Button type="submit" variant="contained" color="success" onClick={() => handleExportTranscript(data?.id)}>
+				{/* <Button type="submit" variant="contained" color="success" onClick={() => handleExportTranscript(data?.id)}>
 					<i className="fa-solid fa-file-export me-2"></i> Xuất bảng điểm
-				</Button>
+				</Button> */}
 			</div>
 			<div className="d-flex justify-content-center">
 				<div className="mt-2 w-7">
@@ -132,6 +134,24 @@ export default function ResultDetailComponent(props) {
 					</p>
 				</div>
 			</div>
+			<table class="table caption-top my-2">
+				<thead>
+					<tr style={{ textAlign: "center" }}>
+						<th scope="col">Điểm cao nhất</th>
+						<th scope="col">Điểm thấp nhất</th>
+						<th scope="col">Điểm trung bình</th>
+						<th scope="col">Số bài thi trên trung bình</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr style={{ textAlign: "center" }}>
+						<td>{statisticalData.max_mark}</td>
+						<td>{statisticalData.min_mark}</td>
+						<td>{statisticalData.avg_mark}</td>
+						<td>{statisticalData.above_avg_mark}</td>
+					</tr>
+				</tbody>
+			</table>
 			<p className="my-2" style={{ fontWeight: "bold" }}>
 				Danh sách kết quả làm bài thi
 			</p>

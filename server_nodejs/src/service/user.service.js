@@ -314,11 +314,13 @@ module.exports = {
     const newResetPasswordToken = authService.generateResetPasswordToken(
       userExists.id
     );
+    console.log("begin send mail", new Date());
     const result = await sendMailService.SendMailHTML(
       userExists.email,
       CONFIG.API_MESSAGE.USER.FORGOT_PASSWORD,
       `${URL_CONFIG.CORE_CLIENT_URL}${URL_CONFIG.RESET_PASSWORD}?token=${newResetPasswordToken}`
     );
+    console.log("end send mail", new Date());
     if (result) userExists.resetPasswordToken = newResetPasswordToken;
     await userRepository.update(userExists);
     return result ? newResetPasswordToken : false;

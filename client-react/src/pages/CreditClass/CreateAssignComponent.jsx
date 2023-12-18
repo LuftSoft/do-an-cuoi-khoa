@@ -191,7 +191,7 @@ export default function CreateAssignComponent(props) {
 					) : null}
 					{users.map((user, index) => (
 						<MenuItem key={index} value={user.id}>
-							{user.firstName} {user.lastName}
+							{user.firstName} {user.lastName} ({user.email})
 						</MenuItem>
 					))}
 				</TextField>

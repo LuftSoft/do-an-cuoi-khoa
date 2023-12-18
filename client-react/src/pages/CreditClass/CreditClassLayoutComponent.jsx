@@ -57,7 +57,7 @@ export default function CreditClassLayoutComponent() {
 			<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
 				<Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
 					<Tab label="Lớp tín chỉ" {...genIndex(0)} />
-					{HAS_ADMIN_PERMISSION ? <Tab label="Quản lý lớp tín chỉ" {...genIndex(1)} /> : null}
+					<Tab label="Quản lý lớp tín chỉ" {...genIndex(1)} />
 				</Tabs>
 			</Box>
 			<CustomTabPanel value={value} index={0}>

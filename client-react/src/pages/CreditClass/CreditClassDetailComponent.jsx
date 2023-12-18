@@ -16,7 +16,7 @@ import "./CreditClass.css";
 import { CommonDialogComponent, CommonTableComponent } from "../../components/Common";
 import ConfirmDialog from "../../components/Common/CommonDialog/ConfirmDialog";
 import ImportDialogComponent from "../Question/ImportComponent";
-import { selectAccessToken } from "../../redux/selectors";
+import { selectAccessToken, selectUser } from "../../redux/selectors";
 import { useSelector } from "react-redux";
 
 const initialValues = {
@@ -41,6 +41,9 @@ export default function CreditClassDetailComponent(props) {
 	const [confirmRemoveUserDialog, setConfirmRemoveUserDialog] = useState(false);
 	const [openImportDialog, setOpenImportDialog] = useState(false);
 	const accessToken = useSelector(selectAccessToken);
+	const currentUser = useSelector(selectUser);
+	const permissions = FeHelpers.getUserPermission(currentUser);
+	const HAS_ADMIN_PERMISSION = FeHelpers.isUserHasPermission(permissions, CONST.PERMISSION.ADMIN);
 	async function getInitData() {
 		setLoading(true);
 		await getClassAssign();
@@ -57,6 +60,10 @@ export default function CreditClassDetailComponent(props) {
 		{
 			colName: "Mã sinh viên",
 			colDef: "user_code",
+		},
+		{
+			colName: "Email",
+			colDef: "user_email",
 		},
 	];
 	useEffect(() => {
@@ -249,55 +256,59 @@ export default function CreditClassDetailComponent(props) {
 	}
 	return (
 		<Container style={{ padding: "0 24px 24px 24px" }}>
-			<form onSubmit={handleSubmit}>
-				<TextField
-					select
-					label="Lớp tín chỉ"
-					variant="outlined"
-					name="credit_class_id"
-					value={formData.credit_class_id}
-					onChange={handleChange}
-					fullWidth
-					className="disable-field"
-					margin="normal"
-					error={Boolean(errors.credit_class_id)}>
-					{creditClasses.map((creditClass, index) => (
-						<MenuItem key={index} value={creditClass.id}>
-							{creditClass.subject_name}
-						</MenuItem>
-					))}
-				</TextField>
-				<Autocomplete
-					multiple
-					id="tags-outlined"
-					options={users.filter((item) => !dataSource.map((i) => i.user_id).includes(item.id))}
-					filterSelectedOptions
-					getOptionLabel={(option) => `${option.code} - ${option.firstName} ${option.lastName}`}
-					onChange={handleAutocompleteChange}
-					style={{ marginTop: 16, marginBottom: 8 }}
-					renderInput={(params) => (
-						<TextField {...params} label="Sinh viên" placeholder="Có thể chọn nhiều sinh viên..." />
-					)}
-				/>
+			{HAS_ADMIN_PERMISSION ? (
+				<form onSubmit={handleSubmit}>
+					<TextField
+						select
+						label="Lớp tín chỉ"
+						variant="outlined"
+						name="credit_class_id"
+						value={formData.credit_class_id}
+						onChange={handleChange}
+						fullWidth
+						className="disable-field"
+						margin="normal"
+						error={Boolean(errors.credit_class_id)}>
+						{creditClasses.map((creditClass, index) => (
+							<MenuItem key={index} value={creditClass.id}>
+								{creditClass.subject_name}
+							</MenuItem>
+						))}
+					</TextField>
+					<Autocomplete
+						multiple
+						id="tags-outlined"
+						options={users.filter((item) => !dataSource.map((i) => i.user_id).includes(item.id))}
+						filterSelectedOptions
+						getOptionLabel={(option) => `${option.firstName} ${option.lastName} (${option.email})`}
+						onChange={handleAutocompleteChange}
+						style={{ marginTop: 16, marginBottom: 8 }}
+						renderInput={(params) => (
+							<TextField {...params} label="Sinh viên" placeholder="Có thể chọn nhiều sinh viên..." />
+						)}
+					/>
+					<div>
+						<Button type="submit" className="me-2" variant="contained" color="primary">
+							<i className="fa-solid fa-plus me-2"></i>Thêm sinh viên
+						</Button>
+					</div>
+				</form>
+			) : null}
+			<h4 className="mt-3 mb-2">Danh sách lớp</h4>
+			{HAS_ADMIN_PERMISSION ? (
 				<div>
-					<Button type="submit" className="me-2" variant="contained" color="primary">
-						<i className="fa-solid fa-plus me-2"></i>Thêm sinh viên
+					<Button className="me-2" variant="contained" color="success" onClick={handleOpenImportQuestionDialog}>
+						<i className="fa-solid fa-file-import me-2"></i>import sinh viên
+					</Button>
+					<Button className="me-2" variant="contained" color="warning" onClick={handleDownLoadTemplate}>
+						<i className="fa-solid fa-download me-2"></i>template
 					</Button>
 				</div>
-			</form>
-			<h4 className="mt-3 mb-2">Danh sách lớp</h4>
-			<div>
-				<Button className="me-2" variant="contained" color="success" onClick={handleOpenImportQuestionDialog}>
-					<i className="fa-solid fa-file-import me-2"></i>import sinh viên
-				</Button>
-				<Button className="me-2" variant="contained" color="warning" onClick={handleDownLoadTemplate}>
-					<i className="fa-solid fa-download me-2"></i>template
-				</Button>
-			</div>
+			) : null}
 			<CommonTableComponent
 				columnDef={columnDef}
 				dataSource={dataSource}
-				onDelete={handleDelete}></CommonTableComponent>
+				onDelete={HAS_ADMIN_PERMISSION ? handleDelete : null}></CommonTableComponent>
 			<CommonDialogComponent
 				open={confirmRemoveUserDialog}
 				title="Xác nhận"
