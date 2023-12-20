@@ -189,6 +189,7 @@ module.exports = {
               answer_d: row.answer_d,
               image: null,
               chapter_id: row.chapter_id,
+              cluster_id: 1,
             });
             successQ++;
           } catch (err) {

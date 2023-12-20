@@ -318,6 +318,7 @@ export default function QuestionComponent() {
 			// Clean up
 			document.body.removeChild(link);
 			toast.success(`Import câu hỏi thành công`);
+			getQuestions();
 			setOpenImportDialog(false);
 		}
 	}
